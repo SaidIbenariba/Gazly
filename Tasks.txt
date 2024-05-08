@@ -1,0 +1,14 @@
+###Tasks ilyass:
+-complete add measuremenent to database - this week 
+-fill all tables in database with demo data (every table put atleast 5 row  )  
+-create crud for one table - saturaday  
+-complete crud operations of all tables - next week  
+
+###Tasks said:
+-create repo in github and add readme file and push project folder .
+-create sitemap in figma 
+-create website structure 
+-create interface of tables  
+-create forms of crud operation 
+-create ui for dashboard 
+ 
