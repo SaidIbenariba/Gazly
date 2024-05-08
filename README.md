@@ -1,5 +1,5 @@
 
-### Laboratory Gas Monitoring Website Project
+# Laboratory Gas Monitoring Website Project
 ## Introduction
 Welcome to the showcase of our latest project aimed at building a comprehensive website for laboratories to organize their information and monitor for toxic gas leaks. This README provides an overview of the project's objectives, features, and technologies utilized.
 
