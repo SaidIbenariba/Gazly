@@ -36,8 +36,8 @@ User Authentication and Access Control:
 Secure login system with role-based access control to ensure data privacy and confidentiality.
 Different levels of access permissions for administrators, researchers, and technicians.
 ## Technologies Used
-Frontend: HTML5, CSS3, JavaScript (React.js)
-Backend: Node.js, Express.js
+Frontend: HTML5, CSS3, Tailwind, JavaScript (React.js)
+Backend: Node.js, Express.js, 
 Database: Mysql
 Real-time Monitoring: ?
 Authentication: JSON Web Tokens (JWT)
