@@ -13,23 +13,23 @@ Provide intuitive data visualization tools for easy analysis.
 Facilitate collaboration among laboratory staff for better communication and response to safety incidents.
 Ensure compliance with safety regulations and standards.
 ## Features
-# Dashboard:
+### Dashboard:
 Overview of recent activities, alerts, and important notifications.
 Quick access to key functionalities and data summaries.
-# Data Management:
+### Data Management:
 Tools for organizing laboratory information, including equipment inventory, experiment logs, and safety protocols.
 Customizable forms for inputting and updating data.
-# Toxic Gas Monitoring:
+### Toxic Gas Monitoring:
 Integration with gas sensors and detectors to monitor for toxic gas leaks in real-time.
 Automated alerts via email or SMS in case of detected leaks.
 Historical data tracking and analysis to identify trends and patterns.
-# Data Visualization:
+### Data Visualization:
 Interactive charts and graphs to visualize gas concentration levels over time.
 Heatmaps to identify areas with high gas concentration or frequent leaks.
-# Collaboration Tools:
+### Collaboration Tools:
 Discussion forums and messaging features for laboratory staff to communicate and share information.
 Task management and assignment tools for coordinating safety protocols and response plans.
-# Compliance Tracking:
+### Compliance Tracking:
 Tools to track regulatory compliance requirements and deadlines.
 Reminders and notifications for upcoming inspections or safety audits.
 User Authentication and Access Control:
