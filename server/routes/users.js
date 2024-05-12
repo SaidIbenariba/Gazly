@@ -1,0 +1,10 @@
+import express from "express";
+import { getUser, createUser, users } from "../controllers/user.js";
+import { verifyJWT } from "../middleware/verifyJWT.js";
+import { verifyRoles } from "../middleware/verifyRoles.js";
+import { ROLES_LIST } from "../config/roles_list.js";
+const router = express.Router();
+router.get("/", verifyRoles(ROLES_LIST.admin), verifyJWT, users);
+router.get("/find/:userId", getUser);
+router.get("/create/:userId", createUser, verifyRoles(ROLES_LIST.admin));
+export default router;

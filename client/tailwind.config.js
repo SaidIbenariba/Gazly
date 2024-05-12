@@ -9,7 +9,12 @@ export default {
     flowbite.content(),
   ],
   theme: {
-    extend: {},
+    screens: {},
+    extend: {
+      backgroundImage: {
+        "login-bg": "url('/src/assets/')",
+      },
+    },
   },
   // eslint-disable-next-line no-undef
   plugins: [flowbite.plugin()],
