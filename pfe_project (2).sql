@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: May 05, 2024 at 02:33 PM
+-- Generation Time: May 15, 2024 at 09:59 PM
 -- Server version: 8.2.0
 -- PHP Version: 8.2.13
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `pfeproject`
+-- Database: `pfe_project`
 --
 
 -- --------------------------------------------------------
@@ -49,9 +49,17 @@ CREATE TABLE IF NOT EXISTS `capteur` (
   `id` int NOT NULL AUTO_INCREMENT,
   `type` varchar(60) NOT NULL,
   `id_ET` int NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `id_ET` (`id_ET`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  PRIMARY KEY (`id`,`id_ET`),
+  KEY `id_ET_capteur` (`id_ET`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `capteur`
+--
+
+INSERT INTO `capteur` (`id`, `type`, `id_ET`) VALUES
+(1, 'MQ-2', 1),
+(2, 'MQ-9', 1);
 
 -- --------------------------------------------------------
 
@@ -65,9 +73,10 @@ CREATE TABLE IF NOT EXISTS `dircteur` (
   `nom` varchar(50) NOT NULL,
   `prenom` varchar(50) NOT NULL,
   `telphone` int NOT NULL,
-  `dir_email` varchar(70) NOT NULL,
-  `dir_password` varchar(50) NOT NULL,
+  `dir_password` varchar(40) NOT NULL,
+  `dir_email` varchar(60) NOT NULL,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `dir_password_2` (`dir_password`,`dir_email`),
   KEY `dir_password` (`dir_password`),
   KEY `dir_email` (`dir_email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -83,22 +92,14 @@ CREATE TABLE IF NOT EXISTS `espace de travail` (
   `id` int NOT NULL AUTO_INCREMENT,
   `nom` varchar(30) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- --------------------------------------------------------
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
--- Table structure for table `login`
+-- Dumping data for table `espace de travail`
 --
 
-DROP TABLE IF EXISTS `login`;
-CREATE TABLE IF NOT EXISTS `login` (
-  `email` varchar(80) NOT NULL,
-  `password` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `user_type` enum('Admin','Respensable','ouvrier') NOT NULL,
-  PRIMARY KEY (`email`),
-  UNIQUE KEY `password` (`password`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+INSERT INTO `espace de travail` (`id`, `nom`) VALUES
+(1, 'nom');
 
 -- --------------------------------------------------------
 
@@ -112,9 +113,10 @@ CREATE TABLE IF NOT EXISTS `mesure` (
   `gazlvl` int NOT NULL,
   `date` datetime NOT NULL,
   `id_cap` int NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `id_cap` (`id_cap`)
-) ENGINE=InnoDB AUTO_INCREMENT=282 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `gaz_danger` enum('0','1') NOT NULL,
+  PRIMARY KEY (`id`,`id_cap`),
+  KEY `id_capteur` (`id_cap`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -168,7 +170,16 @@ CREATE TABLE IF NOT EXISTS `ouvrier` (
   PRIMARY KEY (`id`),
   KEY `ouv_password` (`ouv_password`),
   KEY `ouv_email` (`ouv_email`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `ouvrier`
+--
+
+INSERT INTO `ouvrier` (`id`, `nom`, `prenom`, `telphone`, `ouv_email`, `ouv_password`) VALUES
+(10, 'kj', 'kjn', 3868, 'user3@gmail.com', '5555'),
+(12, 'lilk', 'lkklnkl', 845, 'user1@gmail.com', '5544'),
+(14, 'lilk', 'lkklnkl', 845, 'user10@gmail.com', '1233');
 
 -- --------------------------------------------------------
 
@@ -187,7 +198,15 @@ CREATE TABLE IF NOT EXISTS `respensable` (
   PRIMARY KEY (`id`),
   KEY `resp_password` (`resp_password`),
   KEY `resp_email` (`resp_email`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `respensable`
+--
+
+INSERT INTO `respensable` (`id`, `nom`, `prenom`, `telphone`, `resp_email`, `resp_password`) VALUES
+(13, 'lilk', 'lkklnkl', 845, 'user7@gmail.co', '0000'),
+(15, 'Iliass', 'Wakkar', 6485654, 'iliasswakkar992@gmail.com', '55555');
 
 -- --------------------------------------------------------
 
@@ -224,6 +243,37 @@ CREATE TABLE IF NOT EXISTS `tache` (
   KEY `id_resp_tache` (`id_resp`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `users`
+--
+
+DROP TABLE IF EXISTS `users`;
+CREATE TABLE IF NOT EXISTS `users` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `email` varchar(80) NOT NULL,
+  `password` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `user_type` enum('Admin','Respensable','Ouvrier') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`,`password`),
+  UNIQUE KEY `email_3` (`email`),
+  KEY `password` (`password`),
+  KEY `email_2` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`id`, `email`, `password`, `user_type`) VALUES
+(1, 'user7@gmail.co', '0000', 'Respensable'),
+(3, 'user3@gmail.com', '5555', 'Ouvrier'),
+(7, 'iliasswak5kar2@gmail.com', '5555', 'Respensable'),
+(11, 'user1@gmail.com', '5544', 'Ouvrier'),
+(18, 'user10@gmail.com', '1233', 'Ouvrier'),
+(19, 'iliasswakkar992@gmail.com', '55555', 'Respensable');
+
 --
 -- Constraints for dumped tables
 --
@@ -245,56 +295,22 @@ ALTER TABLE `capteur`
 -- Constraints for table `dircteur`
 --
 ALTER TABLE `dircteur`
-  ADD CONSTRAINT `dir_email` FOREIGN KEY (`dir_email`) REFERENCES `login` (`email`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `dir_password` FOREIGN KEY (`dir_password`) REFERENCES `login` (`password`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `mesure`
---
-ALTER TABLE `mesure`
-  ADD CONSTRAINT `id_capteur` FOREIGN KEY (`id_cap`) REFERENCES `capteur` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `mission`
---
-ALTER TABLE `mission`
-  ADD CONSTRAINT `id_dir_miss` FOREIGN KEY (`id_dir`) REFERENCES `dircteur` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `id_resp_miss` FOREIGN KEY (`id_resp`) REFERENCES `respensable` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `observation`
---
-ALTER TABLE `observation`
-  ADD CONSTRAINT `id_ET_obs` FOREIGN KEY (`id_ET`) REFERENCES `espace de travail` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `id_resp_obs` FOREIGN KEY (`id_resp`) REFERENCES `respensable` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `dir_email` FOREIGN KEY (`dir_email`) REFERENCES `users` (`email`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `dir_password` FOREIGN KEY (`dir_password`) REFERENCES `users` (`password`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `ouvrier`
 --
 ALTER TABLE `ouvrier`
-  ADD CONSTRAINT `ouv_email` FOREIGN KEY (`ouv_email`) REFERENCES `login` (`email`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `ouv_password` FOREIGN KEY (`ouv_password`) REFERENCES `login` (`password`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `ouv_email` FOREIGN KEY (`ouv_email`) REFERENCES `users` (`email`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `ouv_password` FOREIGN KEY (`ouv_password`) REFERENCES `users` (`password`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `respensable`
 --
 ALTER TABLE `respensable`
-  ADD CONSTRAINT `resp_email` FOREIGN KEY (`resp_email`) REFERENCES `login` (`email`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `resp_password` FOREIGN KEY (`resp_password`) REFERENCES `login` (`password`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `reunion`
---
-ALTER TABLE `reunion`
-  ADD CONSTRAINT `id_dir_reun` FOREIGN KEY (`id_dir`) REFERENCES `dircteur` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `id_resp_reun` FOREIGN KEY (`id_resp`) REFERENCES `respensable` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `tache`
---
-ALTER TABLE `tache`
-  ADD CONSTRAINT `id_ouv` FOREIGN KEY (`id_ouv`) REFERENCES `ouvrier` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `id_resp_tache` FOREIGN KEY (`id_resp`) REFERENCES `respensable` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `resp_email` FOREIGN KEY (`resp_email`) REFERENCES `users` (`email`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `resp_password` FOREIGN KEY (`resp_password`) REFERENCES `users` (`password`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
