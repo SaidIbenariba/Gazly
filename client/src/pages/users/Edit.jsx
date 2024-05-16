@@ -1,120 +1,138 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import {
+  Card,
+  Input,
+  Typography,
+  Select,
+  Option,
+} from "@material-tailwind/react";
+import Button from "../../components/Button";
 
-const Create = () => {
+const Edit = () => {
   const { id } = useParams();
+  const [values, setValues] = useState({
+    firstname: "",
+    lastname: "",
+    email: "",
+    role: "",
+  });
   useEffect(() => {
     axios
-      .get("http://localhost:5000/read_user/" + id)
+      .get("http://localhost:5000/api/users/read/" + id)
       .then((res) => {
         setValues({
           ...values,
-          nom: res.data[0].Nom,
-          tel: res.data[0].Tel,
-          ville: res.data[0].Ville,
-          adresse: res.data[0].Adresse,
+          firstname: res.data[0].firstname,
+          lastname: res.data[0].lastname,
+          email: res.data[0].email,
+          role: res.data[0].role,
         });
         console.log(res.data[0]);
       })
       .catch((err) => console.log(err));
   }, []);
-  const [values, setValues] = useState({
-    nom: "",
-    tel: "",
-    ville: "",
-    adresse: "",
-  });
+
   const nav = useNavigate();
   function handleUpdate(e) {
     e.preventDefault();
-    console.log(`form submitted`);
+    console.log(`form subm  itted`);
+    console.log(values);
     axios
-      .post("http://localhost:5000/edit_user/" + id, values)
+      .put("http://localhost:5000/api/users/edit/" + id, values) //
       .then((res) => {
         console.log(res);
-        nav("/users");
+        nav("/admin/users");
       })
       .catch((err) => console.log(err));
   }
   return (
     <>
-      <div className="container h-[100vh] w-[100vw] bg-gray-200">
-        <h1 className=" text-3xl font-bold text-gray-500">Edit client</h1>
-        <div className="flex justify-end">
-          <Link
-            to="/users"
-            className="bg-blue-400 hover:bg-blue-800 text-white px-5 rounded-sm shadow-md"
-          >
-            Home
-          </Link>
+      <div className=" flex flex-col h-[100vh] p-2 items-center">
+        <div className="flex flex-col ">
+          <nav className="flex justify-between">
+            <h1 className=" text-3xl font-bold text-text dark:text-text">
+              Edit User
+            </h1>
+            <Link to="/users" className="button">
+              Home
+            </Link>
+          </nav>
+          <Card color="transparent" className="w-fit p-5" shadow={true}>
+            <form className="mt-2 mb-2 w-80 sm:w-96" onSubmit={handleUpdate}>
+              <div className="mb-1 flex flex-col gap-6">
+                <Typography variant="h6" color="blue-gray" className="-mb-3">
+                  FirstName
+                </Typography>
+                <Input
+                  size="lg"
+                  value={values.firstname}
+                  className="input"
+                  labelProps={{
+                    className: "before:content-none after:content-none",
+                  }}
+                  onChange={(e) =>
+                    setValues({ ...values, firstname: e.target.value })
+                  }
+                />
+                <Typography variant="h6" color="blue-gray" className="-mb-3">
+                  LastName
+                </Typography>
+                <Input
+                  size="lg"
+                  className="input"
+                  value={values.lastname}
+                  labelProps={{
+                    className: "before:content-none after:content-none",
+                  }}
+                  onChange={(e) =>
+                    setValues({ ...values, lastname: e.target.value })
+                  }
+                />
+                <Typography variant="h6" color="blue-gray" className="-mb-3">
+                  Email
+                </Typography>
+                <Input
+                  type="email"
+                  size="lg"
+                  placeholder="name@mail.com"
+                  value={values.email}
+                  className="input"
+                  labelProps={{
+                    className: "before:content-none after:content-none",
+                  }}
+                  onChange={(e) =>
+                    setValues({ ...values, email: e.target.value })
+                  }
+                />
+                <Typography variant="h6" color="blue-gray" className="-mb-3">
+                  Role
+                </Typography>
+                <Select
+                  className="input"
+                  labelProps={{
+                    className: "before:content-none after:content-none",
+                  }}
+                  value={values.role}
+                  onChange={(value) => setValues({ ...values, role: value })}
+                >
+                  <Option value="admin">Admin</Option>
+                  <Option value="responsable">Responsable</Option>
+                  <Option value="ouvrier">Ouvrier</Option>
+                </Select>
+              </div>
+              <Button
+                type="submit"
+                className="button w-full mt-10"
+                text={`save`}
+              />
+            </form>
+          </Card>
         </div>
-        <form onSubmit={handleUpdate}>
-          <div className=" my-5">
-            <label htmlFor="nom">Nom</label>
-            <input
-              type="text"
-              name="nom"
-              id="nom"
-              value={values.nom}
-              required
-              onChange={(e) => {
-                setValues({ ...values, nom: e.target.value });
-              }}
-              className=" ml-4 border border-gray-400 rounded-sm"
-            />
-          </div>
-
-          <div className=" my-5">
-            <label htmlFor="tel">Tel</label>
-            <input
-              type="text"
-              name="tel"
-              id="tel"
-              value={values.tel}
-              required
-              onChange={(e) => {
-                setValues({ ...values, tel: e.target.value });
-              }}
-              className=" ml-4 border border-gray-400 rounded-sm"
-            />
-          </div>
-          <div className=" my-5">
-            <label htmlFor="ville">Ville</label>
-            <input
-              type="text"
-              name="ville"
-              id="ville"
-              value={values.ville}
-              onChange={(e) => {
-                setValues({ ...values, ville: e.target.value });
-              }}
-              className=" ml-4 border border-gray-400 rounded-sm"
-            />
-          </div>
-          <div className=" my-5">
-            <label htmlFor="adresse">Adresse</label>
-            <input
-              type="text"
-              name="adresse"
-              id="adresse"
-              value={values.adresse}
-              onChange={(e) => {
-                setValues({ ...values, adresse: e.target.value });
-              }}
-              className=" ml-4 border border-gray-400 rounded-sm"
-            />
-          </div>
-          <button
-            type="submit"
-            className="bg-blue-400 hover:bg-blue-800 text-white px-5 rounded-sm shadow-md"
-          >
-            save
-          </button>
-        </form>
       </div>
     </>
   );
 };
 
-export default Create;
+export default Edit;

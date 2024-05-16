@@ -1,96 +1,324 @@
-// import React from "react";
-"use client";
-import { Table } from "flowbite-react";
+// // import React from "react";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import Sidebar from "../../components/Sidbar";
-import Loader from "../../components/Loader";
-const Users = () => {
-  const [data, setData] = useState([]);
-  const [Loading, setLoading] = useState();
+
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { FaTrashAlt } from "react-icons/fa";
+
+import { PencilIcon, UserPlusIcon } from "@heroicons/react/24/solid";
+import {
+  Card,
+  CardHeader,
+  Input,
+  Typography,
+  CardBody,
+  Chip,
+  CardFooter,
+  Tabs,
+  TabsHeader,
+  Tab,
+  Avatar,
+  IconButton,
+  Tooltip,
+} from "@material-tailwind/react";
+import Button from "../../components/Button";
+
+const TABS = [
+  {
+    label: "All",
+    value: "all",
+  },
+  {
+    label: "Admin",
+    value: "admin",
+  },
+  {
+    label: "Responsable",
+    value: "responsable",
+  },
+  {
+    label: "Ouvrier",
+    value: "ouvrier",
+  },
+];
+
+export default function Users() {
+  const [tableRows, setTableRows] = useState([]);
+  const tableHeads = ["NAME", "EMAIL", "ROLE"];
+  const [Loading, setLoading] = useState(true);
+  const [deletedUser, setDeletedUser] = useState({ deleted: false, id: "" });
+  const [search, setSearch] = useState("");
   useEffect(() => {
     setLoading(true);
     axios
-      .get("http://localhost:5000/users")
+      .get("http://localhost:5000/api/users")
       .then((res) => {
-        setData(res.data);
-        console.log(res);
+        setTableRows(res.data);
         setLoading(false);
       })
       .catch((err) => {
-        console.log(err);
+        // console.log(err);
         setLoading(false);
+        setTableRows([]);
       });
-  }, []);
+  }, [deletedUser]);
+  function handleSubmit(e) {
+    e.preventDefault();
+    console.log(`search result : ${search}`);
+    setLoading(true);
+    axios
+      .get("http://localhost:5000/api/users/search/" + search)
+      .then((res) => {
+        setTableRows(res.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        // console.log(err);
+        setLoading(false);
+        setTableRows([]);
+      });
+  }
+  function handleSearchByrole(e) {
+    const role = e.target.value;
+    console.log(role);
+    setLoading(true);
+    switch (role) {
+      case "all":
+        axios
+          .get("http://localhost:5000/api/users")
+          .then((res) => {
+            setTableRows(res.data);
+            setLoading(false);
+          })
+          .catch((err) => {
+            // console.log(err);
+            setLoading(false);
+            setTableRows([]);
+          });
+        break;
+      default:
+        axios
+          .get("http://localhost:5000/api/users/search-role/" + role)
+          .then((res) => {
+            setTableRows(res.data);
+            setLoading(false);
+          })
+          .catch((err) => {
+            // console.log(err);
+            setLoading(false);
+            setTableRows([]);
+          });
+    }
+  }
 
+  function handleDelete(e) {
+    const id = e.target.id;
+    axios
+      .delete("http://localhost:5000/api/users/delete/" + id)
+      .then((res) => {
+        setDeletedUser({ ...deletedUser, deleted: true, id: id });
+      })
+      .catch((err) => {
+        // console.log(err);
+        setDeletedUser({ ...deletedUser, deleted: false, id: "" });
+      });
+  }
   return (
-    <>
-      {Loading ? (
-        <Loader />
-      ) : (
-        <div className="flex flex-col justify-center items-end">
-          <Link
-            to="/users/create"
-            className="flex  text-white py-2 px-4 justify-center items-center rounded-md shadow-md bg-blue-500 hover:bg-blue-600"
-          >
-            {" "}
-            Add User +{" "}
-          </Link>
-          <div className="overflow-x-auto flex items-center justify-center">
-            <Table>
-              <Table.Head>
-                <Table.HeadCell>ID</Table.HeadCell>
-                <Table.HeadCell>Nom</Table.HeadCell>
-                <Table.HeadCell>Tel</Table.HeadCell>
-                <Table.HeadCell>Ville</Table.HeadCell>
-                <Table.HeadCell>Adresse</Table.HeadCell>
-                <Table.HeadCell>Actions</Table.HeadCell>
-              </Table.Head>
-              <Table.Body className="divide-y">
-                {data.map((user, index) => {
-                  return (
-                    <Table.Row
-                      key={index}
-                      className="bg-white dark:border-gray-700 dark:bg-gray-800"
-                    >
-                      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                        {user.ID}
-                      </Table.Cell>
-                      <Table.Cell>{user.Nom}</Table.Cell>
-                      <Table.Cell>{user.Tel}</Table.Cell>
-                      <Table.Cell>{user.Ville}</Table.Cell>
-                      <Table.Cell>{user.Adresse}</Table.Cell>
-                      <Table.Cell className="flex justify-between gap-2">
-                        <Link
-                          to={`/users/edit/${user.ID}`}
-                          className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
-                        >
-                          Edit
-                        </Link>
-                        <Link
-                          to={`/users/read/${user.ID}`}
-                          className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
-                        >
-                          Read
-                        </Link>
-                        <Link
-                          to={`/users/delete/${user.ID}`}
-                          className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
-                        >
-                          Delete
-                        </Link>
-                      </Table.Cell>
-                    </Table.Row>
-                  );
-                })}
-              </Table.Body>
-            </Table>
+    <Card className="h-full w-full">
+      <CardHeader floated={false} shadow={false} className="rounded-none">
+        <div className="mb-8 flex items-center justify-between gap-8">
+          <div>
+            <Typography variant="h5" color="blue-gray">
+              Users list
+            </Typography>
+            <Typography color="gray" className="mt-1 font-normal">
+              See information about all users
+            </Typography>
+          </div>
+          <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
+            <Button
+              size="sm"
+              text="view all"
+              className="button bg-background text-black border border-black hover:bg-gray-50"
+            />
+            <Link to="create">
+              <Button
+                className="button "
+                size="sm"
+                icon={<UserPlusIcon strokeWidth={2} className="h-4 w-4" />}
+                text="Add user"
+              />
+            </Link>
           </div>
         </div>
-      )}
-    </>
-  );
-};
+        <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+          <Tabs value="all" className="w-full md:w-max">
+            <TabsHeader>
+              {TABS.map(({ label, value }) => (
+                <button
+                  className="p-2 mx-2 bg-gray-100 rounded-2xl"
+                  key={value}
+                  value={value}
+                  onClick={handleSearchByrole}
+                >
+                  &nbsp;&nbsp;{label}&nbsp;&nbsp;
+                </button>
+              ))}
+            </TabsHeader>
+          </Tabs>
+          <div className="w-full md:w-72">
+            <form onSubmit={handleSubmit} className="">
+              <Input
+                label="Search"
+                className="flex flex-col justify-center items-center "
+                icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+                placeholder="search..."
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                }}
+              />
+            </form>
+          </div>
+        </div>
+      </CardHeader>
 
-export default Users;
+      <CardBody className="overflow-scroll px-0">
+        {/* {deletedUser.deleted && (
+          <span className="text-red-500">User was Deleted</span>
+        )} */}
+        <table className="mt-4 w-full min-w-max table-auto text-left">
+          <thead>
+            <tr>
+              {tableHeads.map((head) => (
+                <th
+                  key={head}
+                  className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4"
+                >
+                  <Typography
+                    variant="small"
+                    color="blue-gray"
+                    className="font-normal leading-none opacity-70"
+                  >
+                    {head.toUpperCase()}
+                  </Typography>
+                </th>
+              ))}
+              <th className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4">
+                <span className="sr-only">Actions</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {tableRows.map(
+              ({ id, firstname, lastname, email, role }, index) => {
+                const isLast = index === tableRows.length - 1;
+                const classes = isLast
+                  ? "p-4"
+                  : "p-4 border-b border-blue-gray-50";
+
+                return (
+                  <tr key={id}>
+                    <td className={classes}>
+                      <div className="flex items-center gap-3">
+                        {/* <Avatar src={img} alt={name} size="sm" /> */}
+                        <div className="flex flex-col">
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal"
+                          >
+                            {firstname}
+                          </Typography>
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal opacity-70"
+                          >
+                            {lastname}
+                          </Typography>
+                        </div>
+                      </div>
+                    </td>
+                    <td className={classes}>
+                      <div className="flex flex-col">
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {email}
+                        </Typography>
+                      </div>
+                    </td>
+                    <td className={classes}>
+                      <div className="flex flex-col">
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {role}
+                        </Typography>
+                      </div>
+                    </td>
+                    {/* <td className={classes}>
+                      <div className="w-max">
+                        <Chip
+                          variant="ghost"
+                          size="sm"
+                          value={online ? "online" : "offline"} // we can use with referesh code
+                          color={online ? "green" : "blue-gray"}
+                        />
+                      </div>
+                    </td> */}
+                    {/* <td className={classes}>
+                      <Typography
+                        variant="small"
+                        color="blue-gray"
+                        className="font-normal"
+                      >
+                        {date}
+                      </Typography>
+                    </td> */}
+                    <td className={classes}>
+                      <Link to={`edit/${id}`}>
+                        <Tooltip content="Edit User">
+                          <IconButton variant="text">
+                            <PencilIcon className="h-4 w-4" />
+                          </IconButton>
+                        </Tooltip>
+                      </Link>
+                      <Tooltip content="Delete User">
+                        <IconButton
+                          variant="text"
+                          id={id}
+                          onClick={handleDelete}
+                        >
+                          <FaTrashAlt />
+                        </IconButton>
+                      </Tooltip>
+                    </td>
+                  </tr>
+                );
+              }
+            )}
+          </tbody>
+        </table>
+      </CardBody>
+      <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
+        <Typography variant="small" color="blue-gray" className="font-normal">
+          Page 1 of 10
+        </Typography>
+        <div className="flex gap-2">
+          <Button variant="outlined" size="sm">
+            Previous
+          </Button>
+          <Button variant="outlined" size="sm">
+            Next
+          </Button>
+        </div>
+      </CardFooter>
+    </Card>
+  );
+}

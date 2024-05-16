@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS `affectation` (
   PRIMARY KEY (`datedebut`,`id_ET`,`id_resp`),
   KEY `id_ET_affect` (`id_ET`),
   KEY `id_resp_affect` (`id_resp`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ;
 
 -- --------------------------------------------------------
 
@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS `capteur` (
   `id_ET` int NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_ET` (`id_ET`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ;
 
 -- --------------------------------------------------------
 
@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS `dircteur` (
   PRIMARY KEY (`id`),
   KEY `dir_password` (`dir_password`),
   KEY `dir_email` (`dir_email`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ;
 
 -- --------------------------------------------------------
 
@@ -83,7 +83,7 @@ CREATE TABLE IF NOT EXISTS `espace de travail` (
   `id` int NOT NULL AUTO_INCREMENT,
   `nom` varchar(30) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ;
 
 -- --------------------------------------------------------
 
@@ -94,11 +94,11 @@ CREATE TABLE IF NOT EXISTS `espace de travail` (
 DROP TABLE IF EXISTS `login`;
 CREATE TABLE IF NOT EXISTS `login` (
   `email` varchar(80) NOT NULL,
-  `password` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `password` varchar(50) CHARACTER SET utf8mb4  NOT NULL,
   `user_type` enum('Admin','Respensable','ouvrier') NOT NULL,
   PRIMARY KEY (`email`),
   UNIQUE KEY `password` (`password`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ;
 
 -- --------------------------------------------------------
 
@@ -114,7 +114,7 @@ CREATE TABLE IF NOT EXISTS `mesure` (
   `id_cap` int NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_cap` (`id_cap`)
-) ENGINE=InnoDB AUTO_INCREMENT=282 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=282 DEFAULT CHARSET=utf8mb4 ;
 
 -- --------------------------------------------------------
 
@@ -132,7 +132,7 @@ CREATE TABLE IF NOT EXISTS `mission` (
   PRIMARY KEY (`startdate`,`id_dir`,`id_resp`),
   KEY `id_resp_miss` (`id_resp`),
   KEY `id_dir_miss` (`id_dir`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ;
 
 -- --------------------------------------------------------
 
@@ -149,7 +149,7 @@ CREATE TABLE IF NOT EXISTS `observation` (
   PRIMARY KEY (`date`,`id_ET`,`id_resp`),
   KEY `id_ET_obs` (`id_ET`),
   KEY `id_resp_obs` (`id_resp`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ;
 
 -- --------------------------------------------------------
 
@@ -168,7 +168,7 @@ CREATE TABLE IF NOT EXISTS `ouvrier` (
   PRIMARY KEY (`id`),
   KEY `ouv_password` (`ouv_password`),
   KEY `ouv_email` (`ouv_email`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ;
 
 -- --------------------------------------------------------
 
@@ -187,7 +187,7 @@ CREATE TABLE IF NOT EXISTS `respensable` (
   PRIMARY KEY (`id`),
   KEY `resp_password` (`resp_password`),
   KEY `resp_email` (`resp_email`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ;
 
 -- --------------------------------------------------------
 
@@ -204,7 +204,7 @@ CREATE TABLE IF NOT EXISTS `reunion` (
   PRIMARY KEY (`date`,`id_resp`,`id_dir`),
   KEY `id_resp_reun` (`id_resp`),
   KEY `id_dir_reun` (`id_dir`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ;
 
 -- --------------------------------------------------------
 
@@ -222,7 +222,7 @@ CREATE TABLE IF NOT EXISTS `tache` (
   PRIMARY KEY (`date`,`id_ouv`,`id_resp`),
   KEY `id_ouv` (`id_ouv`),
   KEY `id_resp_tache` (`id_resp`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ;
 
 --
 -- Constraints for dumped tables

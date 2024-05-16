@@ -5,8 +5,9 @@ import jwt from "jsonwebtoken";
 import { ROLES_LIST } from "../config/roles_list.js";
 dotenv.config();
 // import jwt from "jsonwebtoken";
-export const register = (req, res) => {
+export const register = async (req, res) => {
   // CHECK USER IF EXISTS OR NOT
+  console.log("register");
   const sql = "SELECT * FROM users WHERE email = ?";
   db.query(sql, req.body.email, (err, data) => {
     if (err)
@@ -14,6 +15,7 @@ export const register = (req, res) => {
         .status(500)
         .json({ messsage: "Error mysql when select from users" + err });
     if (data.length > 0) {
+      console.log("User already exits");
       return res.status(409).json("User already exists!");
     }
     // HERE SPECIFIC ROLE OF USER
@@ -33,7 +35,8 @@ export const register = (req, res) => {
   });
 };
 
-export const login = (req, res) => {
+export const login = async (req, res) => {
+  console.log("login");
   const sql = "SELECT * FROM users WHERE email = ?";
   db.query(sql, req.body.email, (err, data) => {
     if (err) return res.status(500).json(err);
@@ -42,6 +45,7 @@ export const login = (req, res) => {
       req.body.password,
       data[0].password
     );
+
     if (!checkPassword) {
       return res.status(400).json("Wrong password");
     }
@@ -55,7 +59,6 @@ export const login = (req, res) => {
       role: data[0].role,
       tokenrefresh: data[0].refreshToken,
     };
-
     const accessToken = jwt.sign(
       {
         UserInfo: {
@@ -78,10 +81,12 @@ export const login = (req, res) => {
     );
     //WE SELECT ALL USERS AND
     // REPLACE IT WITH UPDATE QUERY
-    const q = "UPDATE users SET refreshToken = ? WHERE id = ?";
-    db.query(q, [refreshToken, foundUser.id], (err, result) => {
-      if (err) return res.status(500).json(err);
-      //   return res.status(200).json("add refresh Token to user");
+    const q = `UPDATE users SET refreshToken = ? WHERE id = ${foundUser.id}`;
+    // const values = [refreshToken, foundUser.id];
+    // console.log(values);
+    db.query(q, [refreshToken], (err, result) => {
+      if (err) console.log(err);
+      console.log(result);
     });
     // const q = "SELECT * FROM users WHERE id = ?";
     // db.query(q,foundUser.id ,(err, users) => {
@@ -110,7 +115,7 @@ export const login = (req, res) => {
   });
 };
 
-export const logout = (req, res) => {
+export const logout = async (req, res) => {
   // On client(front end ), also delete the acces token
 
   //   const cookies = req.cookies;

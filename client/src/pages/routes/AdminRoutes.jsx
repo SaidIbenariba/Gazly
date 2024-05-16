@@ -1,8 +1,8 @@
 import { Route, Routes } from "react-router-dom";
-import AdminLayout from "./directeur/AdminLayout";
-import Dashboard from "./directeur/Dashboard";
-import Users from "./users/Users";
-import Espaces from "./Espaces";
+import AdminLayout from "../directeur/AdminLayout";
+import Dashboard from "../directeur/Dashboard";
+import Espaces from "../Espaces";
+import UsersRoutes from "../routes/UsersRoutes";
 
 export function AdminRoutes() {
   return (
@@ -10,9 +10,9 @@ export function AdminRoutes() {
       <Routes>
         <Route element={<AdminLayout />}>
           <Route index element={<Dashboard />} />
-          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="dashboard" index element={<Dashboard />} />
           <Route path="espaces" element={<Espaces />} />
-          <Route path="users" element={<Users />} />
+          <Route path="users/*" element={<UsersRoutes />} />
         </Route>
       </Routes>
     </>

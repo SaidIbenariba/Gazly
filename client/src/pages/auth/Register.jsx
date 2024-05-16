@@ -16,10 +16,10 @@ const register = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     axios
-      .post("/register", values)
-      .then((res) => nav("/"))
+      .post("http://localhost:5000/auth/register", values)
+      .then((res) => nav("/login"))
       .catch((err) => {
-        setError(true);
+        setError(err);
       });
   };
   return (
@@ -60,11 +60,52 @@ const register = () => {
                 required
               />
             </div>
+            <div>
+              <div className="mb-2 block">
+                <Label htmlFor="phoneNumber" value="phoneNumber" />
+              </div>
+              <TextInput
+                id="phoneNumber"
+                type="number"
+                onChange={(e) =>
+                  setValues({ ...values, phoneNumber: e.target.value })
+                }
+                required
+              />
+            </div>
+            <div>
+              <div className="mb-2 block">
+                <Label htmlFor="lastName" value="lastName" />
+              </div>
+              <TextInput
+                id="lastName"
+                type="text"
+                onChange={(e) =>
+                  setValues({ ...values, lastName: e.target.value })
+                }
+                required
+              />
+            </div>
+            <div>
+              <div className="mb-2 block">
+                <Label htmlFor="firstName" value="firstName" />
+              </div>
+              <TextInput
+                id="firstName"
+                type="text"
+                onChange={(e) =>
+                  setValues({ ...values, firstName: e.target.value })
+                }
+                required
+              />
+            </div>
+
             <div className="flex items-center gap-2">
               <Checkbox id="remember" />
               <Label htmlFor="remember">Remember me</Label>
             </div>
             <Button type="submit">Sign up</Button>
+            {error && error.response.data}
           </form>
         </div>
       </div>

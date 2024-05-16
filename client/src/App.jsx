@@ -4,22 +4,14 @@ import {
   Routes,
   Route,
 } from "react-router-dom";
-import { useAuth } from "./hooks/useAuth";
-import { AuthProvider } from "./context/AuthContext";
-import Edit from "./pages/users/Edit";
-import Users from "./pages/users/Users";
-import Read from "./pages/users/Read";
-import Create from "./pages/users/Create";
-import Delete from "./pages/users/Delete";
+
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
-import Dashboard from "./pages/directeur/Dashboard";
 import Notfound from "./Notfound";
 import Home from "./pages/Home";
-import Espaces from "./pages/Espaces";
 
-import AdminLayout from "./pages/directeur/AdminLayout";
-import { AdminRoutes } from "./pages/AdminRoutes";
+import { AdminRoutes } from "./pages/routes/AdminRoutes";
+// import UsersRoutes from "./pages/routes/UsersRoutes";
 // const router = createBrowserRouter([
 //   {
 //     path: "/",
@@ -61,6 +53,8 @@ const App = () => {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/admin/*" element={<AdminRoutes />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
       <Route path="*" element={<Notfound />} />
     </Routes>
   );

@@ -2,10 +2,13 @@ import { Button, Checkbox, Label, TextInput } from "flowbite-react";
 // import login from "../../assets/login.jpg";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
 import { useState } from "react";
 const Login = () => {
   const [login, setLogin] = useState({ email: "", password: "" });
+  const { setIsLoggedIn } = useAuth();
   const [error, setError] = useState(null);
+  const [message, setMessage] = useState("");
   const nav = useNavigate();
   function handleSubmit(e) {
     e.preventDefault();
@@ -13,10 +16,17 @@ const Login = () => {
       .post("http://localhost:5000/auth/login", login)
       .then((res) => {
         console.log(res);
-        nav(`/`);
+        // setMessage(message);
+        // setIsLoggedIn(true);
+        nav(`/admin`);
       })
-      .catch((err) => setError(err));
+      .catch((err) => {
+        setError(err);
+        setMessage(err.message.data);
+        // setIsLoggedIn(false);
+      });
   }
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
       <div className="flex flex-col bg-white shadow-md px-4 sm:px-6 md:px-8 lg:px-10 py-8 rounded-md w-full max-w-md">
@@ -52,7 +62,7 @@ const Login = () => {
             <Label htmlFor="remember">Remember me</Label>
           </div>
           <Button type="submit">Log in</Button>
-          {error && error}
+          {error && message}
         </form>
       </div>
     </div>

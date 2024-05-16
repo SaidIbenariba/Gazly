@@ -1,16 +1,19 @@
 import React from "react";
-import Sidbar from "../../components/Sidbar";
+import Navbar from "../../components/Navbar";
+import Sidebar from "../../components/Sidebar";
 import { Outlet } from "react-router-dom";
+
 const AdminLayout = () => {
   return (
     <>
-      <div className="container h-[100vh] flex flex-row">
-        <Sidbar />
-        <main className=" overflow-hidden mx-auto">
-          <div>
-            <Outlet />
+      <div className="flex flex-auto h-screen">
+        <Sidebar />
+        <div className="grow">
+          <Navbar />
+          <div className="m-5">
+            <Outlet></Outlet>
           </div>
-        </main>
+        </div>
       </div>
     </>
   );
