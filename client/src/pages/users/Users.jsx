@@ -23,6 +23,7 @@ import {
   Tooltip,
 } from "@material-tailwind/react";
 import Button from "../../components/Button";
+import { IoIosRefresh } from "react-icons/io";
 
 const TABS = [
   {
@@ -152,12 +153,12 @@ export default function Users() {
             </Link>
           </div>
         </div>
-        <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+        <div className="flex  flex-wrap items-center justify-between gap-1 gap-y-4">
           <Tabs value="all" className="w-full md:w-max">
             <TabsHeader>
               {TABS.map(({ label, value }) => (
                 <button
-                  className="p-2 mx-2 bg-gray-100 rounded-2xl"
+                  className="p-2 mx-2 bg-gray-100 rounded-md hover:bg-white"
                   key={value}
                   value={value}
                   onClick={handleSearchByrole}
@@ -167,11 +168,11 @@ export default function Users() {
               ))}
             </TabsHeader>
           </Tabs>
-          <div className="w-full md:w-72">
-            <form onSubmit={handleSubmit} className="">
+          <div className="flex flex-row w-full md:w-72">
+            <form onSubmit={handleSubmit} className=" w-11/12 md:10/12">
               <Input
                 label="Search"
-                className="flex flex-col justify-center items-center "
+                className="flex flex-col justify-center items-center rounded-r-none border-r-0"
                 icon={<MagnifyingGlassIcon className="h-5 w-5" />}
                 placeholder="search..."
                 onChange={(e) => {
@@ -179,6 +180,9 @@ export default function Users() {
                 }}
               />
             </form>
+            <div className="w-1/12 md:w-[40px] flex justify-center items-center bg-black  text-white cursor-pointer rounded-r-md ">
+              <IoIosRefresh />
+            </div>
           </div>
         </div>
       </CardHeader>

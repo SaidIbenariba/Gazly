@@ -4,6 +4,8 @@
 -create crud for one table - saturaday  
 -complete crud operations of all tables - next week  
 
+5/18 
+
 ###Tasks said:  
 -create repo in github and add readme file and push project folder .
 -create sitemap in figma 

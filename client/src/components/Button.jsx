@@ -2,15 +2,9 @@ import React from "react";
 
 import { useStateContext } from "../context/ContextProvider";
 
-const Button = ({ icon, size, text, className, type }) => {
-  const { setIsClicked, initialState } = useStateContext();
-
+const Button = ({ icon, size, text, className, type, onClick }) => {
   return (
-    <button
-      type={type}
-      onClick={() => setIsClicked(initialState)}
-      className={className}
-    >
+    <button type={type} onClick={onClick} className={className}>
       {icon} {text}
     </button>
   );

@@ -1,5 +1,5 @@
 import express from "express";
-import {} from "../controllers/mission.js";
+import { searchBy } from "../controllers/mission.js";
 const router = express.Router();
-router.get("");
+router.get("/search/:searchBy", searchBy);
 export default router;

@@ -10,8 +10,10 @@
   .input {
     @apply !border-gray-200 focus:!border-active/50;
   }
+  .h2 {
+    @apply text-2xl font-bold text-text;
+  }
 }
-
 @tailwind utilities;
 :root {
   --background: 0, 0, 0;
@@ -27,7 +29,7 @@
   --border: 200, 200, 200;
   --icon: 0, 0, 0;
   --text: 51, 51, 51;
-  --active: 0, 145, 213;
+  --active: 229, 231, 235;
 }
 .dark {
   --background: 0, 0, 0;
@@ -36,4 +38,8 @@
   --icon: 255, 255, 255;
   --text: 204, 204, 204;
   --active: 0, 145, 213;
+}
+/* width */
+::-webkit-scrollbar {
+  width: 0px;
 }

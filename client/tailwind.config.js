@@ -1,7 +1,8 @@
 /** @type {import('tailwindcss').Config} */
 // eslint-disable-next-line no-undef
 const flowbite = require("flowbite-react/tailwind");
-export default {
+const withMT = require("@material-tailwind/react/utils/withMT");
+export default withMT({
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
@@ -11,10 +12,10 @@ export default {
   darkMode: "class",
   theme: {
     screens: {
-      sm: "640px",
+      sm: "400px",
       // => @media (min-width: 640px) { ... }
 
-      md: "768px",
+      md: "700px",
       // => @media (min-width: 768px) { ... }
 
       lg: "1024px",
@@ -25,25 +26,20 @@ export default {
 
       "2xl": "1536px",
       // => @media (min-width: 1536px) { ... }
-    },  
+    },
     extend: {
       backgroundImage: {
         "login-bg": "url('/src/assets/')",
       },
       colors: {
-        black: "#09090c",
-        darkGray: "#121212",
-
-        brightRed: "hsl(12, 88%, 59%)",
-        brightRedLight: "hsl(12, 88%, 69%)",
-        brightRedSupLight: "hsl(12, 88%, 95%)",
-
-        darkBlue: "hsl(228, 39%, 23%)",
-        darkGrayishBlue: "hsl(227, 12%, 61%)",
-        veryDarkBlue: "hsl(233, 12%, 13%)",
+        background: "rgba(var(--background))",
+        sidebar: "rgba(var(--sidebar))",
+        border: "rgba(var(--border))",
+        text: "rgba(var(--text))",
+        active: "rgba(var(--active))",
       },
     },
   },
   // eslint-disable-next-line no-undef
   plugins: [flowbite.plugin()],
-};
+});

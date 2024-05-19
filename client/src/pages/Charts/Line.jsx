@@ -6,6 +6,7 @@ import {
 } from "@material-tailwind/react";
 import Chart from "react-apexcharts";
 import { Square3Stack3DIcon } from "@heroicons/react/24/outline";
+import { useEffect } from "react";
 
 // If you're using Next.js please use the dynamic import for react-apexcharts and remove the import from the top for the react-apexcharts
 // import dynamic from "next/dynamic";
@@ -16,7 +17,7 @@ const chartConfig = {
   height: 240,
   series: [
     {
-      name: "Sales",
+      name: "Level",
       data: [50, 40, 300, 320, 500, 350, 200, 230, 500],
     },
   ],
@@ -27,7 +28,7 @@ const chartConfig = {
       },
     },
     title: {
-      show: "",
+      show: "Gaz history",
     },
     dataLabels: {
       enabled: false,
@@ -102,27 +103,26 @@ const chartConfig = {
 
 export default function Example() {
   return (
-    <Card>
+    <Card className="w-full md:w-auto">
       <CardHeader
         floated={false}
         shadow={false}
         color="transparent"
         className="flex flex-col gap-4 rounded-none md:flex-row md:items-center"
       >
-        <div className="w-max rounded-lg bg-gray-900 p-5 text-white">
+        {/* <div className="w-max rounded-lg bg-gray-900 p-5 text-white">
           <Square3Stack3DIcon className="h-6 w-6" />
-        </div>
+        </div> */}
         <div>
           <Typography variant="h6" color="blue-gray">
-            Line Chart
+            Gaz Historique
           </Typography>
           <Typography
             variant="small"
             color="gray"
             className="max-w-sm font-normal"
           >
-            Visualize your data in a simple way using the
-            @material-tailwind/react chart plugin.
+            Evolution of gaz
           </Typography>
         </div>
       </CardHeader>

@@ -1,16 +1,17 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
-import { BsArrowLeftCircle, BsArrow90DegLeft } from "react-icons/bs";
-import { MdKeyboardDoubleArrowLeft } from "react-icons/md";
+// import { BsArrowLeftCircle, BsArrow90DegLeft } from "react-icons/bs";
+import { MdKeyboardDoubleArrowLeft, MdOutlineWork } from "react-icons/md";
 
 import { AiFillPieChart } from "react-icons/ai";
-import { SiFuturelearn } from "react-icons/si";
-import { SiOpenaccess } from "react-icons/si";
+
 import { CgProfile } from "react-icons/cg";
+import { ImUsers } from "react-icons/im";
 import Logo from "../components/Logo";
 import HamburgerButton from "./HamburgerMenuButton/HamburgerButton";
-import { LocateIcon, SidebarCloseIcon } from "lucide-react";
+import { SidebarCloseIcon } from "lucide-react";
+import { FaCalendarAlt, FaMap } from "react-icons/fa";
 
 const Sidebar = () => {
   const [open, setOpen] = useState(true);
@@ -19,8 +20,12 @@ const Sidebar = () => {
 
   const Menus = [
     { title: "Dashboard", path: "dashboard", src: <AiFillPieChart /> },
-    { title: "users", path: "users", src: <SiFuturelearn /> },
-    { title: "Profile", path: "/profile", src: <CgProfile /> },
+    { title: "users", path: "users", src: <ImUsers /> },
+
+    { title: "Planning", path: "planning", src: <FaCalendarAlt /> },
+    { title: "Missions", path: "missions", src: <MdOutlineWork /> },
+    { title: "Espaces", path: "espaces", src: <FaMap /> },
+    { title: "Profile", path: "/profile", src: <CgProfile />, gap: "true" },
     {
       title: "Logout",
       path: "/logout",
@@ -36,7 +41,7 @@ const Sidebar = () => {
       <div
         className={`${
           open ? "w-60" : "w-fit"
-        } hidden sm:block relative h-screen duration-300 text-text bg-sidebar border-r border-border dark:bg-sidebar p-4`}
+        } hidden  md:block relative h-screen duration-300 text-text bg-sidebar border-r border-border dark:bg-sidebar p-4`}
       >
         <MdKeyboardDoubleArrowLeft
           className={`${
@@ -66,11 +71,11 @@ const Sidebar = () => {
                 className={`flex items-center gap-x-6 p-3  text-base font-normal rounded-lg cursor-pointer dark:text-white hover:bg-gray-200  dark:hover:bg-gray-700
                         ${menu.gap ? "mt-9" : "mt-2"} ${
                   isActive(menu.path)
-                    ? "bg-active/20 dark:bg-active/40 text-active"
+                    ? "bg-active/20 dark:bg-active/40 text-text"
                     : ""
                 }`}
               >
-                <span className="text-2xl dark:text-active">{menu.src}</span>
+                <span className="text-2xl dark:text-text">{menu.src}</span>
                 <span
                   className={`${
                     !open && "hidden"
@@ -90,11 +95,11 @@ const Sidebar = () => {
           mobileMenu={mobileMenu}
         />
       </div>
-      <div className="sm:hidden">
+      <div className=" md:hidden">
         <div
           className={`${
             mobileMenu ? "flex" : "hidden"
-          } absolute z-50 flex-col items-center self-end py-8 mt-16 space-y-6 font-bold sm:w-auto left-6 right-6 dark:text-text  bg-background dark:bg-background drop-shadow md rounded-xl`}
+          } absolute z-50 flex-col items-center self-end py-8 mt-16 space-y-6 font-bold sm:w-auto left-6 right-6 dark:text-text  bg-background dark:bg-background drop-shadow md rounded-xl justify-between`}
         >
           {Menus.map((menu, index) => (
             <Link
