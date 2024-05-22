@@ -14,6 +14,7 @@ import {
   Typography,
   CardBody,
   Chip,
+  Button,
   CardFooter,
   Tabs,
   TabsHeader,
@@ -22,7 +23,8 @@ import {
   IconButton,
   Tooltip,
 } from "@material-tailwind/react";
-import Button from "../../components/Button";
+// import Button from "../../components/Button";
+import { Spinner } from "@material-tailwind/react";
 import { IoIosRefresh } from "react-icons/io";
 
 const TABS = [
@@ -59,7 +61,7 @@ export default function Users() {
         setLoading(false);
       })
       .catch((err) => {
-        // console.log(err);
+        console.log(err);
         setLoading(false);
         setTableRows([]);
       });
@@ -93,7 +95,7 @@ export default function Users() {
             setLoading(false);
           })
           .catch((err) => {
-            // console.log(err);
+            console.log(err);
             setLoading(false);
             setTableRows([]);
           });
@@ -106,7 +108,7 @@ export default function Users() {
             setLoading(false);
           })
           .catch((err) => {
-            // console.log(err);
+            console.log(err);
             setLoading(false);
             setTableRows([]);
           });
@@ -118,10 +120,11 @@ export default function Users() {
     axios
       .delete("http://localhost:5000/api/users/delete/" + id)
       .then((res) => {
+        console.log(res);
         setDeletedUser({ ...deletedUser, deleted: true, id: id });
       })
       .catch((err) => {
-        // console.log(err);
+        console.log(err);
         setDeletedUser({ ...deletedUser, deleted: false, id: "" });
       });
   }
@@ -142,14 +145,14 @@ export default function Users() {
               size="sm"
               text="view all"
               className="button bg-background text-black border border-black hover:bg-gray-50"
-            />
+            >
+              view all
+            </Button>
             <Link to="create">
-              <Button
-                className="button "
-                size="sm"
-                icon={<UserPlusIcon strokeWidth={2} className="h-4 w-4" />}
-                text="Add user"
-              />
+              <Button className="button " size="sm" text="Add user">
+                <UserPlusIcon strokeWidth={2} className="h-4 w-4" />
+                Add user
+              </Button>
             </Link>
           </div>
         </div>
@@ -169,10 +172,13 @@ export default function Users() {
             </TabsHeader>
           </Tabs>
           <div className="flex flex-row w-full md:w-72">
-            <form onSubmit={handleSubmit} className=" w-11/12 md:10/12">
+            <form
+              onSubmit={handleSubmit}
+              className=" w-11/12 md:10/12 rounded-r-none"
+            >
               <Input
                 label="Search"
-                className="flex flex-col justify-center items-center rounded-r-none border-r-0"
+                className="flex flex-col justify-center items-center  rounded-r-none border-r-0"
                 icon={<MagnifyingGlassIcon className="h-5 w-5" />}
                 placeholder="search..."
                 onChange={(e) => {
@@ -214,59 +220,60 @@ export default function Users() {
             </tr>
           </thead>
           <tbody>
-            {tableRows.map(
-              ({ id, firstname, lastname, email, role }, index) => {
-                const isLast = index === tableRows.length - 1;
-                const classes = isLast
-                  ? "p-4"
-                  : "p-4 border-b border-blue-gray-50";
+            {Loading ? (
+              tableRows.map(
+                ({ id, firstname, lastname, email, role }, index) => {
+                  const isLast = index === tableRows.length - 1;
+                  const classes = isLast
+                    ? "p-4"
+                    : "p-4 border-b border-blue-gray-50";
 
-                return (
-                  <tr key={id}>
-                    <td className={classes}>
-                      <div className="flex items-center gap-3">
-                        {/* <Avatar src={img} alt={name} size="sm" /> */}
+                  return (
+                    <tr key={id}>
+                      <td className={classes}>
+                        <div className="flex items-center gap-3">
+                          {/* <Avatar src={img} alt={name} size="sm" /> */}
+                          <div className="flex flex-col">
+                            <Typography
+                              variant="small"
+                              color="blue-gray"
+                              className="font-normal"
+                            >
+                              {firstname}
+                            </Typography>
+                            <Typography
+                              variant="small"
+                              color="blue-gray"
+                              className="font-normal opacity-70"
+                            >
+                              {lastname}
+                            </Typography>
+                          </div>
+                        </div>
+                      </td>
+                      <td className={classes}>
                         <div className="flex flex-col">
                           <Typography
                             variant="small"
                             color="blue-gray"
                             className="font-normal"
                           >
-                            {firstname}
+                            {email}
                           </Typography>
+                        </div>
+                      </td>
+                      <td className={classes}>
+                        <div className="flex flex-col">
                           <Typography
                             variant="small"
                             color="blue-gray"
-                            className="font-normal opacity-70"
+                            className="font-normal"
                           >
-                            {lastname}
+                            {role}
                           </Typography>
                         </div>
-                      </div>
-                    </td>
-                    <td className={classes}>
-                      <div className="flex flex-col">
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal"
-                        >
-                          {email}
-                        </Typography>
-                      </div>
-                    </td>
-                    <td className={classes}>
-                      <div className="flex flex-col">
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal"
-                        >
-                          {role}
-                        </Typography>
-                      </div>
-                    </td>
-                    {/* <td className={classes}>
+                      </td>
+                      {/* <td className={classes}>
                       <div className="w-max">
                         <Chip
                           variant="ghost"
@@ -276,7 +283,7 @@ export default function Users() {
                         />
                       </div>
                     </td> */}
-                    {/* <td className={classes}>
+                      {/* <td className={classes}>
                       <Typography
                         variant="small"
                         color="blue-gray"
@@ -285,27 +292,30 @@ export default function Users() {
                         {date}
                       </Typography>
                     </td> */}
-                    <td className={classes}>
-                      <Link to={`edit/${id}`}>
-                        <Tooltip content="Edit User">
-                          <IconButton variant="text">
-                            <PencilIcon className="h-4 w-4" />
+                      <td className={classes}>
+                        <Link to={`edit/${id}`}>
+                          <Tooltip content="Edit User">
+                            <IconButton variant="text">
+                              <PencilIcon className="h-4 w-4" />
+                            </IconButton>
+                          </Tooltip>
+                        </Link>
+                        <Tooltip content="Delete User">
+                          <IconButton
+                            variant="text"
+                            id={id}
+                            onClick={handleDelete}
+                          >
+                            <FaTrashAlt />
                           </IconButton>
                         </Tooltip>
-                      </Link>
-                      <Tooltip content="Delete User">
-                        <IconButton
-                          variant="text"
-                          id={id}
-                          onClick={handleDelete}
-                        >
-                          <FaTrashAlt />
-                        </IconButton>
-                      </Tooltip>
-                    </td>
-                  </tr>
-                );
-              }
+                      </td>
+                    </tr>
+                  );
+                }
+              )
+            ) : (
+              <Spinner />
             )}
           </tbody>
         </table>

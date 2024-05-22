@@ -1,7 +1,7 @@
 // // import React from "react";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import {
   Select,
   Option,
@@ -38,26 +38,55 @@ const TABS = [
     value: "all",
   },
   {
-    label: "Schedule",
-    value: "Schedule",
+    label: "In Review",
+    value: "In Review",
   },
   {
     label: "In progress",
     value: "in progress",
   },
   {
-    label: "Archive",
-    value: "archive",
+    label: "In Hold",
+    value: "In Hold",
+  },
+  {
+    label: "Completed",
+    value: "Completed",
   },
 ];
+const MissionCard = ({ mission }) => {
+  return (
+    <Card className="mt-6 w-72 cursor-pointer">
+      {/* <CardHeader className=" h-1/3" shadow={false}>
+          {/* <img
+            src="https://images.unsplash.com/photo-1540553016722-983e48a2cd10?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80"
+            alt="card-image"
+            className="w-30"
+          /> *
+          <Typography variant="h5" color="blue-gray" className="mb-2">
+            Mission title
+          </Typography>
+        </CardHeader> */}
+      <CardBody>
+        <Typography variant="h5" color="blue-gray" className="mb-2">
+          {mission.title}
+        </Typography>
+        <Typography>{mission.description}</Typography>
+        <Typography>{mission.reponsable}</Typography>
+      </CardBody>
+    </Card>
+  );
+};
 const Missions = () => {
+  const status = useParams();
   const [tableRows, setTableRows] = useState([]);
   const tableHeads = ["RESPONSABLE", "DIRECTEUR", "DESCRIPTION", "STARTDATE"];
   const [openFilter, setOpenFilter] = useState(false);
   const [searchBy, setSearchBy] = useState("");
   const [values, setValues] = useState({ value: "" });
-  function handleFilter() {
+  function handleFilter(e) {
     // console.log([searchBy, value]);
+    e.preventDefault();
     console.log(values);
     switch (searchBy) {
       case "duration":
@@ -75,8 +104,22 @@ const Missions = () => {
         setOpenFilter(false);
         break;
       default:
+        axios
+          .get("http://localhost:5000/api/missions/search/", values)
+          .then((res) => setTableRows(res.data))
+          .catch((err) => console.log(err));
+        setOpenFilter(false);
     }
   }
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:5000/api/missions/" + status)
+      .then((res) => setTableRows(res.data))
+      .catch((err) => console.log(err));
+    setOpenFilter(false);
+  }, [status]);
+  useEffect(() => {}, []);
   return (
     <Card className="h-full w-full relative" shadow={false}>
       <CardHeader floated={false} shadow={false} className="rounded-none">
@@ -110,7 +153,7 @@ const Missions = () => {
             <TabsHeader>
               {TABS.map(({ label, value }) => (
                 <button
-                  className="p-2 mx-2 bg-gray-100 rounded-2xl"
+                  className="p-2 mx-2 bg-gray-100 rounded-2xl hover:bg-white"
                   key={value}
                   value={value}
                   //   onClick={handleSearchByrole}
@@ -148,114 +191,30 @@ const Missions = () => {
             )}
 
             <div className="w-full md:w-72">
-              <form className="">
+              <form onSubmit={handleFilter}>
                 <Input
                   label="Search"
                   className="flex flex-col justify-center items-center "
                   icon={<MagnifyingGlassIcon className="h-5 w-5" />}
                   placeholder="search..."
+                  onChange={(e) => {
+                    setSearchBy("");
+                    setValues({ value: e.target.value });
+                  }}
                 />
               </form>
             </div>
           </div>
         </div>
       </CardHeader>
-      <div className="w-full flex flex-wrap gap-4 relative z-0 mx-5 content-center">
-        <Card className="mt-6 w-72 cursor-pointer">
-          {/* <CardHeader className=" h-1/3" shadow={false}>
-          {/* <img
-            src="https://images.unsplash.com/photo-1540553016722-983e48a2cd10?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80"
-            alt="card-image"
-            className="w-30"
-          /> *
-          <Typography variant="h5" color="blue-gray" className="mb-2">
-            Mission title
-          </Typography>
-        </CardHeader> */}
-          <CardBody>
-            <Typography variant="h5" color="blue-gray" className="mb-2">
-              Mission title
-            </Typography>
-            <Typography>mission description</Typography>
-            <Typography> responsable </Typography>
-          </CardBody>
-        </Card>
-        <Card className="mt-6 w-72 cursor-pointer">
-          {/* <CardHeader className=" h-1/3" shadow={false}>
-          {/* <img
-            src="https://images.unsplash.com/photo-1540553016722-983e48a2cd10?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80"
-            alt="card-image"
-            className="w-30"
-          /> *
-          <Typography variant="h5" color="blue-gray" className="mb-2">
-            Mission title
-          </Typography>
-        </CardHeader> */}
-          <CardBody>
-            <Typography variant="h5" color="blue-gray" className="mb-2">
-              Mission title
-            </Typography>
-            <Typography>mission description</Typography>
-            <Typography> responsable </Typography>
-          </CardBody>
-        </Card>
-        <Card className="mt-6 w-72 cursor-pointer">
-          {/* <CardHeader className=" h-1/3" shadow={false}>
-          {/* <img
-            src="https://images.unsplash.com/photo-1540553016722-983e48a2cd10?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80"
-            alt="card-image"
-            className="w-30"
-          /> *
-          <Typography variant="h5" color="blue-gray" className="mb-2">
-            Mission title
-          </Typography>
-        </CardHeader> */}
-          <CardBody>
-            <Typography variant="h5" color="blue-gray" className="mb-2">
-              Mission title
-            </Typography>
-            <Typography>mission description</Typography>
-            <Typography> responsable </Typography>
-          </CardBody>
-        </Card>
-        <Card className="mt-6 w-72 cursor-pointer">
-          {/* <CardHeader className=" h-1/3" shadow={false}>
-          {/* <img
-            src="https://images.unsplash.com/photo-1540553016722-983e48a2cd10?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80"
-            alt="card-image"
-            className="w-30"
-          /> *
-          <Typography variant="h5" color="blue-gray" className="mb-2">
-            Mission title
-          </Typography>
-        </CardHeader> */}
-          <CardBody>
-            <Typography variant="h5" color="blue-gray" className="mb-2">
-              Mission title
-            </Typography>
-            <Typography>mission description</Typography>
-            <Typography> responsable </Typography>
-          </CardBody>
-        </Card>
-        <Card className="mt-6 w-72 ">
-          {/* <CardHeader className=" h-1/3" shadow={false}>
-          {/* <img
-            src="https://images.unsplash.com/photo-1540553016722-983e48a2cd10?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80"
-            alt="card-image"
-            className="w-30"
-          /> *
-          <Typography variant="h5" color="blue-gray" className="mb-2">
-            Mission title
-          </Typography>
-        </CardHeader> */}
-          <CardBody>
-            <Typography variant="h5" color="blue-gray" className="mb-2">
-              Mission title
-            </Typography>
-            <Typography>mission description</Typography>
-            <Typography> responsable </Typography>
-          </CardBody>
-        </Card>
+      <div className="w-full flex flex-wrap gap-4 relative z-0 mx-5 justify-center lg:justify-start">
+        {tableRows ? (
+          tableRows.map((mission) => {
+            <MissionCard key={mission.id} mission={mission} />;
+          })
+        ) : (
+          <p className="text-red">no Mission</p>
+        )}
       </div>
       <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4 mt-6">
         <Typography variant="small" color="blue-gray" className="font-normal">

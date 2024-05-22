@@ -1,24 +1,40 @@
 import React from "react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-const Map = () => {
+
+const Map = ({ espaces, onEspaceClick }) => {
+  const demoFactoryLocations = [
+    { position: [34.030795, -6.842883], name: "Factory 1", id: 1 },
+    { position: [34.023431, -6.855104], name: "Factory 2", id: 2 },
+    { position: [34.022029, -6.817465], name: "Factory 3" },
+    { position: [34.0123, -6.8245], name: "OMCo Factory" },
+  ];
   return (
     <MapContainer
-      center={[51.505, -0.09]}
+      center={[34.020882, -6.84165]} // Centered on Rabat, Morocco
       zoom={15}
       style={{ height: "80vh", width: "100%" }}
-      className=" rounded-md"
+      className="rounded-md"
     >
-      <TileLayer url="https://tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png" />
-      <Marker position={[51.505, -0.09]}>
-        <Popup>Factory Office</Popup>
-      </Marker>
-      <Marker position={[51.503, -0.09]}>
-        <Popup>Production Area</Popup>
-      </Marker>
-      <Marker position={[51.507, -0.088]}>
-        <Popup>Warehouse</Popup>
-      </Marker>
+      {/* Default OpenStreetMap TileLayer */}
+      {/* <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" /> */}
+
+      {/* Custom TileLayer */}
+      <TileLayer
+        url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+        attribution='&copy; <a href="https://www.jawg.io/">Jawg</a> contributors'
+      />
+      {espaces.map((espace, index) => {
+        return (
+          <Marker
+            eventHandlers={{ click: () => onEspaceClick(espace) }}
+            key={index}
+            position={espace.position}
+          >
+            <Popup>{espace.name}</Popup>
+          </Marker>
+        );
+      })}
     </MapContainer>
   );
 };

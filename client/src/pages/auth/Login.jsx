@@ -8,6 +8,7 @@ const Login = () => {
   const [login, setLogin] = useState({ email: "", password: "" });
   const { setIsLoggedIn } = useAuth();
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
   const nav = useNavigate();
   function handleSubmit(e) {
@@ -17,7 +18,7 @@ const Login = () => {
       .then((res) => {
         console.log(res);
         // setMessage(message);
-        // setIsLoggedIn(true);
+        setIsLoggedIn(true);
         nav(`/admin`);
       })
       .catch((err) => {
@@ -62,7 +63,7 @@ const Login = () => {
             <Label htmlFor="remember">Remember me</Label>
           </div>
           <Button type="submit">Log in</Button>
-          {error && message}
+          <span className="text-blue-500">{error && message}</span>
         </form>
       </div>
     </div>

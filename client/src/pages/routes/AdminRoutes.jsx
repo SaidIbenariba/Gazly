@@ -5,6 +5,7 @@ import Espaces from "../Espaces";
 import UsersRoutes from "../routes/UsersRoutes";
 import Missions from "../Missions";
 import Planning from "../Planning";
+import Observations from "../Observations";
 
 export function AdminRoutes() {
   return (
@@ -15,7 +16,8 @@ export function AdminRoutes() {
           <Route path="dashboard" index element={<Dashboard />} />
           <Route path="espaces" element={<Espaces />} />
           <Route path="users/*" element={<UsersRoutes />} />
-          <Route path="missions" element={<Missions />} />
+          <Route path="missions/*" element={<Missions />} />
+          <Route path="observations/*" element={<Observations />} />
           <Route path="planning" element={<Planning />} />
           <Route path="espaces" element={<Espaces />} />
         </Route>

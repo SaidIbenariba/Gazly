@@ -8,7 +8,7 @@ import { AiFillPieChart } from "react-icons/ai";
 
 import { CgProfile } from "react-icons/cg";
 import { ImUsers } from "react-icons/im";
-import Logo from "../components/Logo";
+import Logo from "../components/ui/Logo";
 import HamburgerButton from "./HamburgerMenuButton/HamburgerButton";
 import { SidebarCloseIcon } from "lucide-react";
 import { FaCalendarAlt, FaMap } from "react-icons/fa";
