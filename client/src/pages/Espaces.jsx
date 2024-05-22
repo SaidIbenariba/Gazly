@@ -162,7 +162,7 @@ const Espaces = () => {
               <IoIosRefresh />
             </div>
           </div>
-          <div className="flex  gap-4 flex-col xl:flex-row xl:h-[80vh]  ">
+          <div className="flex  gap-4 flex-col md:flex-row xl:h-[80vh]  ">
             {/* <h2 className="h2 xl:">Observation List</h2> */}
 
             <div className="h-full">
@@ -179,11 +179,13 @@ const Espaces = () => {
                   })}
                 </div>
               ) : (
-                <p className="text-red-400">no observation for this espace</p>
+                <p className="text-red-400 bg-red-50 pl-4 rounded-md">
+                  No observation for this espace
+                </p>
               )}
             </div>
             {/* <div className=" md:h-screen"> */}
-            <h2 className="h2 mt-20 block xl:hidden">Factory Map</h2>
+            <h2 className="h2 mt-20 block md:hidden">Factory Map</h2>
             <Map espaces={espaces} onEspaceClick={handleEspaceClick} />
             {/* when i click on espace in map i want to show all obervations related to it  */}
             {/* </div> */}

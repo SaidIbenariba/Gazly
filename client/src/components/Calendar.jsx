@@ -93,6 +93,7 @@ export default function Calendar() {
   }
   //: { event: { id: string } })
   function handleEventClick(data) {
+    console.log(data.event);
     const isDifferentTime = data.event.start !== data.event.end;
 
     // Show the modal only if the start time is different from the end time

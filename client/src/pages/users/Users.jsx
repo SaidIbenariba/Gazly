@@ -315,7 +315,7 @@ export default function Users() {
                 }
               )
             ) : (
-              <Spinner />
+              <Spinner color="red" />
             )}
           </tbody>
         </table>
