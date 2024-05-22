@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1:3308
--- Generation Time: May 19, 2024 at 01:03 PM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Host: 127.0.0.1:3306
+-- Generation Time: May 19, 2024 at 01:05 PM
+-- Server version: 8.2.0
+-- PHP Version: 8.2.13
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `pfe-project`
+-- Database: `pfe_project`
 --
 
 -- --------------------------------------------------------
@@ -27,48 +27,27 @@ SET time_zone = "+00:00";
 -- Table structure for table `affectation`
 --
 
-CREATE TABLE `affectation` (
+DROP TABLE IF EXISTS `affectation`;
+CREATE TABLE IF NOT EXISTS `affectation` (
   `datedebut` datetime NOT NULL,
   `datefin` datetime NOT NULL,
-  `id_ET` int(11) NOT NULL,
-  `id_resp` int(11) NOT NULL
+  `id_ET` int NOT NULL,
+  `id_resp` int NOT NULL,
+  PRIMARY KEY (`datedebut`,`id_ET`,`id_resp`),
+  KEY `id_ET_affect` (`id_ET`),
+  KEY `id_resp_affect` (`id_resp`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `capteur`
+-- Table structure for table `director`
 --
 
-CREATE TABLE `capteur` (
-  `id` int(11) NOT NULL,
-  `type` varchar(60) NOT NULL,
-  `id_ET` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `directeur`
---
-
-CREATE TABLE `directeur` (
-  `id` int(11) NOT NULL,
-  `nom` varchar(50) NOT NULL,
-  `prenom` varchar(50) NOT NULL,
-  `telphone` int(11) NOT NULL,
-  `dir_email` varchar(70) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `espace de travail`
---
-
-CREATE TABLE `espace de travail` (
-  `id` int(11) NOT NULL,
-  `nom` varchar(30) NOT NULL
+DROP TABLE IF EXISTS `director`;
+CREATE TABLE IF NOT EXISTS `director` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -77,12 +56,33 @@ CREATE TABLE `espace de travail` (
 -- Table structure for table `measure`
 --
 
-CREATE TABLE `measure` (
-  `id` int(11) NOT NULL,
-  `gazlvl` int(11) NOT NULL,
+DROP TABLE IF EXISTS `measure`;
+CREATE TABLE IF NOT EXISTS `measure` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `gazlvl` int NOT NULL,
   `date` datetime NOT NULL,
-  `id_cap` int(11) NOT NULL,
-  `gaz_danger` enum('0','1') NOT NULL
+  `id_cap` int NOT NULL,
+  `gaz_danger` enum('0','1') COLLATE utf8mb4_general_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_cap` (`id_cap`)
+) ENGINE=InnoDB AUTO_INCREMENT=282 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `meeting`
+--
+
+DROP TABLE IF EXISTS `meeting`;
+CREATE TABLE IF NOT EXISTS `meeting` (
+  `start` datetime NOT NULL,
+  `title` text COLLATE utf8mb4_general_ci NOT NULL,
+  `description` text COLLATE utf8mb4_general_ci ,
+  `id_resp` int NOT NULL,
+  `id_dir` int NOT NULL,
+  PRIMARY KEY (`date`,`id_resp`,`id_dir`),
+  KEY `id_resp_reun` (`id_resp`),
+  KEY `id_dir_reun` (`id_dir`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -91,12 +91,17 @@ CREATE TABLE `measure` (
 -- Table structure for table `mission`
 --
 
-CREATE TABLE `mission` (
+DROP TABLE IF EXISTS `mission`;
+CREATE TABLE IF NOT EXISTS `mission` (
   `startdate` datetime NOT NULL,
-  `duree` int(11) NOT NULL,
-  `discription` text NOT NULL,
-  `id_dir` int(11) NOT NULL,
-  `id_resp` int(11) NOT NULL
+  `duree` int NOT NULL,
+  `discription` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `id_dir` int NOT NULL,
+  `id_resp` int NOT NULL,
+  `stat` enum('done','inprogress','expired') CHARACTER SET utf8mb4 COLLATE utf8mb4_icelandic_ci NOT NULL,
+  PRIMARY KEY (`startdate`,`id_dir`,`id_resp`),
+  KEY `id_resp_miss` (`id_resp`),
+  KEY `id_dir_miss` (`id_dir`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -105,11 +110,15 @@ CREATE TABLE `mission` (
 -- Table structure for table `observation`
 --
 
-CREATE TABLE `observation` (
+DROP TABLE IF EXISTS `observation`;
+CREATE TABLE IF NOT EXISTS `observation` (
   `date` datetime NOT NULL,
-  `sujet` text NOT NULL,
-  `id_ET` int(11) NOT NULL,
-  `id_resp` int(11) NOT NULL
+  `sujet` text COLLATE utf8mb4_general_ci NOT NULL,
+  `id_ET` int NOT NULL,
+  `id_resp` int NOT NULL,
+  PRIMARY KEY (`date`,`id_ET`,`id_resp`),
+  KEY `id_ET_obs` (`id_ET`),
+  KEY `id_resp_obs` (`id_resp`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -118,12 +127,10 @@ CREATE TABLE `observation` (
 -- Table structure for table `ouvrier`
 --
 
-CREATE TABLE `ouvrier` (
-  `id` int(11) NOT NULL,
-  `nom` varchar(50) NOT NULL,
-  `prenom` varchar(50) NOT NULL,
-  `telphone` int(11) NOT NULL,
-  `ouv_email` varchar(70) NOT NULL
+DROP TABLE IF EXISTS `ouvrier`;
+CREATE TABLE IF NOT EXISTS `ouvrier` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -132,39 +139,53 @@ CREATE TABLE `ouvrier` (
 -- Table structure for table `respensable`
 --
 
-CREATE TABLE `respensable` (
-  `id` int(11) NOT NULL,
-  `nom` varchar(50) NOT NULL,
-  `prenom` varchar(50) NOT NULL,
-  `telphone` int(11) NOT NULL,
-  `resp_email` varchar(70) NOT NULL
+DROP TABLE IF EXISTS `respensable`;
+CREATE TABLE IF NOT EXISTS `respensable` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `reunion`
+-- Table structure for table `sensor`
 --
 
-CREATE TABLE `reunion` (
-  `date` datetime NOT NULL,
-  `sujet` text NOT NULL,
-  `id_resp` int(11) NOT NULL,
-  `id_dir` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+DROP TABLE IF EXISTS `sensor`;
+CREATE TABLE IF NOT EXISTS `sensor` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `type` varchar(60) COLLATE utf8mb4_general_ci NOT NULL,
+  `id_WS` int NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_ET` (`id_WS`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `sensor`
+--
+
+INSERT INTO `sensor` (`id`, `type`, `id_WS`) VALUES
+(1, 'MQ-2', 1),
+(2, 'MQ-9', 2),
+(3, 'MQ-?', 3);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tache`
+-- Table structure for table `task`
 --
 
-CREATE TABLE `tache` (
+DROP TABLE IF EXISTS `task`;
+CREATE TABLE IF NOT EXISTS `task` (
   `date` datetime NOT NULL,
-  `duree` varchar(30) NOT NULL,
-  `description` text NOT NULL,
-  `id_ouv` int(11) NOT NULL,
-  `id_resp` int(11) NOT NULL
+  `duree` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `stat` enum('done','inprogress','expired') CHARACTER SET utf8mb4 COLLATE utf8mb4_icelandic_ci NOT NULL,
+  `id_ouv` int NOT NULL,
+  `id_resp` int NOT NULL,
+  PRIMARY KEY (`date`,`id_ouv`,`id_resp`),
+  KEY `id_ouv` (`id_ouv`),
+  KEY `id_resp_tache` (`id_resp`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -173,14 +194,17 @@ CREATE TABLE `tache` (
 -- Table structure for table `users`
 --
 
-CREATE TABLE `users` (
-  `id` int(11) NOT NULL,
-  `firstname` varchar(20) NOT NULL,
-  `lastname` varchar(20) NOT NULL,
-  `email` varchar(80) NOT NULL,
-  `password` varchar(500) NOT NULL,
+DROP TABLE IF EXISTS `users`;
+CREATE TABLE IF NOT EXISTS `users` (
+  `id` int NOT NULL,
+  `firstname` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
+  `lastname` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
+  `email` varchar(80) COLLATE utf8mb4_general_ci NOT NULL,
+  `password` varchar(500) COLLATE utf8mb4_general_ci NOT NULL,
   `role` enum('admin','responsable','ouvrier') CHARACTER SET utf8mb4 COLLATE utf8mb4_icelandic_ci NOT NULL,
-  `refreshToken` varchar(500) NOT NULL
+  `refreshToken` varchar(500) COLLATE utf8mb4_general_ci NOT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE KEY `password` (`password`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -188,139 +212,36 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `firstname`, `lastname`, `email`, `password`, `role`, `refreshToken`) VALUES
-(0, 'said', 'ibenariba', 'saidbenarabia55@gmail.com', 'said', 'admin', '');
+(0, 'said', 'ibenariba', 'saidbenarabia55@gmail.com', 'said', 'admin', ''),
+(1, 'iliass', 'wakkar', 'iliass.wakkar@um5r.ac.ma', '1234', 'admin', ''),
+(2, 'John', 'Doe', 'john.doe@example.com', 'password1', 'ouvrier', ''),
+(3, 'Jane', 'Smith', 'jane.smith@example.com', 'password2', 'ouvrier', ''),
+(4, 'Bob', 'Brown', 'bob.brown@example.com', 'password3', 'ouvrier', ''),
+(5, 'Alice', 'Johnson', 'alice.johnson@example.com', 'password4', 'responsable', ''),
+(6, 'Charlie', 'Miller', 'charlie.miller@example.com', 'password5', 'responsable', ''),
+(7, 'Eve', 'Davis', 'eve.davis@example.com', 'password6', 'responsable', '');
+
+-- --------------------------------------------------------
 
 --
--- Indexes for dumped tables
+-- Table structure for table `workspace`
 --
 
---
--- Indexes for table `affectation`
---
-ALTER TABLE `affectation`
-  ADD PRIMARY KEY (`datedebut`,`id_ET`,`id_resp`),
-  ADD KEY `id_ET_affect` (`id_ET`),
-  ADD KEY `id_resp_affect` (`id_resp`);
+DROP TABLE IF EXISTS `workspace`;
+CREATE TABLE IF NOT EXISTS `workspace` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nom` varchar(30) COLLATE utf8mb4_general_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Indexes for table `capteur`
---
-ALTER TABLE `capteur`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `id_ET` (`id_ET`);
-
---
--- Indexes for table `directeur`
---
-ALTER TABLE `directeur`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `dir_email` (`dir_email`);
-
---
--- Indexes for table `espace de travail`
---
-ALTER TABLE `espace de travail`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `measure`
---
-ALTER TABLE `measure`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `id_cap` (`id_cap`);
-
---
--- Indexes for table `mission`
---
-ALTER TABLE `mission`
-  ADD PRIMARY KEY (`startdate`,`id_dir`,`id_resp`),
-  ADD KEY `id_resp_miss` (`id_resp`),
-  ADD KEY `id_dir_miss` (`id_dir`);
-
---
--- Indexes for table `observation`
---
-ALTER TABLE `observation`
-  ADD PRIMARY KEY (`date`,`id_ET`,`id_resp`),
-  ADD KEY `id_ET_obs` (`id_ET`),
-  ADD KEY `id_resp_obs` (`id_resp`);
-
---
--- Indexes for table `ouvrier`
---
-ALTER TABLE `ouvrier`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `ouv_email` (`ouv_email`);
-
---
--- Indexes for table `respensable`
---
-ALTER TABLE `respensable`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `resp_email` (`resp_email`);
-
---
--- Indexes for table `reunion`
---
-ALTER TABLE `reunion`
-  ADD PRIMARY KEY (`date`,`id_resp`,`id_dir`),
-  ADD KEY `id_resp_reun` (`id_resp`),
-  ADD KEY `id_dir_reun` (`id_dir`);
-
---
--- Indexes for table `tache`
---
-ALTER TABLE `tache`
-  ADD PRIMARY KEY (`date`,`id_ouv`,`id_resp`),
-  ADD KEY `id_ouv` (`id_ouv`),
-  ADD KEY `id_resp_tache` (`id_resp`);
-
---
--- Indexes for table `users`
---
-ALTER TABLE `users`
-  ADD PRIMARY KEY (`id`) USING BTREE,
-  ADD UNIQUE KEY `password` (`password`);
-
---
--- AUTO_INCREMENT for dumped tables
+-- Dumping data for table `workspace`
 --
 
---
--- AUTO_INCREMENT for table `capteur`
---
-ALTER TABLE `capteur`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `directeur`
---
-ALTER TABLE `directeur`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `espace de travail`
---
-ALTER TABLE `espace de travail`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `measure`
---
-ALTER TABLE `measure`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=282;
-
---
--- AUTO_INCREMENT for table `ouvrier`
---
-ALTER TABLE `ouvrier`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `respensable`
---
-ALTER TABLE `respensable`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+INSERT INTO `workspace` (`id`, `nom`) VALUES
+(1, 'Workspace 1'),
+(2, 'Workspace 2'),
+(3, 'Workspace 3');
 
 --
 -- Constraints for dumped tables
@@ -330,48 +251,60 @@ ALTER TABLE `respensable`
 -- Constraints for table `affectation`
 --
 ALTER TABLE `affectation`
-  ADD CONSTRAINT `id_ET_affect` FOREIGN KEY (`id_ET`) REFERENCES `espace de travail` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `id_ET_affect` FOREIGN KEY (`id_ET`) REFERENCES `workspace` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `id_resp_affect` FOREIGN KEY (`id_resp`) REFERENCES `respensable` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `capteur`
---
-ALTER TABLE `capteur`
-  ADD CONSTRAINT `id_ET_capteur` FOREIGN KEY (`id_ET`) REFERENCES `espace de travail` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `measure`
 --
 ALTER TABLE `measure`
-  ADD CONSTRAINT `id_capteur` FOREIGN KEY (`id_cap`) REFERENCES `capteur` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `id_capteur` FOREIGN KEY (`id_cap`) REFERENCES `sensor` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `meeting`
+--
+ALTER TABLE `meeting`
+  ADD CONSTRAINT `id_dir_reun` FOREIGN KEY (`id_dir`) REFERENCES `director` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `id_resp_reun` FOREIGN KEY (`id_resp`) REFERENCES `respensable` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `mission`
 --
 ALTER TABLE `mission`
-  ADD CONSTRAINT `id_dir_miss` FOREIGN KEY (`id_dir`) REFERENCES `directeur` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `id_dir_miss` FOREIGN KEY (`id_dir`) REFERENCES `director` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `id_resp_miss` FOREIGN KEY (`id_resp`) REFERENCES `respensable` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `observation`
 --
 ALTER TABLE `observation`
-  ADD CONSTRAINT `id_ET_obs` FOREIGN KEY (`id_ET`) REFERENCES `espace de travail` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `id_ET_obs` FOREIGN KEY (`id_ET`) REFERENCES `workspace` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `id_resp_obs` FOREIGN KEY (`id_resp`) REFERENCES `respensable` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `reunion`
+-- Constraints for table `ouvrier`
 --
-ALTER TABLE `reunion`
-  ADD CONSTRAINT `id_dir_reun` FOREIGN KEY (`id_dir`) REFERENCES `directeur` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `id_resp_reun` FOREIGN KEY (`id_resp`) REFERENCES `respensable` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `ouvrier`
+  ADD CONSTRAINT `id_ouv` FOREIGN KEY (`id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `tache`
+-- Constraints for table `respensable`
 --
-ALTER TABLE `tache`
-  ADD CONSTRAINT `id_ouv` FOREIGN KEY (`id_ouv`) REFERENCES `ouvrier` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `id_resp_tache` FOREIGN KEY (`id_resp`) REFERENCES `respensable` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `respensable`
+  ADD CONSTRAINT `id_resp` FOREIGN KEY (`id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `sensor`
+--
+ALTER TABLE `sensor`
+  ADD CONSTRAINT `id_WS_capteur` FOREIGN KEY (`id_WS`) REFERENCES `workspace` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `task`
+--
+ALTER TABLE `task`
+  ADD CONSTRAINT `id_ouv_task` FOREIGN KEY (`id_ouv`) REFERENCES `ouvrier` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `id_resp_task` FOREIGN KEY (`id_resp`) REFERENCES `respensable` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

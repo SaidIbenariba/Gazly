@@ -3,8 +3,8 @@ import Toggle from "./ThemeToggle";
 
 const Navbar = () => {
   return (
-    <nav className="bg-sidebar border-border mx-2 px-2  rounded dark:bg-background">
-      <div className=" flex justify-between items-center mx-auto pt-3">
+    <nav className="bg-sidebar  border-border mx-2 px-2 rounded dark:bg-background">
+      <div className=" flex justify-between items-center mx-auto mt-3">
         <div className="flex items-center mx-auto">
           <span className="text-xl font-medium whitespace-nowrap dark:text-white">
             Welcome

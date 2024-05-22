@@ -151,99 +151,104 @@ const Dashboard = () => {
   // }, []);
 
   return (
-    <div className="flex flex-col gap-10 justify-center">
-      <div
-        className="flex flex-col-reverse md:flex-row flex-wrap justify-center gap-5 w-fit"
-        id="cart-container"
-      >
-        <div className="flex flex-col  w-fit gap-5">
-          <Card className="flex flex-col p-5 items-start justify-between w-[180px] h-fit">
-            <div className="flex flex-row  items-center justify-between w-full">
-              <span className=" font-bold">Gaz Level</span>
+    <div className="flex flex-col gap-10 justify-center items-center">
+      <div className="flex flex-col justify-start items-start">
+        <div
+          className="flex flex-col-reverse sm:flex-row flex-wrap justify-center gap-5 w-fit"
+          id="cart-container"
+        >
+          <div className="flex flex-col flex-wrap justify-start gap-5 w-fit">
+            <Card className="flex flex-col p-5 items-start justify-between w-[180px] h-fit">
+              <div className="flex flex-row  items-center justify-between w-full">
+                <span className=" font-bold">Gaz Level</span>
 
-              <span className="bg-gray-100 w-8 h-8 flex items-center justify-center rounded-full text-red-500">
-                <FaFire />
-              </span>
-            </div>
-            <span className="text-xl font-bold p-0 text-red-500">
-              {gazLevel}
-              {/*unit */}
-            </span>
-            <span className=" text-xs font-extralight"> this month</span>
-          </Card>
-
-          <Card className="flex flex-col p-2 gap-1 h-fit w-fit">
-            <div className="text-xs font-semi-bold text-yellow-400">
-              {formattedDate}
-            </div>{" "}
-            {meetings.map((meet) => {
-              return (
-                <Card
-                  className="flex flex-row items-center rounded-none pr-1 justify-start bg-blue-100 shadow-none w-fit"
-                  key={meet.id}
-                >
-                  <PiLineVertical size className="h-10  text-blue-400" />
-                  <div
-                    className="flex flex-row gap-10 items-center "
-                    id="event-description"
-                  >
-                    <span className=" text-sm font-bold" id="title">
-                      Object
-                    </span>
-                    <div
-                      className=" text-[10px] font-extralight flex flex-col"
-                      id="duration"
-                    >
-                      <span>13:15</span> {/* Start  date  */}
-                      <span>13:45</span>
-                      {/* End  date  */}
-                    </div>
-                  </div>
-                </Card>
-              );
-            })}
-            <Card className="flex flex-row items-center rounded-none pr-1 justify-start bg-yellow-100 shadow-none w-[165px]">
-              <PiLineVertical size className="h-10  text-yellow-400" />
-              <div
-                className="flex flex-row gap-10 items-center"
-                id="event-description"
-              >
-                <span className=" text-sm font-bold" id="title">
-                  Title
+                <span className="bg-gray-100 w-8 h-8 flex items-center justify-center rounded-full text-red-500">
+                  <FaFire />
                 </span>
-                <div
-                  className="text-[10px] font-extralight flex flex-col"
-                  id="description"
-                >
-                  <span>13:15</span> {/* Start  date  */}
-                  <span>13:45</span>
-                  {/* End  date  */}
-                </div>
               </div>
+              <span className="text-xl font-bold p-0 text-red-500">
+                {gazLevel}
+                {/*unit */}
+              </span>
+              <span className=" text-xs font-extralight"> this month</span>
             </Card>
+
+            <Card className="flex flex-col p-2 gap-1 h-fit w-fit">
+              <div className="text-xs font-semi-bold text-yellow-400">
+                {formattedDate}
+              </div>{" "}
+              {meetings.map((meet) => {
+                return (
+                  <Card
+                    className="flex flex-row items-center rounded-none pr-1 justify-start bg-blue-100 shadow-none w-fit"
+                    key={meet.id}
+                  >
+                    <PiLineVertical size className="h-10  text-blue-400" />
+                    <div
+                      className="flex flex-row gap-10 items-center "
+                      id="event-description"
+                    >
+                      <span className=" text-sm font-bold" id="title">
+                        Object
+                      </span>
+                      <div
+                        className=" text-[10px] font-extralight flex flex-col"
+                        id="duration"
+                      >
+                        <span>13:15</span> {/* Start  date  */}
+                        <span>13:45</span>
+                        {/* End  date  */}
+                      </div>
+                    </div>
+                  </Card>
+                );
+              })}
+              <Card className="flex flex-row items-center rounded-none pr-1 justify-start bg-yellow-100 shadow-none w-[165px]">
+                <PiLineVertical size className="h-10  text-yellow-400" />
+                <div
+                  className="flex flex-row gap-10 items-center"
+                  id="event-description"
+                >
+                  <span className=" text-sm font-bold" id="title">
+                    Title
+                  </span>
+                  <div
+                    className="text-[10px] font-extralight flex flex-col"
+                    id="description"
+                  >
+                    <span>13:15</span> {/* Start  date  */}
+                    <span>13:45</span>
+                    {/* End  date  */}
+                  </div>
+                </div>
+              </Card>
+            </Card>
+          </div>
+          <Card className="shadow-none flex ">
+            <div className="text-md font-semibold mb-2">Missions Summary</div>
+            {/* status{In Progress, In Review, On Hold, Completed} */}
+            <div className="flex flex-row flex-wrap gap-4  w-80">
+              {<MissionCard status="In Progress" number={missionInProgress} />}
+              {<MissionCard status="In Review" number={missionInReview} />}
+              {<MissionCard status="On Hold" number={missionOnHold} />}
+              {<MissionCard status="Completed" number={missionCompleted} />}
+            </div>
           </Card>
         </div>
-        <Card className="shadow-none flex">
-          <div className="text-md font-semibold mb-2">Missions Summary</div>
-          {/* status{In Progress, In Review, On Hold, Completed} */}
-          <div className="flex flex-row flex-wrap gap-4  w-80">
-            {<MissionCard status="In Progress" number={missionInProgress} />}
-            {<MissionCard status="In Review" number={missionInReview} />}
-            {<MissionCard status="On Hold" number={missionOnHold} />}
-            {<MissionCard status="Completed" number={missionCompleted} />}
-          </div>
-        </Card>
-      </div>
-      <div className="flex flex-wrap gap-10 justify-center ">
-        <Line />
+        <div className="flex flex-wrap gap-10 justify-start ">
+          <Line />
 
-        <Card>
-          <h2>Observation List</h2>
-          {/* Observations and Feedback: Include a section for observations and feedback collected from different sources, such as workers `responsable when done a observation can make feedback */}
-          {observations.map((observation) => {
-            <ObservationCard key={observation.id} observation={observation} />;
-          })}
-        </Card>
+          <Card>
+            <h2>Observation List</h2>
+            {/* Observations and Feedback: Include a section for observations and feedback collected from different sources, such as workers `responsable when done a observation can make feedback */}
+            {observations.map((observation) => {
+              <ObservationCard
+                key={observation.id}
+                observation={observation}
+              />;
+            })}
+          </Card>
+        </div>
       </div>
     </div>
   );

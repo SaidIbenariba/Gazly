@@ -22,6 +22,8 @@
   --icon: ;
   --text: ;
   --active: ;
+  --fc-event-bg-color: rgb(107 114 128);
+  --fc-event-border-color: rgb(107 114 128);
 }
 .light {
   --background: 255, 255, 255;
@@ -42,4 +44,19 @@
 /* width */
 ::-webkit-scrollbar {
   width: 0px;
+}
+
+.fc button {
+  background-color: rgb(107 114 128) !important; /* Blue color */
+  color: white;
+  border: none !important;
+
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.fc button:hover {
+  background-color: #000 !important; /* Darker shade of blue on hover */
 }

@@ -13,7 +13,7 @@ const AdminLayout = () => {
           <Navbar />
           <main className="relative">
             <div className="m-5">
-              <Outlet></Outlet>
+              <Outlet />
             </div>
           </main>
         </div>
