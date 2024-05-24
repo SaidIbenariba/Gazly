@@ -18,5 +18,5 @@ router.get("/search-role/:role", searchByRole);
 router.get("/search/:text", search);
 router.put("/edit/:userId", editUser);
 router.delete("/delete/:userId", deleteUser);
-router.post("/create", createUser, verifyRoles(ROLES_LIST.admin));
+router.post("/create", createUser);
 export default router;

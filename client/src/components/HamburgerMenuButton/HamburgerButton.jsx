@@ -7,7 +7,7 @@ const HamburgerButton = ({ mobileMenu, setMobileMenu }) => {
       onClick={() => setMobileMenu(!mobileMenu)}
       className={`${
         mobileMenu && "open"
-      } block hamburger md:hidden focus:outline-none`}
+      } block hamburger lg:hidden focus:outline-none`}
     >
       <span className="hamburger-top dark:bg-slate-50"></span>
       <span className="hamburger-middle dark:bg-slate-50"></span>

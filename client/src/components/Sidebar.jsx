@@ -41,12 +41,12 @@ const Sidebar = () => {
       <div
         className={`${
           open ? "w-60" : "w-fit"
-        } hidden  md:block relative h-screen duration-300 text-text bg-sidebar border-r border-border dark:bg-sidebar p-4`}
+        } hidden  lg:block relative h-screen duration-300 text-text bg-sidebar border-r border-border dark:bg-sidebar p-4`}
       >
         <MdKeyboardDoubleArrowLeft
           className={`${
             !open && "rotate-180 left-[100px]"
-          } absolute text-2xl bg-background/50 fill-slate-800  rounded-full cursor-pointer top-8 right-1 dark:fill-gray-400 dark:bg-background`}
+          } absolute text-2xl bg-background/50 fill-slate-800  rounded-full cursor-pointer top-5 right-1 dark:fill-gray-400 dark:bg-background`}
           onClick={() => setOpen(!open)}
         />
         <Link to="/admin">
@@ -95,7 +95,7 @@ const Sidebar = () => {
           mobileMenu={mobileMenu}
         />
       </div>
-      <div className=" md:hidden">
+      <div className=" lg:hidden">
         <div
           className={`${
             mobileMenu ? "flex" : "hidden"

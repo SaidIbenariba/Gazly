@@ -2,33 +2,19 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useParams } from "react-router-dom";
-import {
-  Select,
-  Option,
-  Menu,
-  MenuItem,
-  MenuHandler,
-  Button,
-  MenuList,
-} from "@material-tailwind/react";
+import { Select, Option, Button } from "@material-tailwind/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { FaTrashAlt } from "react-icons/fa";
 import { IoFilter } from "react-icons/io5";
-import { PencilIcon, UserPlusIcon } from "@heroicons/react/24/solid";
+import { UserPlusIcon } from "@heroicons/react/24/solid";
 import {
   Card,
   CardHeader,
   Input,
   Typography,
   CardBody,
-  Chip,
   CardFooter,
   Tabs,
   TabsHeader,
-  Tab,
-  Avatar,
-  IconButton,
-  Tooltip,
 } from "@material-tailwind/react";
 // import Button from "../components/Button";
 
@@ -119,7 +105,6 @@ const Missions = () => {
       .catch((err) => console.log(err));
     setOpenFilter(false);
   }, [status]);
-  useEffect(() => {}, []);
   return (
     <Card className="h-full w-full relative" shadow={false}>
       <CardHeader floated={false} shadow={false} className="rounded-none">
@@ -148,12 +133,12 @@ const Missions = () => {
             </Link>
           </div>
         </div>
-        <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+        <div className="flex flex-col items-center justify-between gap-4 lg:flex-row">
           <Tabs value="all" className="w-full md:w-max">
             <TabsHeader>
               {TABS.map(({ label, value }) => (
                 <button
-                  className="p-2 mx-2 bg-gray-100 rounded-2xl hover:bg-white"
+                  className="p-2 mx-2 bg-gray-100 rounded-md hover:bg-white"
                   key={value}
                   value={value}
                   //   onClick={handleSearchByrole}

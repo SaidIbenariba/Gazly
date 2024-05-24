@@ -13,13 +13,10 @@ import {
   Input,
   Typography,
   CardBody,
-  Chip,
   Button,
   CardFooter,
   Tabs,
   TabsHeader,
-  Tab,
-  Avatar,
   IconButton,
   Tooltip,
 } from "@material-tailwind/react";
@@ -49,9 +46,10 @@ const TABS = [
 export default function Users() {
   const [tableRows, setTableRows] = useState([]);
   const tableHeads = ["NAME", "EMAIL", "ROLE"];
-  const [Loading, setLoading] = useState(true);
+  const [Loading, setLoading] = useState(false);
   const [deletedUser, setDeletedUser] = useState({ deleted: false, id: "" });
   const [search, setSearch] = useState("");
+  const [err, setErr] = useState({ exist: false, msg: "" });
   useEffect(() => {
     setLoading(true);
     axios
@@ -62,6 +60,7 @@ export default function Users() {
       })
       .catch((err) => {
         console.log(err);
+        setErr({ exist: true, msg: err.data.message });
         setLoading(false);
         setTableRows([]);
       });
@@ -78,6 +77,7 @@ export default function Users() {
       })
       .catch((err) => {
         // console.log(err);
+        setErr({ exist: true, msg: err.data.message });
         setLoading(false);
         setTableRows([]);
       });
@@ -95,7 +95,7 @@ export default function Users() {
             setLoading(false);
           })
           .catch((err) => {
-            console.log(err);
+            setErr({ exist: true, msg: err.data.message });
             setLoading(false);
             setTableRows([]);
           });
@@ -108,7 +108,7 @@ export default function Users() {
             setLoading(false);
           })
           .catch((err) => {
-            console.log(err);
+            setErr({ exist: true, msg: err.data.message });
             setLoading(false);
             setTableRows([]);
           });
@@ -117,6 +117,7 @@ export default function Users() {
 
   function handleDelete(e) {
     const id = e.target.id;
+    console.log(id);
     axios
       .delete("http://localhost:5000/api/users/delete/" + id)
       .then((res) => {
@@ -125,11 +126,12 @@ export default function Users() {
       })
       .catch((err) => {
         console.log(err);
+        setErr({ exist: true, msg: err.message });
         setDeletedUser({ ...deletedUser, deleted: false, id: "" });
       });
   }
   return (
-    <Card className="h-full w-full">
+    <Card className="h-full w-full" shadow={false}>
       <CardHeader floated={false} shadow={false} className="rounded-none">
         <div className="mb-8 flex items-center justify-between gap-8">
           <div>
@@ -220,7 +222,7 @@ export default function Users() {
             </tr>
           </thead>
           <tbody>
-            {Loading ? (
+            {!Loading ? (
               tableRows.map(
                 ({ id, firstname, lastname, email, role }, index) => {
                   const isLast = index === tableRows.length - 1;
