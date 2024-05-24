@@ -1,5 +1,7 @@
 import express from "express";
-import {} from "../controllers/observation.js";
+import {
+    getObservations,
+} from "../controllers/observation.js";
 const router = express.Router();
-router.get("");
+router.get("/",getObservations);
 export default router;

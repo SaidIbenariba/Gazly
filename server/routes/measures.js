@@ -1,5 +1,7 @@
 import express from "express";
-import {} from "../controllers/measure.js";
+import {
+    getLastMeasure,
+} from "../controllers/measure.js";
 const router = express.Router();
-router.get("");
+router.get("/getLastMeasure", getLastMeasure);
 export default router;
