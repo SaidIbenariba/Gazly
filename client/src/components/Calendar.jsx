@@ -8,7 +8,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { CheckIcon } from "@heroicons/react/20/solid";
 import { TrashIcon, XMarkIcon, PencilIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
-
+import { useAuth } from "../hooks/useAuth";
 // interface Event {
 //   title: string;
 //   start: Date | string;
@@ -17,6 +17,7 @@ import axios from "axios";
 // }
 
 export default function Calendar() {
+  // {title:"event 1", id:"1"}
   const [events, setEvents] = useState([
     { title: "event 1", id: "1" },
     { title: "event 2", id: "2" },
@@ -36,16 +37,25 @@ export default function Calendar() {
     description: "",
   });
   const [selectedEvent, setSelectedEvent] = useState(null);
-
+  const { user } = useAuth();
   // Function to handle the selection of time range
   useEffect(() => {
+    // console.log(user);
     axios
-      .get("http://localhost:5000/api/meetings/")
+      .get("http://localhost:5000/api/meetings/read/" + user.id)
       .then((res) => {
+        console.log(res.data);
+      })
+      .catch((err) => console.log(err));
+    axios
+      .get("http://localhost:5000/api/meetings/read/" + user.id)
+      .then((res) => {
+        console.log(res.data);
         setAllEvents(res.data);
       })
       .catch((err) => console.log(err));
-  }, []);
+  }, [user]);
+  useEffect(() => {}, [newEvent]);
   useEffect(() => {
     let draggableEl = document.getElementById("draggable-el");
     if (draggableEl) {
@@ -140,10 +150,12 @@ export default function Calendar() {
 
   function handleSubmit(e) {
     e.preventDefault();
-    axios
-      .post("http://localhost:5000/api/observations/create", newEvent)
-      .then((res) => console.log(res))
-      .catch((err) => console.log(err));
+    const event = { ...newEvent };
+    // axios
+    //   .post("http://localhost:5000/api/meetings/create", newEvent)
+    //   .then((res) => console.log(res))
+    //   .catch((err) => console.log(err));
+    localStorage.setItem("newEvent", JSON.stringify(event));
     setAllEvents([...allEvents, newEvent]);
     setShowModal(false);
     setNewEvent({
@@ -154,6 +166,19 @@ export default function Calendar() {
       description: "",
     });
   }
+  setTimeout(() => {
+    const storedEvent = JSON.parse(localStorage.getItem("newEvent"));
+    if (storedEvent) {
+      axios
+        .post("http://localhost:5000/api/meetings/create", storedEvent)
+        .then((res) => {
+          console.log(res);
+          localStorage.removeItem("newEvent"); // Clear localStorage after successful post
+        })
+        .catch((err) => console.log(err));
+    }
+  }, 5000); // 15 min delay 900000
+
   return (
     <>
       {/* <nav className="flex justify-between mb-12 border-b border-violet-100 p-4">

@@ -1,23 +1,108 @@
-import { createContext, useReducer } from "react";
+import React, { createContext, useState } from "react";
+import axios from "axios";
+import { useEffect } from "react";
+import { jwtDecode } from "jwt-decode";
+
 export const AuthContext = createContext();
 
-export const AuthReducer = (state, action) => {
-  switch (action.type) {
-    case "LOGIN":
-      return { user: action.payload };
-    case "LOGOUT":
-      return { user: null };
-    default:
-      return state;
-  }
-};
-
 export const AuthProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(AuthReducer, {
-    user: null,
-  });
-  console.log("AuthContext state : ", state);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(false);
+  /**data reviece it { email: "",
+    password: "",
+    rememberMe: false,} */
+  const login = async (formData) => {
+    setLoading(true);
+
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/auth/login",
+        formData
+      );
+      // reponse data form { i send only accestoken { user.id, role} }
+      const accessToken = response.data.accessToken;
+      if (formData.rememberMe) {
+        localStorage.setItem("accessToken", accessToken);
+      } else {
+        sessionStorage.setItem("accessToken", accessToken);
+      }
+      const decodedUser = jwtDecode(accessToken);
+      console.log(decodedUser.UserInfo);
+      setUser(decodedUser.UserInfo);
+      // setUser(response.data.user);
+    } catch (error) {
+      console.error("Login failed:", error.response.data);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await axios.post("http://localhost:5000/auth/logout", null, {
+        withCredentials: true, // Ensure cookies are sent
+      });
+    } catch (error) {
+      console.error("Logout failed:", error.response?.data);
+    } finally {
+      localStorage.removeItem("accessToken");
+      sessionStorage.removeItem("accessToken");
+      setUser(null);
+    }
+  };
+
+  const register = async (formData) => {
+    setLoading(true);
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/auth/register",
+        formData
+      );
+      setUser(response.data.user);
+    } catch (error) {
+      console.error("Registration failed:", error.response.data);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+  const autoLogin = async (storedToken) => {
+    setLoading(true);
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/users/autologin",
+        { token: storedToken }
+      );
+      setUser(response.data.user);
+    } catch (error) {
+      console.error("Auto login failed:", error.response.data);
+      // If auto-login fails, clear the stored token and log the user out
+      localStorage.removeItem("accessToken");
+      sessionStorage.removeItem("accessToken");
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    const storedToken =
+      localStorage.getItem("accessToken") ||
+      sessionStorage.getItem("accessToken");
+    if (storedToken) {
+      // Perform automatic login using stored token
+      autoLogin(storedToken);
+    }
+  }, []);
+  const authValues = {
+    user,
+    loading,
+    login,
+    logout,
+    register,
+  };
+
   return (
-    <AuthContext.Provider value={{ ...state }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={authValues}>{children}</AuthContext.Provider>
   );
 };

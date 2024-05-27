@@ -75,12 +75,13 @@ CREATE TABLE IF NOT EXISTS `measure` (
 
 DROP TABLE IF EXISTS `meeting`;
 CREATE TABLE IF NOT EXISTS `meeting` (
+  `id` INT  AUTO_INCREMENT,
   `start` datetime NOT NULL,
   `title` text COLLATE utf8mb4_general_ci NOT NULL,
   `description` text COLLATE utf8mb4_general_ci ,
   `id_resp` int NOT NULL,
   `id_dir` int NOT NULL,
-  PRIMARY KEY (`date`,`id_resp`,`id_dir`),
+  PRIMARY KEY (`id`,`id_resp`,`id_dir`),
   KEY `id_resp_reun` (`id_resp`),
   KEY `id_dir_reun` (`id_dir`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

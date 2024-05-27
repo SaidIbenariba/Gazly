@@ -1,12 +1,12 @@
 import express from "express";
 import {
-    getMeetingsForResp,
-    getMeetingsForAdmin,
-    respSearch,
-    createMeeting,
-    editMeeting,
-    deleteMeeting,
-    Meetings,
+  getMeetingsForResp,
+  getMeetingsForAdmin,
+  respSearch,
+  createMeeting,
+  editMeeting,
+  deleteMeeting,
+  Meetings,
 } from "../controllers/meeting.js";
 const router = express.Router();
 router.get("/", Meetings);

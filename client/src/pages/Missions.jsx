@@ -5,7 +5,7 @@ import { Link, useParams } from "react-router-dom";
 import { Select, Option, Button } from "@material-tailwind/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { IoFilter } from "react-icons/io5";
-import { UserPlusIcon } from "@heroicons/react/24/solid";
+import { PlusIcon } from "@heroicons/react/24/solid";
 import {
   Card,
   CardHeader,
@@ -127,7 +127,7 @@ const Missions = () => {
             </Button>
             <Link to="create">
               <Button className="button " size="sm">
-                <UserPlusIcon strokeWidth={2} className="h-4 w-4" />
+                <PlusIcon strokeWidth={6} className="h-4 w-4" />
                 Add mission
               </Button>
             </Link>
@@ -141,7 +141,7 @@ const Missions = () => {
                   className="p-2 mx-2 bg-gray-100 rounded-md hover:bg-white"
                   key={value}
                   value={value}
-                  //   onClick={handleSearchByrole}
+                  // onClick={handleSearchByrole}
                 >
                   &nbsp;&nbsp;{label}&nbsp;&nbsp;
                 </button>

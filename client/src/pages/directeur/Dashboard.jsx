@@ -8,7 +8,8 @@ import { MdAir } from "react-icons/md";
 import { PiLineVertical } from "react-icons/pi";
 import { BsThreeDots } from "react-icons/bs";
 import axios from "axios";
-import { Spinner } from "@material-tailwind/react";
+import { useAuth } from "../../hooks/useAuth";
+import { useNavigate, redirect } from "react-router-dom";
 // import { PiLineVerticalBold } from "react-icons/pi";
 const MissionCard = ({ status, number }) => {
   return (
@@ -58,10 +59,20 @@ const ObservationCard = ({ observation }) => {
 const Dashboard = () => {
   const [loading, setLoading] = useState(false);
   const [gazLevel, setGazLevel] = useState(0);
-  const [missions, setMissions] = useState([]);
   const [meetings, setMeetings] = useState([]);
   const [observations, setObservations] = useState([]);
   const [refresh, setRefresh] = useState(false);
+  const [missionCounts, setMissionCounts] = useState({
+    inProgress: 0,
+    inReview: 0,
+    onHold: 0,
+    completed: 0,
+  });
+  const { user } = useAuth();
+  const nav = useNavigate();
+  useEffect(() => {
+    console.log(user);
+  }, [user]);
   // date
   let date = new Date();
 
@@ -99,62 +110,58 @@ const Dashboard = () => {
   let formattedDate = `${dayName},${dayOfMonth} ${monthName}`;
   // end date
   //  group mission by status
-  let missionInProgress = 0;
-  let missionOnHold = 0;
-  let missionInReview = 0;
-  let missionCompleted = 0;
-  missions.forEach((mission) => {
-    switch (mission.status) {
-      case "In Progress":
-        missionInProgress++;
-        break;
-      case "In Review":
-        missionInReview++;
-        break;
-      case "On Hold":
-        missionOnHold++;
-        break;
-      case "Completed":
-        missionCompleted++;
-        break;
+
+  useEffect(() => {
+    setLoading(true);
+    try {
+      axios
+        .get("http://localhost:5000/api/missions/missionCounts")
+        .then((res /*setMissionCounts(...missionCounts, res.data)*/) =>
+          console.log(res)
+        )
+        .catch((err) => console.log(err));
+      axios
+        .get("http://localhost:5000/api/meetings/read/" + user.id) // i want data for current day
+        .then((res) => {
+          setMeetings(res.data), setLoading(false);
+        })
+        .catch((err) => console.log(err), setLoading(false));
+    } catch (err) {
+      console.log(err);
     }
-  });
+  }, []);
+  // missions.forEach((mission) => {
+  //   switch (mission.status) {
+  //     case "In Progress":
+  //       missionInProgress++;
+  //       break;
+  //     case "In Review":
+  //       missionInReview++;
+  //       break;
+  //     case "On Hold":
+  //       missionOnHold++;
+  //       break;
+  //     case "Completed":
+  //       missionCompleted++;
+  //       break;
+  //   }
+  // });
   // end
-  // setInterval(() => {
-  //   setLoading(true);
-  //   axios
-  //     .get("http://localhost:5000/api/measures/getLastMeasure")
-  //     .then((res) => {
-  //       setGazLevel(res.data[0]), setLoading(false);
-  //     })
-  //     .catch((err) => console.log(err), setLoading(false));
-  // }, 30000);
-
-  // useEffect(() => {
-  //   setLoading(true);
-  //   axios
-  //     .get("http://localhost:5000/api/missions/getMissionsForDir" + dirId)
-  //     .then((res) => {
-  //       setMissions(res.data), setLoading(false);
-  //     })
-  //     .catch((err) => console.log(err), setLoading(false));
-
-  //   axios
-  //     .get("http://localhost:5000/api/meetings/getMeetingsForDir/" + dirId) // i want data for current day
-  //     .then((res) => {
-  //       setMeetings(res.data), setLoading(false);
-  //     })
-  //     .catch((err) => console.log(err), setLoading(false));
-
-  //   setLoading(false);
-  //   // setRefresh(false);
-  // }, []);
+  setInterval(() => {
+    setLoading(true);
+    axios
+      .get("http://localhost:5000/api/measures/getLastMeasure")
+      .then((res) => {
+        setGazLevel(res.data[0]), setLoading(false);
+      })
+      .catch((err) => console.log(err), setLoading(false));
+  }, 30000);
 
   return (
     <div className="flex flex-col gap-10 justify-center items-center">
-      <div className="flex flex-col justify-start items-start">
+      <div className="flex flex-col justify-start items-center">
         <div
-          className="flex flex-col-reverse sm:flex-row flex-wrap justify-center gap-5 w-fit"
+          className="flex flex-col sm:flex-row flex-wrap justify-center gap-5 w-fit items-center"
           id="cart-container"
         >
           <div className="flex flex-col flex-wrap justify-start gap-5 w-fit">
@@ -189,14 +196,14 @@ const Dashboard = () => {
                       id="event-description"
                     >
                       <span className=" text-sm font-bold" id="title">
-                        Object
+                        {meet.title}
                       </span>
                       <div
                         className=" text-[10px] font-extralight flex flex-col"
                         id="duration"
                       >
-                        <span>13:15</span> {/* Start  date  */}
-                        <span>13:45</span>
+                        <span>{meet.start}</span> {/* Start  date  */}
+                        <span>{meet.end}</span> {/**13:45 */}
                         {/* End  date  */}
                       </div>
                     </div>
@@ -227,16 +234,32 @@ const Dashboard = () => {
           <Card className="shadow-none flex ">
             <div className="text-md font-semibold mb-2">Missions Summary</div>
             {/* status{In Progress, In Review, On Hold, Completed} */}
-            <div className="flex flex-row flex-wrap gap-4  w-80">
-              {<MissionCard status="In Progress" number={missionInProgress} />}
-              {<MissionCard status="In Review" number={missionInReview} />}
-              {<MissionCard status="On Hold" number={missionOnHold} />}
-              {<MissionCard status="Completed" number={missionCompleted} />}
+            <div className="grid grid-cols-2 grid-rows-2  gap-4">
+              {
+                <MissionCard
+                  status="In Progress"
+                  number={missionCounts.inProgress}
+                />
+              }
+              {
+                <MissionCard
+                  status="In Review"
+                  number={missionCounts.inReview}
+                />
+              }
+              {<MissionCard status="On Hold" number={missionCounts.onHold} />}
+              {
+                <MissionCard
+                  status="Completed"
+                  number={missionCounts.completed}
+                />
+              }
             </div>
           </Card>
         </div>
         <div className="flex flex-wrap gap-10 justify-start ">
           <Line />
+          {/* just a graphe were showing some date about level gaz    */}
 
           <Card>
             <h2>Observation List</h2>

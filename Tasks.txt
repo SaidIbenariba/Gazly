@@ -13,4 +13,18 @@
 -create interface of tables  
 -create forms of crud operation 
 -create ui for dashboard 
+5/26 
+
+# ilyass 
+
+# updates 
+## database 
+   update all id of tables  to AUTO_INCREMENT 
+   
+## server
+  ### mettings 
+	router.get("/read/:id_resp", getMeetingsForResp);
+router.get("/read/:id_Admin", getMeetingsForAdmin); 
+    is repeated you get role of user from database 
+  ### 
  

@@ -19,18 +19,32 @@ export const register = async (req, res) => {
       return res.status(409).json("User already exists!");
     }
     // HERE SPECIFIC ROLE OF USER
-
+    // DATA OBJECT EXAMPLE
+    /*{
+  firstname: 'ilyass',
+  lastname: 'pfe',
+  email: 'test@gmail.com',
+  password: 'test',
+  role: 'admin'
+}*/
     // CREATE A NEW USER TO DATABASE USE UPDATE QUERY
     // HASH PASSWORD
     const salt = bcrypt.genSaltSync(10);
     const hashedPassword = bcrypt.hashSync(req.body.password, salt);
-    const q = "INSERT INTO users (`email`,`password`,`role`) VALUE(?) ";
-    const newUser = [req.body.email, hashedPassword, "responsable"];
-    db.query(q, [newUser], (err, result) => {
+    const q =
+      "INSERT INTO users (`firstname`,`lastname` ,`email`,`password`,`role`) VALUES(?) ";
+
+    const newUser = {
+      firstName: req.body.firstname,
+      lastname: req.body.lastname,
+      email: req.body.email,
+      password: hashedPassword,
+      role: req.body.role,
+    };
+    console.log(newUser);
+    db.query(q, [Object.values(newUser)], (err, result) => {
       if (err) return res.status(500).json(err);
-      return res
-        .status(200)
-        .json({ succes: `New User ${newUser[0]} created ` });
+      return res.status(200).json({ succes: `New User  created ` });
     });
   });
 };
@@ -38,6 +52,8 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
   console.log("login");
   const sql = "SELECT * FROM users WHERE email = ?";
+  // { userId: }
+  console.log(req.body);
   db.query(sql, req.body.email, (err, data) => {
     if (err) return res.status(500).json(err);
     if (data.length == 0) return res.status(404).json("Email not found !");
@@ -146,25 +162,30 @@ export const logout = async (req, res) => {
   const refreshToken = cookies.jwt;
 
   //Is refreshToken in db?
-  let foundUser = {};
+  // let foundUser = {};
   const q = "SELECT * FROM users WHERE refreshToken = ? ";
   db.query(q, refreshToken, (err, data) => {
     if (err) return json.status(500);
     if (data.length == 0) return res.sendStatus(403); // forbidden
-    const foundUser = {
-      id: data[0].id,
-      email: data[0].email,
-      firstName: data[0].firstname,
-      lastName: data[0].lastname,
-      role: data[0].role,
-      tokenrefresh: data[0].refreshToken,
-    };
+    //   const foundUser = {
+    //     id: data[0].id,
+    //     email: data[0].email,
+    //     firstName: data[0].firstname,
+    //     lastName: data[0].lastname,
+    //     role: data[0].role,
+    //     tokenrefresh: data[0].refreshToken,
+    //   };
+    const foundUser = data[0];
+    // Delete refreshToken in db
+    const SQL = "UPDATE users SET refreshToken = '' WHERE id= ?  ";
+    db.query(SQL, foundUser.id, (err, result) => {
+      if (err) return res.status(500).json(err);
+      res.clearCookie("jwt", {
+        httpOnly: true,
+        sameSite: "None",
+        secure: true,
+      });
+      res.sendStatus(204);
+    });
   });
-
-  // Delete refreshToken in db
-  const SQL = "UPDATE users SET refreshToken = '' WHERE id= ?  ";
-  db.query(SQL, foundUser.id, (err, result) => {});
-
-  res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: true });
-  res.sendStatus(204);
 };

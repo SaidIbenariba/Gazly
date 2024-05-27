@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 // import { BsArrowLeftCircle, BsArrow90DegLeft } from "react-icons/bs";
 import { MdKeyboardDoubleArrowLeft, MdOutlineWork } from "react-icons/md";
@@ -12,12 +12,19 @@ import Logo from "../components/ui/Logo";
 import HamburgerButton from "./HamburgerMenuButton/HamburgerButton";
 import { SidebarCloseIcon } from "lucide-react";
 import { FaCalendarAlt, FaMap } from "react-icons/fa";
+import { useAuth } from "../hooks/useAuth";
 
 const Sidebar = () => {
   const [open, setOpen] = useState(true);
   const [mobileMenu, setMobileMenu] = useState(false);
   const location = useLocation();
-
+  const navigate = useNavigate();
+  const { logout, user } = useAuth();
+  const handleLogout = async () => {
+    console.log("logout");
+    await logout();
+    navigate("/login");
+  };
   const Menus = [
     { title: "Dashboard", path: "dashboard", src: <AiFillPieChart /> },
     { title: "users", path: "users", src: <ImUsers /> },
@@ -25,10 +32,15 @@ const Sidebar = () => {
     { title: "Planning", path: "planning", src: <FaCalendarAlt /> },
     { title: "Missions", path: "missions", src: <MdOutlineWork /> },
     { title: "Espaces", path: "espaces", src: <FaMap /> },
-    { title: "Profile", path: "/profile", src: <CgProfile />, gap: "true" },
+    {
+      title: "Profile",
+      path: `/profile`,
+      src: <CgProfile />,
+      gap: "true",
+    },
     {
       title: "Logout",
-      path: "/logout",
+      // path: "/logout",
       src: <SidebarCloseIcon />,
       gap: "true",
     },
@@ -66,25 +78,49 @@ const Sidebar = () => {
 
         <ul className="pt-6">
           {Menus.map((menu, index) => (
-            <Link to={menu.path} key={index}>
-              <li
-                className={`flex items-center gap-x-6 p-3  text-base font-normal rounded-lg cursor-pointer dark:text-white hover:bg-gray-200  dark:hover:bg-gray-700
-                        ${menu.gap ? "mt-9" : "mt-2"} ${
-                  isActive(menu.path)
-                    ? "bg-active/20 dark:bg-active/40 text-text"
-                    : ""
-                }`}
-              >
-                <span className="text-2xl dark:text-text">{menu.src}</span>
-                <span
-                  className={`${
-                    !open && "hidden"
-                  } origin-left duration-300 hover:block`}
+            <>
+              {menu.title == "logout" ? (
+                <li
+                  key={index}
+                  onClick={handleLogout}
+                  className={`flex items-center gap-x-6 p-3  text-base font-normal rounded-lg cursor-pointer dark:text-white hover:bg-gray-200  dark:hover:bg-gray-700
+                     ${menu.gap ? "mt-9" : "mt-2"} ${
+                    isActive(menu.path)
+                      ? "bg-active/20 dark:bg-active/40 text-text"
+                      : ""
+                  }`}
                 >
-                  {menu.title}
-                </span>
-              </li>
-            </Link>
+                  <span className="text-2xl dark:text-text">{menu.src}</span>
+                  <span
+                    className={`${
+                      !open && "hidden"
+                    } origin-left duration-300 hover:block`}
+                  >
+                    {menu.title}
+                  </span>
+                </li>
+              ) : (
+                <Link to={menu.path} key={index}>
+                  <li
+                    className={`flex items-center gap-x-6 p-3  text-base font-normal rounded-lg cursor-pointer dark:text-white hover:bg-gray-200  dark:hover:bg-gray-700
+                        ${menu.gap ? "mt-9" : "mt-2"} ${
+                      isActive(menu.path)
+                        ? "bg-active/20 dark:bg-active/40 text-text"
+                        : ""
+                    }`}
+                  >
+                    <span className="text-2xl dark:text-text">{menu.src}</span>
+                    <span
+                      className={`${
+                        !open && "hidden"
+                      } origin-left duration-300 hover:block`}
+                    >
+                      {menu.title}
+                    </span>
+                  </li>
+                </Link>
+              )}
+            </>
           ))}
         </ul>
       </div>

@@ -1,15 +1,11 @@
-import {
-  createBrowserRouter,
-  RouterProvider,
-  Routes,
-  Route,
-} from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
+import Profile from "./pages/auth/Profile";
 import Notfound from "./Notfound";
 import Home from "./pages/Home";
-
+// import {} from "./context/AuthContext";
 import { AdminRoutes } from "./pages/routes/AdminRoutes";
 // import UsersRoutes from "./pages/routes/UsersRoutes";
 // const router = createBrowserRouter([
@@ -55,6 +51,7 @@ const App = () => {
       <Route path="/admin/*" element={<AdminRoutes />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/profile/:id" element={<Profile />} />
       <Route path="*" element={<Notfound />} />
     </Routes>
   );

@@ -146,6 +146,7 @@ export default function Users() {
             <Button
               size="sm"
               text="view all"
+              variant="outline"
               className="button bg-background text-black border border-black hover:bg-gray-50"
             >
               view all
