@@ -42,8 +42,8 @@ const ObservationCard = ({ observation }) => {
           <div className="uppercase tracking-wide text-sm text-indigo-500 font-semibold">
             Observation
           </div>
-          <p className="mt-2 text-gray-500">{observation.date}</p>
-          <p className="mt-2 text-gray-500">{observation.sujet}</p>
+          <p className="mt-2 text-gray-500">{observation.responsable}</p>
+          <p className="mt-2 text-gray-500">{observation.feedback}</p>
           <div className="mt-4">
             <a href="#" className="text-indigo-600 hover:text-indigo-500">
               View more
@@ -116,9 +116,10 @@ const Dashboard = () => {
     try {
       axios
         .get("http://localhost:5000/api/missions/missionCounts")
-        .then((res /*setMissionCounts(...missionCounts, res.data)*/) =>
-          console.log(res)
-        )
+        .then((res /*setMissionCounts(...missionCounts, res.data)*/) => {
+          console.log(res);
+          setMissionCounts(res.data);
+        })
         .catch((err) => console.log(err));
       axios
         .get("http://localhost:5000/api/meetings/read/" + user.id) // i want data for current day
@@ -126,27 +127,17 @@ const Dashboard = () => {
           setMeetings(res.data), setLoading(false);
         })
         .catch((err) => console.log(err), setLoading(false));
+      axios
+        .get("http://localhost:5000/api/observations/lastest") // i want data for current day
+        .then((res) => {
+          setObservations(res.data);
+        })
+        .catch((err) => console.log(err), setLoading(false));
     } catch (err) {
       console.log(err);
     }
   }, []);
-  // missions.forEach((mission) => {
-  //   switch (mission.status) {
-  //     case "In Progress":
-  //       missionInProgress++;
-  //       break;
-  //     case "In Review":
-  //       missionInReview++;
-  //       break;
-  //     case "On Hold":
-  //       missionOnHold++;
-  //       break;
-  //     case "Completed":
-  //       missionCompleted++;
-  //       break;
-  //   }
-  // });
-  // end
+
   setInterval(() => {
     setLoading(true);
     axios

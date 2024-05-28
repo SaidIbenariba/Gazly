@@ -94,7 +94,12 @@ const ObservationCard = ({ observation }) => {
 const Espaces = () => {
   const [observations, setObservations] = useState([]);
   const [espaces, setEspaces] = useState([
-    { position: [34.030795, -6.842883], name: "Factory 1", id: 1 },
+    {
+      position: [34.030795, -6.842883],
+      name: "Factory 1",
+      id: 1,
+      observations: [{ responsable: { firstname, lastname }, feedback }],
+    },
     { position: [34.023431, -6.855104], name: "Factory 2", id: 2 },
     { position: [34.022029, -6.817465], name: "Factory 3" },
     { position: [34.0123, -6.8245], name: "OMCo Factory" },
@@ -103,7 +108,7 @@ const Espaces = () => {
   useEffect(() => {
     setIsLoading(true);
     axios
-      .get("http://localhost:5000/api/observations")
+      .get("http://localhost:5000/api/observations/latest")
       .then((res) => {
         setObservations(res.data);
         setIsLoading(false);

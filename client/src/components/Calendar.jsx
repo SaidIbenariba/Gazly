@@ -42,20 +42,13 @@ export default function Calendar() {
   useEffect(() => {
     // console.log(user);
     axios
-      .get("http://localhost:5000/api/meetings/read/" + user.id)
+      .get("http://localhost:5000/api/meetings/")
       .then((res) => {
         console.log(res.data);
-      })
-      .catch((err) => console.log(err));
-    axios
-      .get("http://localhost:5000/api/meetings/read/" + user.id)
-      .then((res) => {
-        console.log(res.data);
-        setAllEvents(res.data);
       })
       .catch((err) => console.log(err));
   }, [user]);
-  useEffect(() => {}, [newEvent]);
+
   useEffect(() => {
     let draggableEl = document.getElementById("draggable-el");
     if (draggableEl) {

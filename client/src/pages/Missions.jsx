@@ -133,7 +133,7 @@ const Missions = () => {
             </Link>
           </div>
         </div>
-        <div className="flex flex-col items-center justify-between gap-4 lg:flex-row">
+        <div className="flex  flex-wrap items-center justify-between gap-1 gap-y-4">
           <Tabs value="all" className="w-full md:w-max">
             <TabsHeader>
               {TABS.map(({ label, value }) => (

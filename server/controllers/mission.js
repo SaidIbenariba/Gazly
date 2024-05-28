@@ -34,7 +34,6 @@ export const getMissionCounts = (req, res) => {
       },
       { ...defaultCounts }
     );
-
     res.json(counts);
   });
 };
