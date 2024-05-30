@@ -1,25 +1,28 @@
 import { db } from "../connect_db.js";
+
+
 export const getMissionCounts = (req, res) => {
-  const sql = `
+  const userId = req.id;
+  const userRole = req.role;
+  let sql = `
     SELECT 
       status, 
       COUNT(*) AS count 
     FROM mission
-    GROUP BY status
+    GROUP BY status WHERE 
   `;
+  if (userRole=='admin') {
+    sql+=" id_dir = ?";
+  } else if (userRole=='responsable') {
+    sql+=" id_resp = ?";
+  }
 
-  db.query(sql, (err, results) => {
+  db.query(sql,userId, (err, results) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
 
-    // Default counts for each status
-    const defaultCounts = {
-      inProgress: 0,
-      inReview: 0,
-      onHold: 0,
-      completed: 0,
-    };
+    
 
     // If there are no results, return defaultCounts directly
     if (results.length === 0) {
@@ -37,96 +40,95 @@ export const getMissionCounts = (req, res) => {
     res.json(counts);
   });
 };
+export const getMissionsByStatus = (req, res) => {
+  const userId = req.id;
+  const userRole = req.role;
+ 
+  if (userRole === 'admin') {
+    sql = "SELECT m.*, CONCAT(r.firstname, ' ', r.lastname) as directeur FROM mission m INNER JOIN users r ON m.id_resp = r.id WHERE m.id_dir = ? AND m.status = ?";
+  } else if (userRole === 'responsable') {
+    sql = "SELECT m.*, CONCAT(r.firstname, ' ', r.lastname) as responsable FROM mission m INNER JOIN users r ON m.id_dir = r.id WHERE m.id_resp = ? AND m.status = ?";
+  }
+console.log(userId);
+  const queryParams = [userId, req.params.status];
 
-export const missionsInProgress = (req, res) => {
-  const sql =
-    "SELECT COUNT(*) AS InProgressnumber FROM mission WHERE status ='In Progress'";
-  db.query(sql, (err, users) => {
-    if (err) res.status(500).json("Can not connect to database");
-    return res.json(users);
+  db.query(sql, queryParams, (err, results) => {
+    if (err) {
+      return res.status(500).json("Cannot connect to database");
+    }
+
+    const formatDate = (mysqlDate) => {
+      const jsDate = new Date(mysqlDate);
+      const options = {
+        weekday: 'short',
+        year: 'numeric',
+        month: 'short',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        timeZoneName: 'short',
+      };
+      return jsDate.toLocaleString('en-GB', options);
+    };
+
+    const formattedResults = results.map(row => ({
+      ...row,
+      start: formatDate(row.start),
+      end: formatDate(row.end),
+    }));
+   
+    return res.json(formattedResults);
   });
 };
-export const getMissionsInProgress = (req, res) => {
-  const sql =
-    "SELECT m.*,r.firstname,r.lastname FROM mission m INNER JOIN users r ON m.id_resp = r.id     WHERE m.status = 'In Progress'";
-  db.query(sql, (err, users) => {
-    if (err) res.status(500).json("Can not connect to database");
-    return res.json(users);
-  });
-};
-export const missionsInReview = (req, res) => {
-  const sql = "SELECT COUNT(*) FROM mission WHERE status ='In Review'";
-  db.query(sql, (err, users) => {
-    if (err) res.status(500).json("Can not connect to database");
-    return res.json(users);
-  });
-};
-export const getMissionsInReview = (req, res) => {
-  const sql =
-    "SELECT m.*,r.firstname,r.lastname FROM mission m INNER JOIN users r ON m.id_resp = r.id  WHERE m.status = 'In Review'";
-  db.query(sql, (err, users) => {
-    if (err) res.status(500).json("Can not connect to database");
-    return res.json(users);
-  });
-};
-export const missionsOnHold = (req, res) => {
-  const sql = "SELECT COUNT(*) FROM mission WHERE status ='On Hold'";
-  db.query(sql, (err, users) => {
-    if (err) res.status(500).json("Can not connect to database");
-    return res.json(users);
-  });
-};
-export const getMissionsOnHold = (req, res) => {
-  const sql =
-    "SELECT m.*,r.firstname,r.lastname FROM mission m INNER JOIN users r ON m.id_resp = r.id WHERE m.status = 'On Hold'";
-  db.query(sql, (err, users) => {
-    if (err) res.status(500).json("Can not connect to database");
-    return res.json(users);
-  });
-};
-export const missionsCompleted = (req, res) => {
-  const sql = "SELECT COUNT(*) FROM mission WHERE status ='Completed'";
-  db.query(sql, (err, users) => {
-    if (err) res.status(500).json("Can not connect to database");
-    return res.json(users);
-  });
-};
-export const getMissionsCompleted = (req, res) => {
-  const sql =
-    "SELECT m.*,r.firstname,r.lastname FROM mission m INNER JOIN users r ON m.id_resp = r.id WHERE m.status = 'Completed'";
-  db.query(sql, (err, users) => {
-    if (err) res.status(500).json("Can not connect to database");
-    return res.json(users);
-  });
-};
-export const missionsExpired = (req, res) => {
-  const sql = "SELECT COUNT(*) FROM mission WHERE status ='Expired'";
-  db.query(sql, (err, users) => {
-    if (err) res.status(500).json("Can not connect to database");
-    return res.json(users);
-  });
-};
-export const getMissionsExpired = (req, res) => {
-  const sql =
-    "SELECT m.*,r.firstname,r.lastname FROM mission m INNER JOIN users r ON m.id_resp = r.id WHERE m.status = 'Expired'";
-  db.query(sql, (err, users) => {
-    if (err) res.status(500).json("Can not connect to database");
-    return res.json(users);
-  });
-};
+
 export const getMissions = (req, res) => {
-  const sql =
-    "SELECT m.*,r.firstname,r.lastname FROM mission m INNER JOIN users r ON m.id_resp = r.id";
-  db.query(sql, (err, users) => {
-    if (err) res.status(500).json("Can not connect to database");
-    return res.json(users);
+  const userId = req.id;
+  const userRole = req.role;
+
+  let sql = "";
+  if (userRole === 'admin') {
+  sql = "SELECT m.*, CONCAT(r.firstname, ' ', r.lastname) as directeur FROM mission m INNER JOIN users r ON m.id_resp = r.id WHERE m.id_dir = ?";
+} else if (userRole === 'responsable') {
+  sql = "SELECT m.*, CONCAT(r.firstname, ' ', r.lastname) as responsable FROM mission m INNER JOIN users r ON m.id_dir = r.id WHERE m.id_resp = ?";
+}
+  const queryParams = [userRole];
+console.log(userId)
+  db.query(sql, queryParams, (err, results) => {  // Corrected from 'users' to 'results'
+    if (err) {
+      return res.status(500).json("Cannot connect to database");
+    }
+    console.log(userId);
+    const formatDate = (mysqlDate) => {
+      const jsDate = new Date(mysqlDate);
+      const options = {
+        weekday: 'short',
+        year: 'numeric',
+        month: 'short',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        timeZoneName: 'short',
+      };
+      return jsDate.toLocaleString('en-GB', options);
+    };
+
+    const formattedResults = results.map(row => ({
+      ...row,
+      start: formatDate(row.start),
+      end: formatDate(row.end),
+    }));
+
+    return res.json(formattedResults);
   });
 };
 export const createMission = (req, res) => {
   const sql =
-    "INSERT INTO mission (`startdate`,`duree`,`title`,`description`,`id_dir`,`id_resp`) VALUES(NOW(),?,?,?,?) ";
+    "INSERT INTO mission (`start`,`end`,`title`,`description`,`id_dir`,`id_resp`) VALUES(?,?,?,?,?,?) ";
   const newTache = {
-    Duree: req.body.duree,
+    start: req.body.start,
+    end: req.body.end,
     title: req.body.title,
     Description: req.body.description,
     id_ouv: req.body.id_dir,
@@ -137,37 +139,132 @@ export const createMission = (req, res) => {
     return res.status(200).json({ succes: `New Mission created ` });
   });
 };
-export const adminMissionSearch = (req, res) => {
-  let q =
-    "SELECT m.*, r.firstname, r.lastname FROM mission m INNER JOIN users r ON m.id_resp = r.id";
-  const queryParams = [];
+export const missionSearch = (req, res) => {
+  const userId = req.id;
+  const userRole = req.role;
+  let q = "";
+  if (userRole === 'admin') {
+  q = "SELECT m.*, CONCAT(r.firstname, ' ', r.lastname) as directeur FROM mission m INNER JOIN users r ON m.id_resp = r.id WHERE m.id_dir = ? ";
+} else if (userRole === 'responsable') {
+  q = "SELECT m.*, CONCAT(r.firstname, ' ', r.lastname) as responsable FROM mission m INNER JOIN users r ON m.id_dir = r.id WHERE m.id_resp = ?";
+}const queryParams = [userId];
 
   let conditions = [];
-  if (req.query.title) {
-    conditions.push("m.title LIKE ?");
-    queryParams.push(`%${req.query.title}%`);
+  if (req.params.searchBy === 'title') {
+      conditions.push("m.title LIKE ?");
+      queryParams.push(`%${req.params.values}%`);
   }
-  if (req.query.startdate) {
-    conditions.push("m.startdate = ?");
-    queryParams.push(req.query.startdate);
+  if (req.params.searchBy === 'startdate') {
+      conditions.push("m.startdate = ?");
+      queryParams.push(req.params.values);
   }
-  if (req.query.enddate) {
-    conditions.push("m.enddate = ?");
-    queryParams.push(req.query.enddate);
+  if (req.params.searchBy === 'enddate') {
+      conditions.push("m.enddate = ?");
+      queryParams.push(req.params.values);
   }
-  if (req.query.firstname) {
-    conditions.push("r.firstname LIKE ?");
-    queryParams.push(`%${req.query.firstname}%`);
+  if (req.params.searchBy === 'firstname') {
+      conditions.push("r.firstname LIKE ?");
+      queryParams.push(`%${req.params.values}%`);
   }
-  if (req.query.lastname) {
-    conditions.push("r.lastname LIKE ?");
-    queryParams.push(`%${req.query.lastname}%`);
+  if (req.params.searchBy === 'lastname') {
+      conditions.push("r.lastname LIKE ?");
+      queryParams.push(`%${req.params.values}%`);
   }
   if (conditions.length > 0) {
-    q += " WHERE " + conditions.join(" AND ");
+      q += " AND " + conditions.join(" AND ");
   }
-  db.query(q, queryParams, (err, result) => {
-    if (err) return res.status(500).json(err);
-    return res.status(200).json(result);
+
+  db.query(q, queryParams, (err, results) => {  // Corrected from 'users' to 'results'
+    if (err) {
+      return res.status(500).json("Cannot connect to database");
+    }
+
+    const formatDate = (mysqlDate) => {
+      const jsDate = new Date(mysqlDate);
+      const options = {
+        weekday: 'short',
+        year: 'numeric',
+        month: 'short',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        timeZoneName: 'short',
+      };
+      return jsDate.toLocaleString('en-GB', options);
+    };
+
+    const formattedResults = results.map(row => ({
+      ...row,
+      start: formatDate(row.start),
+      end: formatDate(row.end),
+      user: [
+       row.firstname,
+        row.lastname,
+      ],
+    }));
+
+    return res.json(formattedResults);
+  });
+};
+
+export const defaultMissionSearch = (req, res) => {
+  const userId = req.id;
+  const userRole = req.role;
+  let q = "";
+  if (userRole === 'admin') {
+  q = "SELECT m.*, CONCAT(r.firstname, ' ', r.lastname) as directeur FROM mission m INNER JOIN users r ON m.id_resp = r.id WHERE m.id_dir = ? ";
+} else if (userRole === 'responsable') {
+  q = "SELECT m.*, CONCAT(r.firstname, ' ', r.lastname) as responsable FROM mission m INNER JOIN users r ON m.id_dir = r.id WHERE m.id_resp = ?";
+}const queryParams = [userId];
+const searchValue = req.params.values;
+  
+  let conditions = [];
+
+  // Check if the searchValue is a valid date
+  const isDate = !isNaN(Date.parse(searchValue));
+
+  if (isDate) {
+    conditions.push("m.start = ? OR m.end = ?");
+    queryParams.push(searchValue, searchValue);
+  } else {
+    conditions.push("m.title LIKE ? OR m.discription LIKE ? OR m.status LIKE ? OR r.firstname LIKE ? OR r.lastname LIKE ?");
+    queryParams.push(`%${searchValue}%`,`%${searchValue}%`,`%${searchValue}%`,`%${searchValue}%`,`%${searchValue}%`);
+  }
+
+  if (conditions.length > 0) {
+    q += " AND (" + conditions.join(" OR ") + ")";
+  }
+  db.query(q, queryParams, (err, results) => {
+    if (err) {
+      return res.status(500).json("Cannot connect to database");
+    }
+
+    const formatDate = (mysqlDate) => {
+      const jsDate = new Date(mysqlDate);
+      const options = {
+        weekday: 'short',
+        year: 'numeric',
+        month: 'short',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        timeZoneName: 'short',
+      };
+      return jsDate.toLocaleString('en-GB', options);
+    };
+
+    const formattedResults = results.map(row => ({
+      ...row,
+      start: formatDate(row.start),
+      end: formatDate(row.end),
+      user: [
+       row.firstname,
+        row.lastname,
+      ],
+    }));
+
+    return res.json(formattedResults);
   });
 };

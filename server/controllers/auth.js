@@ -61,7 +61,6 @@ export const login = async (req, res) => {
       req.body.password,
       data[0].password
     );
-
     if (!checkPassword) {
       return res.status(400).json("Wrong password");
     }
@@ -75,6 +74,8 @@ export const login = async (req, res) => {
       role: data[0].role,
       tokenrefresh: data[0].refreshToken,
     };
+    
+    console.log(foundUser.role)
     const accessToken = jwt.sign(
       {
         UserInfo: {
@@ -180,6 +181,8 @@ export const logout = async (req, res) => {
     const SQL = "UPDATE users SET refreshToken = '' WHERE id= ?  ";
     db.query(SQL, foundUser.id, (err, result) => {
       if (err) return res.status(500).json(err);
+      res.clearCookie("userId");
+      res.clearCookie("userRole");
       res.clearCookie("jwt", {
         httpOnly: true,
         sameSite: "None",

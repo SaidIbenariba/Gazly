@@ -59,6 +59,13 @@ export const getWorkSpace = (req, res) => {
         const sql = "SELECT ws.*,r.firstname,r.lastname FROM WorkSpace ws INNER JOIN users r ON  ws.id_resp= r.id";
         db.query(sql, (err, users) => {
           if (err) res.status(500).json("Can not connect to database");
-          return res.json(users);
+          const formattedResults = users.map(row => ({
+            ...row,
+            user: [
+             row.firstname,
+              row.lastname,
+            ],
+          }));
+          return res.json(formattedResults);
         });
       };
