@@ -82,6 +82,8 @@ export const deleteUser = (req, res) => {
   });
 };
 export const users = (req, res) => {
+  // console.log(req);
+  console.log(req.id);
   const sql = "SELECT * FROM users";
   db.query(sql, (err, users) => {
     if (err) res.status(500).json("Can not connect to database");

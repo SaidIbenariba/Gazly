@@ -111,6 +111,9 @@ app.use(express.json());
 app.use(cors());
 app.use(cookieParser());
 
+app.use("/auth", authRoutes);
+app.use("/refresh", refreshRoutes);
+app.use(verifyJWT);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/sensor", sensorRoutes);
 app.use("/api/observations", observationRoutes);
@@ -118,8 +121,6 @@ app.use("/api/missions", missionRoutes);
 app.use("/api/meetings", meetingRoutes);
 app.use("/api/measures", measureRoutes);
 app.use("/api/espaces", espaceRoutes);
-app.use("/auth", authRoutes);
-app.use("/refresh", refreshRoutes);
 // app.use(verifyJWT); // anything after this should verified auth
 app.use("/api/users", userRoutes);
 app.listen(port, () => {

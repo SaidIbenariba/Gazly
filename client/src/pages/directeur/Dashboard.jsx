@@ -121,12 +121,7 @@ const Dashboard = () => {
           setMissionCounts(res.data);
         })
         .catch((err) => console.log(err));
-      axios
-        .get("http://localhost:5000/api/meetings/read/" + user.id) // i want data for current day
-        .then((res) => {
-          setMeetings(res.data), setLoading(false);
-        })
-        .catch((err) => console.log(err), setLoading(false));
+
       axios
         .get("http://localhost:5000/api/observations/lastest") // i want data for current day
         .then((res) => {

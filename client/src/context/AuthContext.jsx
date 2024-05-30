@@ -29,6 +29,7 @@ export const AuthProvider = ({ children }) => {
       const decodedUser = jwtDecode(accessToken);
       console.log(decodedUser.UserInfo);
       setUser(decodedUser.UserInfo);
+      axios.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
       // setUser(response.data.user);
     } catch (error) {
       console.error("Login failed:", error.response.data);

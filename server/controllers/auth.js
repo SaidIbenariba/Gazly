@@ -125,8 +125,12 @@ export const login = async (req, res) => {
       secure: true,
       maxAge: 24 * 60 * 60 * 1000,
     });
-
+    // req.setHeader("Authorization", "Bearer " + accessToken);
     res.json({ accessToken });
+
+    // headers = {
+    //   Authorization: "Bearer " + accessToken,
+    // };
     // })
   });
 };

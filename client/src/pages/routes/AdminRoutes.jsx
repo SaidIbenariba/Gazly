@@ -7,13 +7,18 @@ import Missions from "../Missions";
 import Planning from "../Planning";
 import Observations from "../Observations";
 import useVerifyRole from "../../hooks/useVerifyRoles";
+import { useAuth } from "../../hooks/useAuth";
 
 export function AdminRoutes() {
-  const isAdmin = useVerifyRole(["admin"]);
+  // const isAdmin = useVerifyRole(["admin"]);
 
-  if (!isAdmin) {
-    // Redirect to a different page or show a message for unauthorized users
-    return <Navigate to="/login" />;
+  // if (!isAdmin) {
+  //   // Redirect to a different page or show a message for unauthorized users
+  //   return <Navigate to="/login" />;
+  // }
+  const { user } = useAuth();
+  if (!user) {
+    return <Navigate to={`/login`} />;
   }
 
   return (
