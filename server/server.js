@@ -27,84 +27,6 @@ const app = express();
 app.use(express.json());
 const port = 5000;
 
-// db.connect((err) => console.log(err));
-
-// login
-// app.post("/login", (req, res) => {
-//   const sql = "SELECT * FROM login WHERE email = ? AND password = ? ";
-//   const values = [req.body.email, req.body.password];
-//   db.query(sql, values, (err, result) => {
-//     if (err) return res.json({ message: "not found this user" } + err);
-
-//     return res.json(result);
-//   });
-// });
-// //
-// app.post("/add_user", (req, res) => {
-//   console.log(`server recieve form`);
-//   const sql =
-//     "INSERT INTO users (`ID`,`Nom`,`Tel`,`Ville`,`Adresse`) VALUES (?,?,?,?,?)";
-//   const values = [
-//     req.body.id,
-//     req.body.nom,
-//     req.body.tel,
-//     req.body.ville,
-//     req.body.adresse,
-//   ];
-//   db.query(sql, values, (err, result) => {
-//     // console.log(result);
-//     if (err) return res.json({ message: "exception occured" + err });
-//     return res.json({ succes: "Client added !" });
-//   });
-// });
-// // edit user
-// app.post("/edit_user/:id", (req, res) => {
-//   console.log(`server recieve form`);
-//   console.log(req);
-//   sql = "UPDATE users SET `Nom`=?,`Tel`=?,`Ville`=?,`Adresse`=? WHERE ID=?";
-//   const id = req.params.id;
-//   const values = [
-//     req.body.nom,
-//     req.body.tel,
-//     req.body.ville,
-//     req.body.adresse,
-//     id,
-//   ];
-//   db.query(sql, values, (err, result) => {
-//     // console.log(result);
-//     if (err) return res.json({ message: "exception occured" + err });
-//     return res.json({ succes: "Client Updated !" });
-//   });
-// });
-// // delete user
-// app.get("/delete_user/:id", (req, res) => {
-//   console.log(`server recieve form`);
-//   sql = "DELETE FROM users WHERE ID=?";
-//   const id = req.params.id;
-//   db.query(sql, id, (err, result) => {
-//     // console.log(result);
-//     if (err) return res.json({ message: "exception occured" + err });
-//     return res.json({ succes: "Client Deleted !" });
-//   });
-// });
-
-// app.get("/read_user/:id", (req, res) => {
-//   const sql = "SELECT * FROM users WHERE ID=?";
-//   const id = req.params.id;
-//   db.query(sql, [id], (err, result) => {
-//     if (err) return res.json({ message: "not select use" + err });
-//     return res.json(result);
-//   });
-// });
-
-// app.get("/users", (req, res) => {
-//   const sql = "SELECT * FROM users";
-//   db.query(sql, (err, result) => {
-//     if (err) return res.json({ message: "mysql" + err });
-//     return res.json(result);
-//   });
-// });
-
 // MIDDLEWARES
 
 app.use(express.json());
@@ -120,8 +42,7 @@ app.use("/api/observations", observationRoutes);
 app.use("/api/missions", missionRoutes);
 app.use("/api/meetings", meetingRoutes);
 app.use("/api/measures", measureRoutes);
-app.use("/api/espaces", espaceRoutes);
-// app.use(verifyJWT); // anything after this should verified auth
+app.use("/api/WorkSpaces", espaceRoutes);
 app.use("/api/users", userRoutes);
 app.listen(port, () => {
   console.log(`our API working on ${port}`);

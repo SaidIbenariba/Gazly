@@ -5,53 +5,40 @@ import Register from "./pages/auth/Register";
 import Profile from "./pages/auth/Profile";
 import Notfound from "./Notfound";
 import Home from "./pages/Home";
+import { Navigate } from "react-router-dom";
 // import {} from "./context/AuthContext";
-import { AdminRoutes } from "./pages/routes/AdminRoutes";
-// import UsersRoutes from "./pages/routes/UsersRoutes";
-// const router = createBrowserRouter([
-//   {
-//     path: "/",
-//     element: <Dashboard />,
-//     children: [
-//       {
-//         path: "/users",
-//         element: <Users />,
-//       },
-//       {
-//         path: "/users/create",
-//         element: <Create />,
-//       },
-//       {
-//         path: "/users/read/:id",
-//         element: <Read />,
-//       },
-//       {
-//         path: "/users/edit/:id",
-//         element: <Edit />,
-//       },
-//       {
-//         path: "/users/delete/:id",
-//         element: <Delete />,
-//       },
-//     ],
-//   },
-//   {
-//     path: "/login",
-//     element: <Login />,
-//   },
-//   {
-//     path: "/register",
-//     element: <Register />,
-//   },
-// ]);
+import useVerifyRole from "./hooks/useVerifyRoles";
+import { useAuth } from "./hooks/useAuth";
+import OuvrierRoutes from "./pages/routes/OuvrierRoutes";
+import ResponsableRoutes from "./pages/routes/ResponsableRoutes";
+import AdminRoutes from "./pages/routes/AdminRoutes";
 const App = () => {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/admin/*" element={<AdminRoutes />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route path="/profile/:id" element={<Profile />} />
+      <Route element={<PrivateRoutes />} path="/private/*" />
+      <Route path="*" element={<Notfound />} />
+    </Routes>
+  );
+};
+const PrivateRoutes = () => {
+  const { user } = useAuth();
+  const isAdmin = useVerifyRole(["admin"]);
+  const isResponsable = useVerifyRole(["responsable"]);
+  const isOuvrier = useVerifyRole(["ouvrier"]);
+  console.log("private routes");
+  if (!user) {
+    return <Navigate to="/login" />;
+  }
+  return (
+    <Routes>
+      {/* <Route path="1/*" element={<AdminRoutes />} /> */}
+      {isAdmin && <Route path="/*" element={<AdminRoutes />} />}
+      {isResponsable && <Route path="/*" element={<ResponsableRoutes />} />}
+      {isOuvrier && <Route path="/*" element={<OuvrierRoutes />} />}
+      <Route path="profile/:id" element={<Profile />} />
       <Route path="*" element={<Notfound />} />
     </Routes>
   );

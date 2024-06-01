@@ -1,9 +1,10 @@
 import React from "react";
 import Navbar from "../../components/Navbar";
 import Sidebar from "../../components/Sidebar";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 
-const AdminLayout = () => {
+const DashboardLayout = () => {
+  console.log("dashboardLayout");
   return (
     <>
       <div className=" flex flex-auto h-screen w-full grid-cols-2 ">
@@ -21,4 +22,4 @@ const AdminLayout = () => {
   );
 };
 
-export default AdminLayout;
+export default DashboardLayout;

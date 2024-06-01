@@ -4,7 +4,6 @@ import { Spinner } from "@material-tailwind/react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { useEffect, useState } from "react";
-import form from "../../components/form";
 const Login = () => {
   const [error, setError] = useState(null);
   const { login, loading } = useAuth();
@@ -19,7 +18,7 @@ const Login = () => {
     e.preventDefault();
     try {
       await login(formData);
-      nav("/admin");
+      nav("/");
     } catch (error) {
       setError("Login failed. Please try again.");
     }

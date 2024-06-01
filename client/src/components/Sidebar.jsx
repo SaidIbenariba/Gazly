@@ -13,19 +13,22 @@ import HamburgerButton from "./HamburgerMenuButton/HamburgerButton";
 import { SidebarCloseIcon } from "lucide-react";
 import { FaCalendarAlt, FaMap } from "react-icons/fa";
 import { useAuth } from "../hooks/useAuth";
-
+import useVerifyRole from "../hooks/useVerifyRoles";
 const Sidebar = () => {
   const [open, setOpen] = useState(true);
   const [mobileMenu, setMobileMenu] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { logout, user } = useAuth();
+  const { logout } = useAuth();
   const handleLogout = async () => {
     console.log("logout");
     await logout();
     navigate("/login");
   };
-  const Menus = [
+  const isAdmin = useVerifyRole(["admin"]);
+  const isResponsable = useVerifyRole(["responsable"]);
+  const isOuvrier = useVerifyRole(["ouvrier"]);
+  const adminMenus = [
     { title: "Dashboard", path: "dashboard", src: <AiFillPieChart /> },
     { title: "users", path: "users", src: <ImUsers /> },
 
@@ -40,11 +43,44 @@ const Sidebar = () => {
     },
     {
       title: "Logout",
-      // path: "/logout",
+      path: "/logout",
       src: <SidebarCloseIcon />,
       gap: "true",
     },
   ];
+  const responsableMenus = [
+    { title: "Dashboard", path: "dashboard", src: <AiFillPieChart /> },
+    { title: "Planning", path: "planning", src: <FaCalendarAlt /> },
+    { title: "Missions", path: "missions", src: <MdOutlineWork /> },
+    { title: "tasks", path: "tasks", src: <MdOutlineWork /> },
+    { title: "Espaces", path: "espaces", src: <FaMap /> },
+    {
+      title: "Profile",
+      path: `/profile`,
+      src: <CgProfile />,
+      gap: "true",
+    },
+    {
+      title: "Logout",
+      path: "/logout",
+      src: <SidebarCloseIcon />,
+      gap: "true",
+    },
+  ];
+  const ouvrierMenus = [
+    { title: "Dashboard", path: "dashboard", src: <AiFillPieChart /> },
+    {
+      title: "Logout",
+      path: "/logout",
+      src: <SidebarCloseIcon />,
+      gap: "true",
+    },
+  ];
+  let Menus = [];
+  // if (isAdmin) Menus = adminMenus;
+  // if (isResponsable) Menus = responsableMenus;
+  // if (isOuvrier) Menus = ouvrierMenus;
+  Menus = adminMenus;
   const isActive = (path) => {
     return location.pathname === "/admin/" + path;
   };
@@ -61,7 +97,7 @@ const Sidebar = () => {
           } absolute text-2xl bg-background/50 fill-slate-800  rounded-full cursor-pointer top-5 right-1 dark:fill-gray-400 dark:bg-background`}
           onClick={() => setOpen(!open)}
         />
-        <Link to="/admin">
+        <Link to="/private">
           <div
             className={`flex ${
               open && "gap-x-4"

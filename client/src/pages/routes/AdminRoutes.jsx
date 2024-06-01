@@ -1,29 +1,16 @@
-import { Route, Routes, Navigate } from "react-router-dom";
-import AdminLayout from "../directeur/AdminLayout";
+import { Route, Routes } from "react-router-dom";
 import Dashboard from "../directeur/Dashboard";
 import Espaces from "../Espaces";
 import UsersRoutes from "../routes/UsersRoutes";
 import Missions from "../Missions";
 import Planning from "../Planning";
 import Observations from "../Observations";
-import useVerifyRole from "../../hooks/useVerifyRoles";
-import { useAuth } from "../../hooks/useAuth";
+import DashboardLayout from "../directeur/DashboardLayout";
 
-export function AdminRoutes() {
-  // const isAdmin = useVerifyRole(["admin"]);
-
-  // if (!isAdmin) {
-  //   // Redirect to a different page or show a message for unauthorized users
-  //   return <Navigate to="/login" />;
-  // }
-  const { user } = useAuth();
-  if (!user) {
-    return <Navigate to={`/login`} />;
-  }
-
+export default function AdminRoutes() {
   return (
     <Routes>
-      <Route element={<AdminLayout />}>
+      <Route path="/" element={<DashboardLayout />}>
         <Route index element={<Dashboard />} />
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="espaces" element={<Espaces />} />
@@ -31,7 +18,6 @@ export function AdminRoutes() {
         <Route path="missions/*" element={<Missions />} />
         <Route path="observations/*" element={<Observations />} />
         <Route path="planning" element={<Planning />} />
-        <Route path="espaces" element={<Espaces />} />
       </Route>
     </Routes>
   );

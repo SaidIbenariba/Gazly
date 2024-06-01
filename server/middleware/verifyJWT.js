@@ -3,7 +3,6 @@ import jwt, { decode } from "jsonwebtoken";
 import { ROLES_LIST } from "../config/roles_list.js";
 dotenv.config();
 export const verifyJWT = (req, res, next) => {
-  console.log(req.headers);
   const authHeader = req.headers.authorization || req.headers.Authorization;
   if (!authHeader) {
     return res.status(401).json({ error: "Authorization header missing" });

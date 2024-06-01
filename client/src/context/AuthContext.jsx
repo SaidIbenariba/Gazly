@@ -2,12 +2,15 @@ import React, { createContext, useState } from "react";
 import axios from "axios";
 import { useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
+  const nav = useNavigate();
   /**data reviece it { email: "",
     password: "",
     rememberMe: false,} */
@@ -33,7 +36,6 @@ export const AuthProvider = ({ children }) => {
       // setUser(response.data.user);
     } catch (error) {
       console.error("Login failed:", error.response.data);
-      throw error;
     } finally {
       setLoading(false);
     }
@@ -70,15 +72,18 @@ export const AuthProvider = ({ children }) => {
   };
   const autoLogin = async (storedToken) => {
     setLoading(true);
+    nav("/");
+    console.log("autologin");
     try {
+      axios.defaults.headers.common["Authorization"] = `Bearer ${storedToken}`;
       const response = await axios.post(
-        "http://localhost:5000/api/users/autologin",
-        { token: storedToken }
+        "http://localhost:5000/auth/autologin",
+        [{ token: storedToken }]
       );
+      // console.log(response.data.user);
       setUser(response.data.user);
     } catch (error) {
       console.error("Auto login failed:", error.response.data);
-      // If auto-login fails, clear the stored token and log the user out
       localStorage.removeItem("accessToken");
       sessionStorage.removeItem("accessToken");
       setUser(null);
@@ -86,15 +91,19 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   };
-  useEffect(() => {
-    const storedToken =
-      localStorage.getItem("accessToken") ||
-      sessionStorage.getItem("accessToken");
-    if (storedToken) {
-      // Perform automatic login using stored token
-      autoLogin(storedToken);
-    }
-  }, []);
+  // useEffect(() => {
+  //   const storedToken =
+  //     localStorage.getItem("accessToken") ||
+  //     sessionStorage.getItem("accessToken");
+  //   if (storedToken) {
+  //     // Perform automatic login using stored token
+  //     // try {
+  //     autoLogin(storedToken);
+  //     // } catch (error) {
+  //     //   console.error("Autologin ERROR", error);
+  //     // }
+  //   }
+  // }, []);
   const authValues = {
     user,
     loading,

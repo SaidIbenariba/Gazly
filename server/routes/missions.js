@@ -1,34 +1,21 @@
 import express from "express";
 import {
-  missionsInProgress,
-  getMissionsInProgress,
-  missionsInReview,
-  getMissionsInReview,
-  missionsOnHold,
-  getMissionsOnHold,
-  missionsCompleted,
-  getMissionsCompleted,
-  missionsExpired,
-  getMissionsExpired,
+  getMissionsByStatus,
   getMissions,
   createMission,
-  adminMissionSearch,
+  missionSearch,
   getMissionCounts,
+  defaultMissionSearch,
 } from "../controllers/mission.js";
+import { verifyJWT } from "../middleware/verifyJWT.js";
 const router = express.Router();
 // router.get("/missionsInProgress", missionsInProgress);
-// router.get("/missionsInReview", missionsInReview);
-// router.get("/missionsOnHold", missionsOnHold);
-// router.get("/missionsCompleted", missionsCompleted);
-// router.get("/missionsExpired", missionsExpired);
+
 router.get("/missionCounts", getMissionCounts);
-router.get("/getMissionsInProgress", getMissionsInProgress);
-router.get("/getMissionsInReview", getMissionsInReview);
-router.get("/getMissionsOnHold", getMissionsOnHold);
-router.get("/getMissionsCompleted", getMissionsCompleted);
-router.get("/getMissionsExpired", getMissionsExpired);
+router.get("/:status", getMissionsByStatus);
 router.get("/", getMissions);
 router.post("/createMission", createMission);
-router.get("/adminMissionSearch", adminMissionSearch);
+router.get("/search/:searchBy/:values", missionSearch);
+router.get("/defaultSearch/:values", defaultMissionSearch);
 
 export default router;

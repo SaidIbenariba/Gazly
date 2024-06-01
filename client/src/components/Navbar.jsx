@@ -1,6 +1,5 @@
 import React from "react";
 import Toggle from "./ThemeToggle";
-
 const Navbar = () => {
   return (
     <nav className="bg-sidebar  border-border mx-2 px-2 rounded dark:bg-background">

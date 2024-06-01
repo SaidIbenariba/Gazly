@@ -7,7 +7,7 @@ dotenv.config();
 // import jwt from "jsonwebtoken";
 export const register = async (req, res) => {
   // CHECK USER IF EXISTS OR NOT
-  console.log("register");
+  // console.log("register");
   const sql = "SELECT * FROM users WHERE email = ?";
   db.query(sql, req.body.email, (err, data) => {
     if (err)
@@ -41,19 +41,53 @@ export const register = async (req, res) => {
       password: hashedPassword,
       role: req.body.role,
     };
-    console.log(newUser);
+    // console.log(newUser);
     db.query(q, [Object.values(newUser)], (err, result) => {
       if (err) return res.status(500).json(err);
       return res.status(200).json({ succes: `New User  created ` });
     });
   });
 };
+// autologin controllers
+export const autologin = async (req, res) => {
+  const { token } = req.body[0];
+  if (!token) {
+    return res.status(400).json({ message: "Token is required" });
+  }
+
+  try {
+    // Verify the token
+    const decoded = jwt.verify(token, process.env.ACCES_TOKEN_SECRET);
+
+    const userId = decoded.UserInfo.id;
+
+    const sql = "SELECT * FROM users WHERE id = ?";
+    db.query(sql, [userId], (err, data) => {
+      if (err)
+        return res
+          .status(500)
+          .json({ message: "Database query error", error: err });
+      if (data.length === 0)
+        return res.status(404).json({ message: "User not found" });
+
+      const user = {
+        id: data[0].id,
+        email: data[0].email,
+        firstName: data[0].firstname,
+        lastName: data[0].lastname,
+        role: data[0].role,
+      };
+
+      return res.status(200).json({ user });
+    });
+  } catch (err) {
+    return res.status(401).json({ message: "Invalid token", error: err });
+  }
+};
 
 export const login = async (req, res) => {
-  console.log("login");
   const sql = "SELECT * FROM users WHERE email = ?";
   // { userId: }
-  console.log(req.body);
   db.query(sql, req.body.email, (err, data) => {
     if (err) return res.status(500).json(err);
     if (data.length == 0) return res.status(404).json("Email not found !");
@@ -61,7 +95,6 @@ export const login = async (req, res) => {
       req.body.password,
       data[0].password
     );
-
     if (!checkPassword) {
       return res.status(400).json("Wrong password");
     }
@@ -75,6 +108,8 @@ export const login = async (req, res) => {
       role: data[0].role,
       tokenrefresh: data[0].refreshToken,
     };
+
+    // console.log(foundUser.role);
     const accessToken = jwt.sign(
       {
         UserInfo: {
@@ -134,7 +169,6 @@ export const login = async (req, res) => {
     // })
   });
 };
-
 export const logout = async (req, res) => {
   // On client(front end ), also delete the acces token
 
@@ -184,6 +218,8 @@ export const logout = async (req, res) => {
     const SQL = "UPDATE users SET refreshToken = '' WHERE id= ?  ";
     db.query(SQL, foundUser.id, (err, result) => {
       if (err) return res.status(500).json(err);
+      res.clearCookie("userId");
+      res.clearCookie("userRole");
       res.clearCookie("jwt", {
         httpOnly: true,
         sameSite: "None",
