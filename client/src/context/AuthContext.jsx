@@ -8,12 +8,56 @@ import { useAuth } from "../hooks/useAuth";
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const storedToken =
+      localStorage.getItem("accessToken") ||
+      sessionStorage.getItem("accessToken");
+    // console.log(user);
+    console.log(storedToken);
+
+    if (storedToken) {
+      try {
+        const decodedUser = jwtDecode(storedToken);
+        axios.defaults.headers.common[
+          "Authorization"
+        ] = `Bearer ${storedToken}`;
+        return decodedUser.UserInfo;
+        // console.log(decodedUser.UserInfo);
+      } catch (error) {
+        console.error("Token decoding failed:", error);
+        localStorage.removeItem("accessToken");
+        sessionStorage.removeItem("accessToken");
+      }
+    } else {
+      return null;
+    }
+  });
   const [loading, setLoading] = useState(false);
   const nav = useNavigate();
   /**data reviece it { email: "",
     password: "",
     rememberMe: false,} */
+  useEffect(() => {
+    console.log("auth procees work");
+    const storedToken =
+      localStorage.getItem("accessToken") ||
+      sessionStorage.getItem("accessToken");
+    // console.log(user);
+    if (storedToken) {
+      try {
+        const decodedUser = jwtDecode(storedToken);
+        setUser(decodedUser.UserInfo);
+        // console.log(decodedUser.UserInfo);
+        axios.defaults.headers.common[
+          "Authorization"
+        ] = `Bearer ${storedToken}`;
+      } catch (error) {
+        console.error("Token decoding failed:", error);
+        localStorage.removeItem("accessToken");
+        sessionStorage.removeItem("accessToken");
+      }
+    }
+  }, []);
   const login = async (formData) => {
     setLoading(true);
 
@@ -91,19 +135,7 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   };
-  // useEffect(() => {
-  //   const storedToken =
-  //     localStorage.getItem("accessToken") ||
-  //     sessionStorage.getItem("accessToken");
-  //   if (storedToken) {
-  //     // Perform automatic login using stored token
-  //     // try {
-  //     autoLogin(storedToken);
-  //     // } catch (error) {
-  //     //   console.error("Autologin ERROR", error);
-  //     // }
-  //   }
-  // }, []);
+
   const authValues = {
     user,
     loading,

@@ -29,7 +29,9 @@ const PrivateRoutes = () => {
   const isResponsable = useVerifyRole(["responsable"]);
   const isOuvrier = useVerifyRole(["ouvrier"]);
   console.log("private routes");
+  console.log(user);
   if (!user) {
+    // console.log(user);
     return <Navigate to="/login" />;
   }
   return (
