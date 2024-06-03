@@ -77,7 +77,7 @@ const Dashboard = () => {
           "http://localhost:5000/api/missions/missionCounts"
         );
         setMissionCounts(missionCountsRes.data);
-
+        
         const meetingsRes = await axios.get(
           "http://localhost:5000/api/meetings/read/"
         );
@@ -85,13 +85,13 @@ const Dashboard = () => {
 
         const observationsRes = await axios.get(
           "http://localhost:5000/api/observations/lastest"
-        );
+        );console.log(observationsRes.data);
         setObservations(observationsRes.data);
 
         const gazLevelRes = await axios.get(
           "http://localhost:5000/api/measures/getLastMeasure"
         );
-        setGazLevel(gazLevelRes.data[0].level); // Assuming response format
+        setGazLevel(gazLevelRes.data[0].gazlvl); // Assuming response format
       } catch (err) {
         console.error(err);
       } finally {

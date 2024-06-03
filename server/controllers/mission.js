@@ -9,52 +9,68 @@ export const getMissionCounts = (req, res) => {
       status, 
       COUNT(*) AS count 
     FROM mission
-    GROUP BY status WHERE 
   `;
-  if (userRole=='admin') {
-    sql+=" id_dir = ?";
-  } else if (userRole=='responsable') {
-    sql+=" id_resp = ?";
+
+  if (userRole == 'admin') {
+    sql += " WHERE id_dir = ?";
+  } else if (userRole == 'responsable') {
+    sql += " WHERE id_resp = ?";
   }
 
-  db.query(sql,userId, (err, results) => {
+  sql += " GROUP BY status";
+
+  db.query(sql, [userId], (err, results) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
 
-    
+    console.log('Query results:', results);
 
-    // If there are no results, return defaultCounts directly
+    const defaultCounts = {
+      inProgress: 0,
+      inReview: 0,
+      onHold: 0,
+      completed: 0,
+    };
+
     if (results.length === 0) {
       return res.json(defaultCounts);
     }
 
-    // Process the results to merge with defaultCounts
-    const counts = results.reduce(
-      (acc, row) => {
-        acc[row.status] = row.count;
-        return acc;
-      },
-      { ...defaultCounts }
-    );
+    const counts = results.reduce((acc, row) => {
+      console.log('Processing row:', row);
+      acc[row.status] = row.count;
+      return acc;
+    }, { ...defaultCounts });
+
     res.json(counts);
   });
 };
+
 export const getMissionsByStatus = (req, res) => {
   const userId = req.id;
   const userRole = req.role;
- 
-  if (userRole === 'admin') {
-    sql = "SELECT m.*, CONCAT(r.firstname, ' ', r.lastname) as directeur FROM mission m INNER JOIN users r ON m.id_resp = r.id WHERE m.id_dir = ? AND m.status = ?";
-  } else if (userRole === 'responsable') {
-    sql = "SELECT m.*, CONCAT(r.firstname, ' ', r.lastname) as responsable FROM mission m INNER JOIN users r ON m.id_dir = r.id WHERE m.id_resp = ? AND m.status = ?";
+  let sql = "";
+  let queryParams = [];
+  if (req.params.status) {
+    if (userRole === 'admin') {
+      sql = "SELECT m.*, CONCAT(r.firstname, ' ', r.lastname) as directeur FROM mission m INNER JOIN users r ON m.id_resp = r.id WHERE m.id_dir = ? AND m.status = ?";
+    } else if (userRole === 'responsable') {
+      sql = "SELECT m.*, CONCAT(r.firstname, ' ', r.lastname) as responsable FROM mission m INNER JOIN users r ON m.id_dir = r.id WHERE m.id_resp = ? AND m.status = ?";
+    }
+    queryParams = [userId, req.params.status];
+  } else {
+    if (userRole === 'admin') {
+      sql = "SELECT m.*, CONCAT(r.firstname, ' ', r.lastname) as directeur FROM mission m INNER JOIN users r ON m.id_resp = r.id WHERE m.id_dir = ?";
+    } else if (userRole === 'responsable') {
+      sql = "SELECT m.*, CONCAT(r.firstname, ' ', r.lastname) as responsable FROM mission m INNER JOIN users r ON m.id_dir = r.id WHERE m.id_resp = ?";
+    }
+    queryParams = [userId];
   }
-console.log(userId);
-  const queryParams = [userId, req.params.status];
-
   db.query(sql, queryParams, (err, results) => {
     if (err) {
-      return res.status(500).json("Cannot connect to database");
+      console.error("Database query error: ", err);
+      return res.status(500).json({ error: "Cannot connect to database" });
     }
 
     const formatDate = (mysqlDate) => {
@@ -77,10 +93,11 @@ console.log(userId);
       start: formatDate(row.start),
       end: formatDate(row.end),
     }));
-   
+console.log(queryParams);
     return res.json(formattedResults);
   });
 };
+
 
 export const getMissions = (req, res) => {
   const userId = req.id;

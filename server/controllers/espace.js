@@ -61,10 +61,14 @@ export const getWorkSpace = (req, res) => {
           if (err) res.status(500).json("Can not connect to database");
           const formattedResults = users.map(row => ({
             ...row,
-            user: [
-             row.firstname,
-              row.lastname,
+            position:[
+              row.x,
+              row.y,
             ],
+            user: {
+          firstname:row.firstname,
+          lastname:row.lastname
+        },
           }));
           return res.json(formattedResults);
         });
