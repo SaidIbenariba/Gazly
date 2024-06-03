@@ -8,6 +8,6 @@ export const db = mysql.createConnection({
   database: "pfe-project",
 });
 db.connect((err) => {
-  if (err) throw err;
+  if (err) console.log(err);
   console.log("Connected to MySQL database");
 });

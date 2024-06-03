@@ -15,6 +15,7 @@ import { FaCalendarAlt, FaMap } from "react-icons/fa";
 import { useAuth } from "../hooks/useAuth";
 import useVerifyRole from "../hooks/useVerifyRoles";
 const Sidebar = () => {
+  const { user } = useAuth();
   const [open, setOpen] = useState(true);
   const [mobileMenu, setMobileMenu] = useState(false);
   const location = useLocation();
@@ -37,7 +38,7 @@ const Sidebar = () => {
     { title: "Espaces", path: "espaces", src: <FaMap /> },
     {
       title: "Profile",
-      path: `/profile`,
+      path: `profile`,
       src: <CgProfile />,
       gap: "true",
     },

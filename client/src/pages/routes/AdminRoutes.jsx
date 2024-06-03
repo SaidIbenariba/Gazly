@@ -15,7 +15,7 @@ export default function AdminRoutes() {
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="espaces" element={<Espaces />} />
         <Route path="users/*" element={<UsersRoutes />} />
-        <Route path="missions/*" element={<Missions />} />
+        <Route path="missions/:status" element={<Missions />} />
         <Route path="observations/*" element={<Observations />} />
         <Route path="planning" element={<Planning />} />
       </Route>

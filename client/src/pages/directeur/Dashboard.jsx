@@ -6,8 +6,10 @@ import { PiLineVertical } from "react-icons/pi";
 import { BsThreeDots } from "react-icons/bs";
 import axios from "axios";
 import { useAuth } from "../../hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 // import { PiLineVerticalBold } from "react-icons/pi";
-const MissionCard = ({ status, number }) => {
+const MissionCard = ({ status, number, onClick }) => {
+  const nav = useNavigate();
   return (
     <div
       className="flex flex-row border border-black p-2 pb-10 rounded-md items-start justify-between w-32"
@@ -18,7 +20,11 @@ const MissionCard = ({ status, number }) => {
         <span className=" text-xs font-semibold">{status}</span>
       </div>
       <span className="flex text-white justify-center items-center bg-black h-5 w-5 rounded-full cursor-pointer">
-        <BsThreeDots />
+        <BsThreeDots
+          onClick={() => {
+            nav(`/missions/${status}`);
+          }}
+        />
       </span>
     </div>
   );
@@ -214,17 +220,17 @@ const Dashboard = () => {
               <div className="grid grid-cols-2 grid-rows-2  gap-4">
                 {
                   <MissionCard
-                    status="In Progress"
+                    status="inProgress"
                     number={missionCounts.inProgress}
                   />
                 }
                 {
                   <MissionCard
-                    status="In Review"
+                    status="inReview"
                     number={missionCounts.inReview}
                   />
                 }
-                {<MissionCard status="On Hold" number={missionCounts.onHold} />}
+                {<MissionCard status="onHold" number={missionCounts.onHold} />}
                 {
                   <MissionCard
                     status="Completed"

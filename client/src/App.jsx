@@ -40,7 +40,7 @@ const PrivateRoutes = () => {
       {isAdmin && <Route path="/*" element={<AdminRoutes />} />}
       {isResponsable && <Route path="/*" element={<ResponsableRoutes />} />}
       {isOuvrier && <Route path="/*" element={<OuvrierRoutes />} />}
-      <Route path="profile/:id" element={<Profile />} />
+      <Route path="profile" element={<Profile />} />
       <Route path="*" element={<Notfound />} />
     </Routes>
   );

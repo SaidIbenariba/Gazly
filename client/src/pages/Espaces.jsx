@@ -98,7 +98,12 @@ const Espaces = () => {
       position: [34.030795, -6.842883],
       name: "Factory 1",
       id: 1,
-      observations: [{ responsable: { firstname, lastname }, feedback }],
+      observations: [
+        {
+          responsable: { firstname: "said", lastname: "iben" },
+          feedback: "everything go normal",
+        },
+      ],
     },
     { position: [34.023431, -6.855104], name: "Factory 2", id: 2 },
     { position: [34.022029, -6.817465], name: "Factory 3" },
