@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Jun 03, 2024 at 02:22 PM
+-- Generation Time: Jun 08, 2024 at 09:33 AM
 -- Server version: 8.2.0
 -- PHP Version: 8.2.13
 
@@ -29,16 +29,15 @@ SET time_zone = "+00:00";
 
 DROP TABLE IF EXISTS `affectation`;
 CREATE TABLE IF NOT EXISTS `affectation` (
-  `id` int NOT NULL AUTO_INCREMENT,
   `datedebut` datetime NOT NULL,
   `datefin` datetime NOT NULL,
   `id_ET` int NOT NULL,
   `id_resp` int NOT NULL,
-  PRIMARY KEY (`id`),
+  PRIMARY KEY (`datedebut`,`id_ET`,`id_resp`),
   UNIQUE KEY `datedebut` (`datedebut`,`id_ET`,`id_resp`),
   KEY `id_ET_affect` (`id_ET`),
   KEY `id_resp_affect` (`id_resp`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -92,7 +91,6 @@ INSERT INTO `measure` (`id`, `gazlvl`, `date`, `id_cap`, `gaz_danger`) VALUES
 
 DROP TABLE IF EXISTS `meeting`;
 CREATE TABLE IF NOT EXISTS `meeting` (
-  `id` int NOT NULL AUTO_INCREMENT,
   `start` datetime NOT NULL,
   `end` datetime NOT NULL,
   `title` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
@@ -100,18 +98,18 @@ CREATE TABLE IF NOT EXISTS `meeting` (
   `id_resp` int NOT NULL,
   `id_dir` int NOT NULL,
   `allDay` enum('0','1') COLLATE utf8mb4_general_ci NOT NULL,
-  PRIMARY KEY (`id`),
+  PRIMARY KEY (`start`,`end`,`id_resp`,`id_dir`),
   UNIQUE KEY `start` (`start`,`end`,`id_resp`,`id_dir`),
   KEY `id_resp_reun` (`id_resp`),
   KEY `id_dir_reun` (`id_dir`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `meeting`
 --
 
-INSERT INTO `meeting` (`id`, `start`, `end`, `title`, `description`, `id_resp`, `id_dir`, `allDay`) VALUES
-(1, '2024-06-03 10:00:00', '2024-06-02 22:16:06', 'firstmeet', 'Monthly Strategy Meeting', 5, 1, '0');
+INSERT INTO `meeting` (`start`, `end`, `title`, `description`, `id_resp`, `id_dir`, `allDay`) VALUES
+('2024-06-03 10:00:00', '2024-06-02 22:16:06', 'firstmeet', 'Monthly Strategy Meeting', 5, 1, '0');
 
 -- --------------------------------------------------------
 
@@ -121,7 +119,6 @@ INSERT INTO `meeting` (`id`, `start`, `end`, `title`, `description`, `id_resp`, 
 
 DROP TABLE IF EXISTS `mission`;
 CREATE TABLE IF NOT EXISTS `mission` (
-  `id` int NOT NULL AUTO_INCREMENT,
   `start` datetime NOT NULL,
   `end` datetime NOT NULL,
   `title` varchar(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
@@ -129,18 +126,18 @@ CREATE TABLE IF NOT EXISTS `mission` (
   `id_dir` int NOT NULL,
   `id_resp` int NOT NULL,
   `status` enum('inProgress','inReview','onHold','completed','expired') CHARACTER SET utf8mb4 COLLATE utf8mb4_icelandic_ci NOT NULL,
-  PRIMARY KEY (`id`),
+  PRIMARY KEY (`start`,`id_dir`,`id_resp`),
   UNIQUE KEY `startdate` (`start`,`id_dir`,`id_resp`),
   KEY `id_resp_miss` (`id_resp`),
   KEY `id_dir_miss` (`id_dir`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `mission`
 --
 
-INSERT INTO `mission` (`id`, `start`, `end`, `title`, `discription`, `id_dir`, `id_resp`, `status`) VALUES
-(1, '2024-05-01 08:00:00', '0000-00-00 00:00:00', 'sometitle', 'Project Alpha', 1, 5, 'inProgress');
+INSERT INTO `mission` (`start`, `end`, `title`, `discription`, `id_dir`, `id_resp`, `status`) VALUES
+('2024-05-01 08:00:00', '0000-00-00 00:00:00', 'sometitle', 'Project Alpha', 1, 5, 'inProgress');
 
 -- --------------------------------------------------------
 
@@ -150,27 +147,26 @@ INSERT INTO `mission` (`id`, `start`, `end`, `title`, `discription`, `id_dir`, `
 
 DROP TABLE IF EXISTS `observation`;
 CREATE TABLE IF NOT EXISTS `observation` (
-  `id` int NOT NULL AUTO_INCREMENT,
   `date` datetime NOT NULL,
   `feedback` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `id_WS` int NOT NULL,
   `id_resp` int NOT NULL,
   `status` enum('pending','completed','archive') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  PRIMARY KEY (`id`),
+  PRIMARY KEY (`date`,`id_WS`,`id_resp`),
   UNIQUE KEY `date` (`date`,`id_WS`,`id_resp`),
   KEY `id_ET_obs` (`id_WS`),
   KEY `id_resp_obs` (`id_resp`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `observation`
 --
 
-INSERT INTO `observation` (`id`, `date`, `feedback`, `id_WS`, `id_resp`, `status`) VALUES
-(8, '2024-06-03 10:00:00', 'Observation 1 for Workspace 1', 1, 5, 'pending'),
-(9, '2024-06-03 12:00:00', 'Observation 2 for Workspace 2', 2, 6, 'completed'),
-(10, '2024-06-03 14:00:00', 'Observation 3 for Workspace 3', 3, 7, 'pending'),
-(11, '2024-06-03 16:00:00', 'Observation 4 for Workspace 1', 1, 5, 'archive');
+INSERT INTO `observation` (`date`, `feedback`, `id_WS`, `id_resp`, `status`) VALUES
+('2024-06-03 10:00:00', 'Observation 1 for Workspace 1', 1, 5, 'pending'),
+('2024-06-03 12:00:00', 'Observation 2 for Workspace 2', 2, 6, 'completed'),
+('2024-06-03 14:00:00', 'Observation 3 for Workspace 3', 3, 7, 'pending'),
+('2024-06-03 16:00:00', 'Observation 4 for Workspace 1', 1, 5, 'archive');
 
 -- --------------------------------------------------------
 
@@ -246,27 +242,26 @@ INSERT INTO `sensor` (`id`, `type`, `id_WS`) VALUES
 
 DROP TABLE IF EXISTS `task`;
 CREATE TABLE IF NOT EXISTS `task` (
-  `id` int NOT NULL AUTO_INCREMENT,
   `date` datetime NOT NULL,
   `duree` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `status` enum('inProgress','inReview','onHold','completed','expired') CHARACTER SET utf8mb4 COLLATE utf8mb4_icelandic_ci NOT NULL,
   `id_ouv` int NOT NULL,
   `id_resp` int NOT NULL,
-  PRIMARY KEY (`id`),
+  PRIMARY KEY (`date`,`id_ouv`,`id_resp`),
   UNIQUE KEY `date` (`date`,`id_ouv`,`id_resp`),
   KEY `id_ouv` (`id_ouv`),
   KEY `id_resp_tache` (`id_resp`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `task`
 --
 
-INSERT INTO `task` (`id`, `date`, `duree`, `description`, `status`, `id_ouv`, `id_resp`) VALUES
-(1, '2024-05-01 08:00:00', '2 hours', 'Task A', 'inProgress', 2, 5),
-(2, '2024-06-01 08:00:00', '3 hours', 'Task B', 'inReview', 3, 6),
-(3, '2024-07-01 08:00:00', '4 hours', 'Task C', '', 4, 7);
+INSERT INTO `task` (`date`, `duree`, `description`, `status`, `id_ouv`, `id_resp`) VALUES
+('2024-05-01 08:00:00', '2 hours', 'Task A', 'inProgress', 2, 5),
+('2024-06-01 08:00:00', '3 hours', 'Task B', 'inReview', 3, 6),
+('2024-07-01 08:00:00', '4 hours', 'Task C', '', 4, 7);
 
 -- --------------------------------------------------------
 
@@ -292,7 +287,7 @@ CREATE TABLE IF NOT EXISTS `users` (
 --
 
 INSERT INTO `users` (`id`, `firstname`, `lastname`, `email`, `password`, `role`, `refreshToken`) VALUES
-(1, 'iliass', 'wakkar', 'iliass@gmail.com', '$2a$10$ThNDXteWxsEJxhiRGwFpwewFdsCxZZDrGy7Hau48bRk6Y0mItGfpC', 'admin', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzE3NDA3NTI5LCJleHAiOjE3MTc0OTM5Mjl9.fNTeM0wt_3BghHc-8B1mQLx1d9DgUGd6MnvdQSPjJcY'),
+(1, 'iliass', 'wakkar', 'iliass@gmail.com', '$2a$10$ThNDXteWxsEJxhiRGwFpwewFdsCxZZDrGy7Hau48bRk6Y0mItGfpC', 'admin', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzE3NDI1MzkwLCJleHAiOjE3MTc1MTE3OTB9.ndLCdydJSeUg0H-U2RvDHvvWx0shY0yfTUdnU3ajse4'),
 (2, 'John', 'Doe', 'john.doe@example.com', 'password1', 'ouvrier', ''),
 (3, 'Jane', 'Smith', 'jane.smith@example.com', 'password2', 'ouvrier', ''),
 (4, 'Bob', 'Brown', 'bob.brown@example.com', 'password3', 'ouvrier', ''),
