@@ -60,7 +60,7 @@ export default function Users() {
       })
       .catch((err) => {
         console.log(err);
-        setErr({ exist: true, msg: err.data.message });
+        setErr({ exist: true, msg: err.message });
         setLoading(false);
         setTableRows([]);
       });

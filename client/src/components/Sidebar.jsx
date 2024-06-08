@@ -23,8 +23,12 @@ const Sidebar = () => {
   const { logout } = useAuth();
   const handleLogout = async () => {
     console.log("logout");
-    await logout();
-    navigate("/login");
+    try {
+      await logout();
+      navigate("/login");
+    } catch (err) {
+      console.log("logout error", err);
+    }
   };
   const isAdmin = useVerifyRole(["admin"]);
   const isResponsable = useVerifyRole(["responsable"]);
@@ -85,6 +89,7 @@ const Sidebar = () => {
   const isActive = (path) => {
     return location.pathname === "/admin/" + path;
   };
+
   return (
     <>
       <div
@@ -116,7 +121,7 @@ const Sidebar = () => {
         <ul className="pt-6">
           {Menus.map((menu, index) => (
             <>
-              {menu.title == "logout" ? (
+              {menu.title === "Logout" ? (
                 <li
                   key={index}
                   onClick={handleLogout}
@@ -175,19 +180,33 @@ const Sidebar = () => {
           } absolute z-50 flex-col items-center self-end py-8 mt-16 space-y-6 font-bold sm:w-auto left-6 right-6 dark:text-text  bg-background dark:bg-background drop-shadow md rounded-xl justify-between`}
         >
           {Menus.map((menu, index) => (
-            <Link
-              to={menu.path}
-              key={index}
-              onClick={() => setMobileMenu(false)}
-            >
-              <span
-                className={` ${
-                  isActive(menu.path) && "bg-gray-200 dark:bg-gray-700"
-                } p-2 rounded-xl hover:bg-active dark:hover:bg-active`}
-              >
-                {menu.title}
-              </span>
-            </Link>
+            <>
+              {menu.title === "Logout" ? (
+                <li key={index}>
+                  <span
+                    className={` ${
+                      isActive(menu.path) && "bg-gray-200 dark:bg-gray-700"
+                    } p-2 rounded-xl hover:bg-active dark:hover:bg-active`}
+                  >
+                    {menu.title}
+                  </span>
+                </li>
+              ) : (
+                <Link
+                  to={menu.path}
+                  key={index}
+                  onClick={() => setMobileMenu(false)}
+                >
+                  <span
+                    className={` ${
+                      isActive(menu.path) && "bg-gray-200 dark:bg-gray-700"
+                    } p-2 rounded-xl hover:bg-active dark:hover:bg-active`}
+                  >
+                    {menu.title}
+                  </span>
+                </Link>
+              )}
+            </>
           ))}
         </div>
       </div>

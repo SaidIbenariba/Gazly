@@ -92,12 +92,13 @@ const Dashboard = () => {
         const observationsRes = await axios.get(
           "http://localhost:5000/api/observations/lastest"
         );
+        console.log(observationsRes.data);
         setObservations(observationsRes.data);
 
         const gazLevelRes = await axios.get(
           "http://localhost:5000/api/measures/getLastMeasure"
         );
-        setGazLevel(gazLevelRes.data[0].level); // Assuming response format
+        setGazLevel(gazLevelRes.data[0].gazlvl); // Assuming response format
       } catch (err) {
         console.error(err);
       } finally {
@@ -140,15 +141,15 @@ const Dashboard = () => {
   const formattedDate = `${dayName},${dayOfMonth} ${monthName}`;
   return (
     <>
-      {console.log("Dashboard conponent")}
+      {console.log("Dashboard conpo nent")}
       <div className="flex flex-col gap-10 justify-center items-center">
         <div className="flex flex-col justify-start items-center">
           <div
-            className="flex flex-col sm:flex-row flex-wrap justify-center gap-5 w-fit items-center"
+            className="flex flex-col sm:flex-row flex-wrap justify-center gap-5 w-fit items-start"
             id="cart-container"
           >
-            <div className="flex flex-col flex-wrap justify-start gap-5 w-fit">
-              <Card className="flex flex-col p-5 items-start justify-between w-[180px] h-fit">
+            {/* <div className="flex flex-col flex-wrap justify-start items-start gap-5 w-fit"> */}
+            {/* <Card className="flex flex-col p-5 items-start justify-between w-[180px] h-fit">
                 <div className="flex flex-row  items-center justify-between w-full">
                   <span className=" font-bold">Gaz Level</span>
 
@@ -158,62 +159,65 @@ const Dashboard = () => {
                 </div>
                 <span className="text-xl font-bold p-0 text-red-500">
                   {gazLevel}
-                  {/*unit */}
+                  {/*unit 
                 </span>
-                <span className=" text-xs font-extralight"> this month</span>
-              </Card>
+                <div className="flex w-full justify-between">
+                  <span className=" text-xs font-extralight"> espace1</span>
+                  <span className=" text-xs font-extralight"> sensor1</span>
+                </div>
+              </Card> */}
 
-              <Card className="flex flex-col p-2 gap-1 h-fit w-fit">
-                <div className="text-xs font-semi-bold text-yellow-400">
-                  {formattedDate}
-                </div>{" "}
-                {meetings.map((meet) => {
-                  return (
-                    <Card
-                      className="flex flex-row items-center rounded-none pr-1 justify-start bg-blue-100 shadow-none w-fit"
-                      key={meet.id}
-                    >
-                      <PiLineVertical size className="h-10  text-blue-400" />
-                      <div
-                        className="flex flex-row gap-10 items-center "
-                        id="event-description"
-                      >
-                        <span className=" text-sm font-bold" id="title">
-                          {meet.title}
-                        </span>
-                        <div
-                          className=" text-[10px] font-extralight flex flex-col"
-                          id="duration"
-                        >
-                          <span>{meet.start}</span> {/* Start  date  */}
-                          <span>{meet.end}</span> {/**13:45 */}
-                          {/* End  date  */}
-                        </div>
-                      </div>
-                    </Card>
-                  );
-                })}
-                <Card className="flex flex-row items-center rounded-none pr-1 justify-start bg-yellow-100 shadow-none w-[165px]">
-                  <PiLineVertical size className="h-10  text-yellow-400" />
-                  <div
-                    className="flex flex-row gap-10 items-center"
-                    id="event-description"
+            <Card className="flex flex-col p-2 gap-1 w-fit h-fit">
+              <div className="text-xs font-semi-bold text-yellow-400">
+                {formattedDate}
+              </div>{" "}
+              {meetings.map((meet) => {
+                return (
+                  <Card
+                    className="flex flex-row items-center rounded-none pr-1 justify-start bg-blue-100 shadow-none w-fit"
+                    key={meet.id}
                   >
-                    <span className=" text-sm font-bold" id="title">
-                      Title
-                    </span>
+                    <PiLineVertical size className="h-10  text-blue-400" />
                     <div
-                      className="text-[10px] font-extralight flex flex-col"
-                      id="description"
+                      className="flex flex-row gap-10 items-center "
+                      id="event-description"
                     >
-                      <span>13:15</span> {/* Start  date  */}
-                      <span>13:45</span>
-                      {/* End  date  */}
+                      <span className=" text-sm font-bold" id="title">
+                        {meet.title}
+                      </span>
+                      <div
+                        className=" text-[10px] font-extralight flex flex-col"
+                        id="duration"
+                      >
+                        <span>{meet.start}</span> {/* Start  date  */}
+                        <span>{meet.end}</span> {/**13:45 */}
+                        {/* End  date  */}
+                      </div>
                     </div>
+                  </Card>
+                );
+              })}
+              <Card className="flex flex-row items-center rounded-none pr-1 justify-start bg-yellow-100 shadow-none w-[165px]">
+                <PiLineVertical size className="h-10  text-yellow-400" />
+                <div
+                  className="flex flex-row gap-10 items-center"
+                  id="event-description"
+                >
+                  <span className=" text-sm font-bold" id="title">
+                    Title
+                  </span>
+                  <div
+                    className="text-[10px] font-extralight flex flex-col"
+                    id="description"
+                  >
+                    <span>13:15</span> {/* Start  date  */}
+                    <span>13:45</span>
+                    {/* End  date  */}
                   </div>
-                </Card>
+                </div>
               </Card>
-            </div>
+            </Card>
+            {/* </div> */}
             <Card className="shadow-none flex ">
               <div className="text-md font-semibold mb-2">Missions Summary</div>
               {/* status{In Progress, In Review, On Hold, Completed} */}

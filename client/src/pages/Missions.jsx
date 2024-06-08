@@ -91,7 +91,7 @@ const Missions = () => {
         break;
       default:
         axios
-          .get("http://localhost:5000/api/missions/search/", values)
+          .get("http://localhost:5000/api/missions/defaultSearch", values)
           .then((res) => setTableRows(res.data))
           .catch((err) => console.log(err));
         setOpenFilter(false);
@@ -105,7 +105,7 @@ const Missions = () => {
       .catch((err) => console.log(err));
     setOpenFilter(false);
   }, [status]);
-  return (
+  return  (
     <Card className="h-full w-full relative" shadow={false}>
       <CardHeader floated={false} shadow={false} className="rounded-none">
         <div className="mb-8 flex items-center justify-between gap-8">

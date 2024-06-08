@@ -98,10 +98,11 @@ const Espaces = () => {
       position: [34.030795, -6.842883],
       name: "Factory 1",
       id: 1,
+
       observations: [
         {
-          responsable: { firstname: "said", lastname: "iben" },
-          feedback: "everything go normal",
+          user: { firstname: "jake", lastname: "genie" },
+          feedback: "evrything is perfect",
         },
       ],
     },
@@ -113,7 +114,7 @@ const Espaces = () => {
   useEffect(() => {
     setIsLoading(true);
     axios
-      .get("http://localhost:5000/api/observations/latest")
+      .get("http://localhost:5000/api/observations/")
       .then((res) => {
         setObservations(res.data);
         setIsLoading(false);
@@ -123,7 +124,7 @@ const Espaces = () => {
         setIsLoading(false);
       });
     axios
-      .get("http://localhost:5000/api/espaces")
+      .get("http://localhost:5000/api/WorkSpaces/")
       .then((res) => {
         setEspaces(res.data);
         setIsLoading(false);

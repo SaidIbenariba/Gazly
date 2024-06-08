@@ -1,0 +1,19 @@
+TO DO: 
+gaz level filter by sensor, workspace dropdown (default) 
+gaz graphe x-axis evolution by day 
+add message altert when doing actions 
+planning 
+update form 
+affect responsable add as select responsable 
+update all cle primaire 
+meeting primary key (start, responsable, director) 
+#espaces 
+## add tables
+## affectation resonsable au espace 
+## update affectation database 
+
+when to live meet case update 
+login auth context expiration of accestoken
+ when make login and make login redirect to home page  
+logout 
+profile (user information ) 

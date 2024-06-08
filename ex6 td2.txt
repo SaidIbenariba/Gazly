@@ -1,0 +1,36 @@
+ex6 td2
+DELIMITER // 
+CREATE PROCEDURE afficher_produit_quantity( ) 
+BEGIN 
+DECLARE quantity_enstock INT; 
+DECLARE quantity_sortie INT; 
+DECLARE quantity_entree INT; 
+DECLARE reference INT ; 
+DECLARE diff INT; 
+DECLARE done INT DEFAULT 0; 
+-- Cursor for iterating over products 
+ DELCARE curseur_produit CURSOR FOR SELECT reference,
+quantity_stock FROM produit ; 
+ DECLARE CONTINUE HANDLER FOR NOT FOUND done = 1; 
+-- 
+OPEN curseur_produit; 
+
+read_loop :LOOP 
+FETCH curseur_produit INTO  reference, quantity_enstock;
+IF done THEN 
+   LEAVE read_loop; 
+END IF ;  
+  SELECT SUM(quantity) INTO quantity_sortie FROM mouvement WHERE RefP = reference, type = 1 ; 
+  SELECT SUM(quantity) INTO quantity_entree FROM mouvement      WHERE RefP = reference, type = 0 ;  
+
+  SET quantity_sortie = IFNULL(quantity_sortie, 0); 
+  SET quantity_entree  = IFNULL(quantity_entree, 0); 
+  SET diff = quantity_sortie - quantity_entree; 
+  -- how to print the results 
+    SELECT  reference as reference , quantity_sortie AS quantity_sortie  , quantity_entree AS quantity_entree, quantity_enstock AS quantity_enstock, diff AS diff, CASE IF diff = quantity_enstock THEN "produit existant: 
+     ELSE "probleme de stock"; END AS Statut;  
+END LOOP; 
+CLOSE curseur_produit ;  
+
+END// 
+DELIMITER; 

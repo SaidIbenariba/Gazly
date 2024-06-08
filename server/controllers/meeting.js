@@ -48,30 +48,28 @@ export const deleteMeeting = (req, res) => {
 export const getMeetings = (req, res) => {
   const userId = req.id;
   const userRole = req.role;
-  let sql = `SELECT m.*, r.firstname, r.lastname FROM meeting m INNER JOIN users r ON m.id_resp = r.id WHERE  DATE(m.start) = CURDATE()`;
+  let sql = `SELECT m.*, r.firstname, r.lastname FROM meeting m INNER JOIN users r ON m.id_resp = r.id WHERE DATE(m.start) = CURDATE()`;
+
   if (userRole == "admin") {
-    sql += "AND id_dir = ?";
+    sql += " AND id_dir = ?";
   } else if (userRole == "responsable") {
-    sql += "AND id_resp = ?";
+    sql += " AND id_resp = ?";
   }
 
   if (userId) {
-    db.query(sql, userId, (err, results) => {
+    db.query(sql, [userId], (err, results) => {
+      // Passed userId as an array
       if (err) {
+        console.error("Database query error: ", err);
         return res.status(500).json("Cannot connect to database");
       }
 
       const formatDate = (mysqlDate) => {
         const jsDate = new Date(mysqlDate);
         const options = {
-          weekday: "short",
-          year: "numeric",
-          month: "short",
-          day: "2-digit",
           hour: "2-digit",
           minute: "2-digit",
-          second: "2-digit",
-          timeZoneName: "short",
+          hour12: false, // 24-hour format
         };
         return jsDate.toLocaleString("en-GB", options);
       };
@@ -80,7 +78,7 @@ export const getMeetings = (req, res) => {
         ...row,
         start: formatDate(row.start),
         end: formatDate(row.end),
-        user: [row.firstname, row.lastname],
+        user: `${row.firstname} ${row.lastname}`,
       }));
 
       return res.json(formattedResults);
@@ -91,44 +89,55 @@ export const getMeetings = (req, res) => {
       .json("Missing required parameter: id_dir or id_resp");
   }
 };
+
 export const Meetings = (req, res) => {
   const userId = req.id;
   const userRole = req.role;
-  let sql = `SELECT m.*, r.firstname, r.lastname FROM meeting m INNER JOIN users r ON m.id_resp = r.id WHERE  DATE(m.start) = CURDATE()`;
-  if (userRole == "admin") {
-    sql += "AND id_dir = ?";
-  } else if (userRole == "responsable") {
-    sql += "AND id_resp = ?";
+  let sql = `
+    SELECT 
+      m.*, 
+      r.firstname, 
+      r.lastname 
+    FROM 
+      meeting m 
+    INNER JOIN 
+      users r 
+    ON 
+      m.id_resp = r.id 
+    WHERE 
+      DATE(m.start) = CURDATE()
+  `;
+
+  if (userRole === "admin") {
+    sql += " AND id_dir = ?";
+  } else if (userRole === "responsable") {
+    sql += " AND id_resp = ?";
   }
 
   if (userId) {
-    db.query(sql, userId, (err, results) => {
+    db.query(sql, [userId], (err, results) => {
+      // Pass userId as an array for query parameters
       if (err) {
+        console.error("Database query error: ", err);
         return res.status(500).json("Cannot connect to database");
       }
 
       const formatDate = (mysqlDate) => {
         const jsDate = new Date(mysqlDate);
-        const options = {
-          weekday: "short",
-          year: "numeric",
-          month: "short",
-          day: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-          timeZoneName: "short",
-        };
-        return jsDate.toLocaleString("en-GB", options);
+        return jsDate.toString(); // Format the date to the desired string representation
       };
 
       const formattedResults = results.map((row) => ({
         ...row,
         start: formatDate(row.start),
         end: formatDate(row.end),
-        user: [row.firstname, row.lastname],
+        user: {
+          firstname: row.firstname,
+          lastname: row.lastname,
+        },
       }));
 
+      console.log(formattedResults);
       return res.json(formattedResults);
     });
   } else {
@@ -137,6 +146,7 @@ export const Meetings = (req, res) => {
       .json("Missing required parameter: id_dir or id_resp");
   }
 };
+
 export const getAllMeetingsById = (req, res) => {
   let sql =
     "SELECT m.*, r.firstname, r.lastname FROM meeting m INNER JOIN users r ON m.id_resp = r.id ";

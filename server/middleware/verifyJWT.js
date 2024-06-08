@@ -4,6 +4,7 @@ import { ROLES_LIST } from "../config/roles_list.js";
 dotenv.config();
 export const verifyJWT = (req, res, next) => {
   const authHeader = req.headers.authorization || req.headers.Authorization;
+  console.log(authHeader);
   if (!authHeader) {
     return res.status(401).json({ error: "Authorization header missing" });
   }
