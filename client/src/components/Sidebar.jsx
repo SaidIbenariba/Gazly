@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 
 // import { BsArrowLeftCircle, BsArrow90DegLeft } from "react-icons/bs";
 import { MdKeyboardDoubleArrowLeft, MdOutlineWork } from "react-icons/md";
+import { HiMiniViewfinderCircle } from "react-icons/hi2";
 
 import { AiFillPieChart } from "react-icons/ai";
 
@@ -39,6 +40,7 @@ const Sidebar = () => {
 
     { title: "Planning", path: "planning", src: <FaCalendarAlt /> },
     { title: "Missions", path: "missions", src: <MdOutlineWork /> },
+    { title: "Observations", path: "observations", src: <HiMiniViewfinderCircle /> },
     { title: "Espaces", path: "espaces", src: <FaMap /> },
     {
       title: "Profile",

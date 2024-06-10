@@ -1,7 +1,7 @@
 // src/observation/ObservationsTable.jsx
 
 import React, { useEffect, useState } from 'react';
-import { Link, useParams, useHistory } from 'react-router-dom';
+import { Link, useParams, useNavigate} from 'react-router-dom';
 import axios from 'axios';
 import { Button, Card, CardHeader, CardBody, CardFooter, Typography, Input, Select, Option, Tabs, TabsHeader } from "@material-tailwind/react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
@@ -39,7 +39,7 @@ const ObservationsTable = () => {
   const [searchBy, setSearchBy] = useState("");
   const [values, setValues] = useState({ value: "" });
   const [openFilter, setOpenFilter] = useState(false);
-  const history = useHistory();
+  const history = useNavigate();
 
   useEffect(() => {
     fetchObservations();
@@ -61,18 +61,18 @@ const ObservationsTable = () => {
   };
 
   const handleEditObservation = (observation) => {
-    history.push(`/observations/edit/${observation.date}/${observation.id_ws}/${observation.id_resp}`);
+    history(`/observations/edit/${observation.date}/${observation.id_ws}/${observation.id_resp}`);
   };
 
-  const handleDeleteObservation = (observationId) => {
+  const handleDeleteObservation = (observation) => {
     axios
-      .delete(`http://localhost:5000/api/observations/${observationId}`)
+      .delete(`http://localhost:5000/api/observations/delete/${observation.date}/${observation.id_ws}/${observation.id_resp}`)
       .then(() => fetchObservations())
       .catch((err) => console.log(err));
   };
 
   const handleCreateObservation = () => {
-    history.push("/observations/create");
+    history("/observations/create");
   };
 
   const handleFilter = (e) => {

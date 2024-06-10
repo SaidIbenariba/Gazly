@@ -1,7 +1,7 @@
 // // import React from "react";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Select, Option, Button, usePrevious } from "@material-tailwind/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { IoFilter } from "react-icons/io5";
@@ -78,6 +78,7 @@ const Missions = () => {
   const [openFilter, setOpenFilter] = useState(false);
   const [searchBy, setSearchBy] = useState("");
   const [values, setValues] = useState({ value: "" });
+  const history = useNavigate(); 
   useEffect(() => {
     // Fetch missions data from the server
     axios
@@ -159,12 +160,12 @@ const Missions = () => {
   }, [status, stat]);
   const handleEditMission = (mission) => {
     // Navigate to the edit mission page
-    history.push(`/missions/edit/${mission.start}/${mission.id_dir}/${mission.id_resp}`);
+    history(`/missions/edit/${mission.start}/${mission.id_dir}/${mission.id_resp}`);
   };
 
   const handleCreateMission = () => {
     // Navigate to the create mission page
-    history.push("/missions/create");
+    history("/missions/create");
   };
 
   const handleDeleteMission = (missionId) => {

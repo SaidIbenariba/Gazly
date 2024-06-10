@@ -8,7 +8,9 @@ import Observations from "../Observations";
 import DashboardLayout from "../directeur/DashboardLayout";
 import CreateMissionForm from "../Missions/CreateMissionForm";
 import EditMissionForm from "../Missions/EditMissionForm";
-
+import ObservationsTable from "../observations/ObservationsTable";
+import EditObservationForm from "../observations/EditObservationForm";
+import CreateObservationForm from "../observations/CreateObservationForm";
 export default function AdminRoutes() {
   return (
     <Routes>
@@ -21,7 +23,10 @@ export default function AdminRoutes() {
         <Route path="missions/:status" element={<Missions />} />
         <Route path="missions/create" element={<CreateMissionForm />} />
         <Route path="missions/edit/:start/:id_dir/:id_resp" element={<EditMissionForm />} />
-        <Route path="observations" element={<Observations/>}/>
+        {/* <Route path="observations" element={<Observations/>}/> */}
+        <Route path="observations" exact component={ObservationsTable} />
+        <Route path="observations/create" exact component={CreateObservationForm} />
+        <Route path="observations/edit/:date/:id_ws/:id_resp" exact component={EditObservationForm} />
         <Route path="observations/*" element={<Observations />} />
         <Route path="planning" element={<Planning />} />
       </Route>
