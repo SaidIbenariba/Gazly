@@ -9,7 +9,6 @@ import {
   Select,
   Option,
 } from "@material-tailwind/react";
-// import Button from "../../components/Button";
 
 const Edit = () => {
   const { id } = useParams();
@@ -22,32 +21,19 @@ const Edit = () => {
   const [err, setErr] = useState({ exist: false, msg: "" });
 
   useEffect(() => {
-    console.log(values);
-  }, [values]);
-  useEffect(() => {
     axios
       .get("http://localhost:5000/api/users/read/" + id)
       .then((res) => {
         setValues({
-          ...values,
           firstname: res.data[0].firstname,
           lastname: res.data[0].lastname,
           email: res.data[0].email,
           role: res.data[0].role,
         });
-        console.log(res.data[0]);
       })
       .catch((error) => setErr({ exist: true, msg: error.response.data }));
-  }, []);
-  /*
-   inputs = [
-    {
-      type: 
-      label: 
-      
-    }
-   ]
-  */
+  }, [id]);
+
   const formFields = [
     {
       name: "email",
@@ -73,24 +59,31 @@ const Edit = () => {
       ],
     },
   ];
+
   const nav = useNavigate();
+
   function handleSubmit(values) {
-    // console.log(values);
     axios
-      .put("http://localhost:5000/api/users/edit/" + id, values) //
+      .put("http://localhost:5000/api/users/edit/" + id, values)
       .then((res) => {
-        console.log(res);
-        nav("/admin/users");
+        nav("/private/users", {
+          state: { message: "User updated successfully!", type: "success" },
+        });
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        nav("/private/users", {
+          state: { message: "Failed to update user.", type: "error" },
+        });
+      });
   }
+
   return (
     <>
-      <div className=" flex flex-col h-[100vh] p-2 items-center">
+      <div className="flex flex-col h-[100vh] p-2 items-center">
         <div className="flex flex-col ">
           <span className="err">{err.exist && err.msg}</span>
           <nav className="flex justify-between">
-            <h1 className=" text-3xl font-bold text-text dark:text-text">
+            <h1 className="text-3xl font-bold text-text dark:text-text">
               Edit User
             </h1>
             <Link to="/users" className="button">

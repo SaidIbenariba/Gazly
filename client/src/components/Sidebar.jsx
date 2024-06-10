@@ -167,7 +167,7 @@ const Sidebar = () => {
         </ul>
       </div>
       {/* Mobile Menu */}
-      <div className="pt-3 t-0">
+      <div className="pt-1 t-0">
         <HamburgerButton
           setMobileMenu={setMobileMenu}
           mobileMenu={mobileMenu}

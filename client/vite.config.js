@@ -4,6 +4,11 @@ import path from "path";
 import { Buffer } from "buffer";
 // https://vitejs.dev/config/
 export default defineConfig({
+  server:{
+    watch:{
+      usePolling:true,
+    }
+  },
   define: {
     Buffer: Buffer,
   },

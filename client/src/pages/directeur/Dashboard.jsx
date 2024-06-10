@@ -8,8 +8,13 @@ import axios from "axios";
 import { useAuth } from "../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 // import { PiLineVerticalBold } from "react-icons/pi";
-const MissionCard = ({ status, number, onClick }) => {
-  const nav = useNavigate();
+const MissionCard = ({ status, number }) => {
+  const navigate = useNavigate();
+
+  const handleOnClick = () => {
+    navigate(`/private/missions/${status}`);
+  };
+
   return (
     <div
       className="flex flex-row border border-black p-2 pb-10 rounded-md items-start justify-between w-32"
@@ -19,12 +24,11 @@ const MissionCard = ({ status, number, onClick }) => {
         <span className=" text-lg font-bold">{number}</span>
         <span className=" text-xs font-semibold">{status}</span>
       </div>
-      <span className="flex text-white justify-center items-center bg-black h-5 w-5 rounded-full cursor-pointer">
-        <BsThreeDots
-          onClick={() => {
-            nav(`/missions/${status}`);
-          }}
-        />
+      <span
+        className="flex text-white justify-center items-center bg-black h-5 w-5 rounded-full cursor-pointer"
+        onClick={handleOnClick}
+      >
+        <BsThreeDots />
       </span>
     </div>
   );
@@ -87,12 +91,12 @@ const Dashboard = () => {
         const meetingsRes = await axios.get(
           "http://localhost:5000/api/meetings/read/"
         );
+        console.log(meetingsRes.data);
         setMeetings(meetingsRes.data);
 
         const observationsRes = await axios.get(
           "http://localhost:5000/api/observations/lastest"
         );
-        console.log(observationsRes.data);
         setObservations(observationsRes.data);
 
         const gazLevelRes = await axios.get(
@@ -224,8 +228,8 @@ const Dashboard = () => {
               <div className="grid grid-cols-2 grid-rows-2  gap-4">
                 {
                   <MissionCard
-                    status="inProgress"
                     number={missionCounts.inProgress}
+                    status="inProgress"
                   />
                 }
                 {
@@ -237,7 +241,7 @@ const Dashboard = () => {
                 {<MissionCard status="onHold" number={missionCounts.onHold} />}
                 {
                   <MissionCard
-                    status="Completed"
+                    status="completed"
                     number={missionCounts.completed}
                   />
                 }

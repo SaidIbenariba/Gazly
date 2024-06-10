@@ -1,7 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import Dashboard from "../directeur/Dashboard";
 import Espaces from "../Espaces";
-import Missions from "../Missions";
+import Missions from "../Missions/Missions";
 import Planning from "../Planning";
 import Observations from "../Observations";
 import DashboardLayout from "../directeur/DashboardLayout";

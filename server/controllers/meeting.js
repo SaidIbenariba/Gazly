@@ -9,19 +9,35 @@ export const respSearch = (req, res) => {
 };
 
 export const createMeeting = (req, res) => {
+  const userId = req.id;
+  console.log(req.role);
   const sql =
     "INSERT INTO meeting (`start`,`end`,`title`,`description`,`id_resp`,`id_Adir`,`allDay`) VALUE(?,?,?,?,?,?,?) ";
+  //  body data object
+  /*
+    {
+    allDay: true, 
+description: "d",
+end: Thu Jun 13 2024 00:00:00 GMT+0100 (UTC+01:00) {},
+start: Wed Jun 12 2024 00:00:00 GMT+0100 (UTC+01:00) {}
+title: "title"
+responsable:id, 
+} */
   const newTache = {
-    startdate: req.body.startdate,
-    enddate: req.body.enddate,
+    startdate: req.body.start,
+    enddate: req.body.end,
+    title: req.body.title,
     Description: req.body.description,
-    id_resp: req.body.id_resp,
-    id_dir: req.body.id_dir,
+    id_resp: req.body.responsable.id,
+    id_dir: userId,
     allDay: req.body.allDay,
   };
-  db.query(sql, [Object.values(newTache)], (err, res) => {
-    if (err) return res.status(500).json(err);
-    return res.status(200).json({ succes: `New Meeting created ` });
+
+  console.log(newTache);
+
+  db.query(sql, [Object.values(newTache)], (err, result) => {
+    if (err) return res.sendStatus(500);
+    res.status(200).json({ succes: `New Meeting created ` });
   });
 };
 export const editMeeting = (req, res) => {
@@ -80,7 +96,7 @@ export const getMeetings = (req, res) => {
         end: formatDate(row.end),
         user: `${row.firstname} ${row.lastname}`,
       }));
-
+      console.log(`meeting result${formattedResults}`);
       return res.json(formattedResults);
     });
   } else {
@@ -136,8 +152,6 @@ export const Meetings = (req, res) => {
           lastname: row.lastname,
         },
       }));
-
-      console.log(formattedResults);
       return res.json(formattedResults);
     });
   } else {

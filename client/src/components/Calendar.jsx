@@ -9,25 +9,14 @@ import { CheckIcon } from "@heroicons/react/20/solid";
 import { TrashIcon, XMarkIcon, PencilIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useAuth } from "../hooks/useAuth";
-// interface Event {
-//   title: string;
-//   start: Date | string;
-//   allDay: boolean;
-//   id: number;
-// }
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Calendar() {
-  // {title:"event 1", id:"1"}
-  const [events, setEvents] = useState([
-    { title: "event 1", id: "1" },
-    { title: "event 2", id: "2" },
-    { title: "event 3", id: "3" },
-    { title: "event 4", id: "4" },
-    { title: "event 5", id: "5" },
-  ]);
+  const [responsables, setResponsables] = useState([{ id: 1, name: "said" }]);
   const [allEvents, setAllEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  //   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [newEvent, setNewEvent] = useState({
     title: "",
@@ -35,16 +24,25 @@ export default function Calendar() {
     allDay: false,
     id: 0,
     description: "",
+    id_resp: null,
   });
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [feedbackMessage, setFeedbackMessage] = useState(null);
   const { user } = useAuth();
-  // Function to handle the selection of time range
+
   useEffect(() => {
-    // console.log(user);
     axios
       .get("http://localhost:5000/api/meetings/")
       .then((res) => {
-        console.log(res.data);
+        setAllEvents(res.data);
+        setLoading(false);
+      })
+      .catch((err) => console.log(err));
+
+    axios
+      .get("http://localhost:5000/api/users/responsables")
+      .then((res) => {
+        setResponsables(res.data);
       })
       .catch((err) => console.log(err));
   }, [user]);
@@ -63,7 +61,7 @@ export default function Calendar() {
       });
     }
   }, []);
-  //   : { date: Date, allDay: boolean }
+
   const handleSelection = (arg) => {
     setNewEvent({
       ...newEvent,
@@ -74,6 +72,7 @@ export default function Calendar() {
     });
     setShowModal(true);
   };
+
   function handleDateClick(arg) {
     setNewEvent({
       ...newEvent,
@@ -83,7 +82,7 @@ export default function Calendar() {
     });
     setShowModal(true);
   }
-  //   : DropArg
+
   function addEvent(data) {
     const event = {
       ...newEvent,
@@ -94,195 +93,137 @@ export default function Calendar() {
     };
     setAllEvents([...allEvents, event]);
   }
-  //: { event: { id: string } })
-  function handleEventClick(data) {
-    console.log(data.event);
-    const isDifferentTime = data.event.start !== data.event.end;
 
-    // Show the modal only if the start time is different from the end time
-    if (isDifferentTime) {
-      setShowViewModal(true);
-      setSelectedEvent(data.event);
-    }
+  function handleEventClick(data) {
+    setSelectedEvent(data.event);
+    setShowViewModal(true);
   }
 
   function handleDelete() {
-    setAllEvents(
-      allEvents.filter((event) => Number(event.id) !== Number(selectedEvent.id))
-    );
-    setShowViewModal(false);
-    setSelectedEvent(null);
+    if (window.confirm("Are you sure you want to delete this event?")) {
+      setAllEvents(allEvents.filter((event) => event.id !== selectedEvent.id));
+      setShowViewModal(false);
+      setSelectedEvent(null);
+      setFeedbackMessage({
+        type: "success",
+        message: "Event deleted successfully",
+      });
+      toast.success("Event deleted successfully"); // Show success notification
+    }
   }
-  //   function handleDelete()
+
+  function handleEdit() {
+    setNewEvent({
+      title: selectedEvent.title,
+      start: selectedEvent.start,
+      allDay: selectedEvent.allDay,
+      id: selectedEvent.id,
+      description: selectedEvent.extendedProps.description,
+      id_resp: selectedEvent.extendedProps.id_resp,
+    });
+    setShowModal(true);
+    setShowViewModal(false);
+  }
 
   function handleCloseModal() {
     setShowModal(false);
+    setShowViewModal(false);
+    setSelectedEvent(null);
     setNewEvent({
       title: "",
       start: "",
       allDay: false,
       id: 0,
       description: "",
+      id_resp: null,
     });
-    setShowViewModal(false);
-    setSelectedEvent(null);
   }
-  //: React.ChangeEvent<HTMLInputElement>
+
   const handleChange = (e) => {
     setNewEvent({
       ...newEvent,
-      title: e.target.value,
-    });
-  };
-  const handleDescriptionChange = (e) => {
-    setNewEvent({
-      ...newEvent,
-      description: e.target.value,
+      [e.target.name]: e.target.value,
     });
   };
 
   function handleSubmit(e) {
     e.preventDefault();
     const event = { ...newEvent };
+
     // axios
-    //   .post("http://localhost:5000/api/meetings/create", newEvent)
-    //   .then((res) => console.log(res))
-    //   .catch((err) => console.log(err));
-    localStorage.setItem("newEvent", JSON.stringify(event));
-    setAllEvents([...allEvents, newEvent]);
+    //   .post("http://localhost:5000/api/meetings/create", event)
+    //   .then((res) => {
+    setAllEvents([...allEvents, event]);
     setShowModal(false);
+    setFeedbackMessage({
+      type: "success",
+      message: "Event created successfully",
+    });
     setNewEvent({
       title: "",
       start: "",
       allDay: false,
       id: 0,
       description: "",
+      id_resp: null,
     });
+    // })
+    // .catch((err) => {
+    //   setFeedbackMessage({ type: "error", message: "Error creating event" });
+    //   console.log(err);
+    // });
   }
-  setTimeout(() => {
-    const storedEvent = JSON.parse(localStorage.getItem("newEvent"));
-    if (storedEvent) {
-      axios
-        .post("http://localhost:5000/api/meetings/create", storedEvent)
-        .then((res) => {
-          console.log(res);
-          localStorage.removeItem("newEvent"); // Clear localStorage after successful post
-        })
-        .catch((err) => console.log(err));
-    }
-  }, 5000); // 15 min delay 900000
 
   return (
     <>
-      {/* <nav className="flex justify-between mb-12 border-b border-violet-100 p-4">
-        <h1 className="font-bold text-2xl text-gray-700">Calendar</h1>
-      </nav> */}
       <main className="flex min-h-screen flex-col items-center justify-between">
+        <ToastContainer position="bottom-right" autoClose={3000} />
         <div className="h-screen grid grid-cols-8 w-full">
-          <div className=" col-span-8">
-            <FullCalendar
-              plugins={[dayGridPlugin, interactionPlugin, timeGridPlugin]}
-              headerToolbar={{
-                left: "prev,next today",
-                center: "title",
-                // right: "resourceTimelineWook, dayGridMonth,timeGridWeek",
-                right: "timeGridDay,timeGridWeek,dayGridMonth",
-              }}
-              events={allEvents}
-              nowIndicator={true}
-              editable={true}
-              droppable={true}
-              selectable={true}
-              selectMirror={true}
-              dateClick={handleDateClick}
-              select={handleSelection}
-              drop={(data) => addEvent(data)}
-              eventClick={(data) => handleEventClick(data)}
-            />
+          <div className="col-span-8">
+            {loading ? (
+              <div className="flex justify-center items-center h-full">
+                <div
+                  className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full"
+                  role="status"
+                ></div>
+              </div>
+            ) : (
+              <FullCalendar
+                plugins={[dayGridPlugin, interactionPlugin, timeGridPlugin]}
+                headerToolbar={{
+                  left: "prev,next today",
+                  center: "title",
+                  right: "timeGridDay,timeGridWeek,dayGridMonth",
+                }}
+                events={allEvents}
+                nowIndicator={true}
+                editable={true}
+                droppable={true}
+                selectable={true}
+                selectMirror={true}
+                dateClick={handleDateClick}
+                select={handleSelection}
+                drop={(data) => addEvent(data)}
+                eventClick={(data) => handleEventClick(data)}
+              />
+            )}
           </div>
         </div>
 
+        {feedbackMessage && (
+          <div
+            className={`alert ${
+              feedbackMessage.type === "success"
+                ? "alert-success"
+                : "alert-error"
+            } fixed bottom-4 left-4 z-50`}
+          >
+            {feedbackMessage.message}
+          </div>
+        )}
+
         <Transition.Root show={showViewModal} as={Fragment}>
           <Dialog as="div" className="relative z-10" onClose={setShowViewModal}>
-            <Transition.Child
-              as={Fragment}
-              enter="ease-out duration-300"
-              enterFrom="opacity-0"
-              enterTo="opacity-100"
-              leave="ease-in duration-200"
-              leaveFrom="opacity-100"
-              leaveTo="opacity-0"
-            >
-              <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
-            </Transition.Child>
-
-            <div className="fixed inset-0 z-10 overflow-y-auto">
-              <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-                <Transition.Child
-                  as={Fragment}
-                  enter="ease-out duration-300"
-                  enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                  enterTo="opacity-100 translate-y-0 sm:scale-100"
-                  leave="ease-in duration-200"
-                  leaveFrom="opacity-100 translate-y-0 sm:scale-100"
-                  leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                >
-                  <Dialog.Panel
-                    className="relative transform overflow-hidden rounded-lg
-                   bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg"
-                  >
-                    <div className="bg-white px-1 pb-4 pt-5 sm:p-6 sm:pb-4">
-                      <div className="px-1 py-3 sm:flex sm:flex-row-reverse sm:px-1">
-                        <div className="flex justify-end">
-                          {/* <button
-                            className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring focus:ring-red-300"
-                            onClick={handleDelete}
-                          > */}
-                          <PencilIcon
-                            className="h-5 w-5 text-black-600 cursor-pointer"
-                            aria-hidden="true"
-                            onClick={handleCloseModal}
-                          />
-                          <TrashIcon
-                            className="h-5 w-5 text-black-600 cursor-pointer ml-2"
-                            aria-hidden="true"
-                            onClick={handleDelete}
-                          />
-                          {/* </button> */}
-                          <XMarkIcon
-                            className="h-5 w-5 text-black-600 cursor-pointer ml-8"
-                            aria-hidden="true"
-                            onClick={handleCloseModal}
-                          />
-                        </div>
-                      </div>
-                      <div className="sm:flex flex-col   sm:items-start">
-                        {/* <div
-                          className="mx-auto flex h-12 w-12 flex-shrink-0 items-center 
-                      justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10"
-                        >
-                          <ExclamationTriangleIcon
-                            className="h-6 w-6 text-red-600"
-                            aria-hidden="true"
-                          />
-                        </div> */}
-                        <h3 className="text-lg font-semibold mb-4">
-                          {selectedEvent && selectedEvent.title}
-                        </h3>
-                        <p className="text-gray-600 mb-4">
-                          {selectedEvent &&
-                            selectedEvent.extendedProps.description}
-                        </p>
-                      </div>
-                    </div>
-                  </Dialog.Panel>
-                </Transition.Child>
-              </div>
-            </div>
-          </Dialog>
-        </Transition.Root>
-        <Transition.Root show={showModal} as={Fragment}>
-          <Dialog as="div" className="relative z-10" onClose={setShowModal}>
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
@@ -319,52 +260,207 @@ export default function Calendar() {
                           as="h3"
                           className="text-base font-semibold leading-6 text-gray-900"
                         >
-                          Add Event
+                          View Event
                         </Dialog.Title>
-                        <form action="submit" onSubmit={handleSubmit}>
-                          <div className="mt-2">
-                            <input
-                              type="text"
-                              name="title"
-                              className="block w-full rounded-md border-0 py-1.5 text-gray-900 
-                            shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 
-                            focus:ring-2 
-                            focus:ring-inset focus:ring-violet-600 
-                            sm:text-sm sm:leading-6 mb-2"
-                              value={newEvent.title}
-                              onChange={(e) => handleChange(e)}
-                              placeholder="Title"
-                            />
-                            <input
-                              type="text"
-                              name="description"
-                              className="block w-full rounded-md border-0 py-1.5 text-gray-900 
-                            shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 
-                            focus:ring-2 
-                            focus:ring-inset focus:ring-violet-600 
-                            sm:text-sm sm:leading-6"
-                              value={newEvent.description}
-                              onChange={(e) => handleDescriptionChange(e)}
-                              placeholder="Description"
-                            />
-                          </div>
-                          <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
-                            <button
-                              type="submit"
-                              className="inline-flex w-full justify-center rounded-md bg-violet-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-violet-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600 sm:col-start-2 disabled:opacity-25"
-                              disabled={newEvent.title === ""}
-                            >
-                              Create
-                            </button>
-                            <button
-                              type="button"
-                              className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
-                              onClick={handleCloseModal}
-                            >
-                              Cancel
-                            </button>
-                          </div>
-                        </form>
+                        <div className="mt-2">
+                          <p className="text-sm text-gray-500">
+                            {selectedEvent && selectedEvent.title}
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            {selectedEvent && selectedEvent.start.toISOString()}
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            {selectedEvent &&
+                              selectedEvent.extendedProps.description}
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            {selectedEvent &&
+                              `Responsible: ${
+                                responsables.find(
+                                  (r) =>
+                                    r.id === selectedEvent.extendedProps.id_resp
+                                )?.username
+                              }`}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
+                      <button
+                        type="button"
+                        className="inline-flex w-full justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:col-start-2 sm:text-sm"
+                        onClick={handleDelete}
+                      >
+                        Delete
+                      </button>
+                      <button
+                        type="button"
+                        className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-1 sm:mt-0 sm:text-sm"
+                        onClick={handleEdit}
+                      >
+                        Edit
+                      </button>
+                    </div>
+                  </Dialog.Panel>
+                </Transition.Child>
+              </div>
+            </div>
+          </Dialog>
+        </Transition.Root>
+
+        <Transition.Root show={showModal} as={Fragment}>
+          <Dialog as="div" className="relative z-10" onClose={handleCloseModal}>
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+            </Transition.Child>
+
+            <div className="fixed inset-0 z-10 overflow-y-auto">
+              <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                <Transition.Child
+                  as={Fragment}
+                  enter="ease-out duration-300"
+                  enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                  enterTo="opacity-100 translate-y-0 sm:scale-100"
+                  leave="ease-in duration-200"
+                  leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+                  leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                >
+                  <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+                    <div className="absolute right-0 top-0 hidden pr-4 pt-4 sm:block">
+                      <button
+                        type="button"
+                        className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        onClick={handleCloseModal}
+                      >
+                        <span className="sr-only">Close</span>
+                        <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+                      </button>
+                    </div>
+                    <div className="sm:flex sm:items-start">
+                      <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10">
+                        <CheckIcon
+                          className="h-6 w-6 text-green-600"
+                          aria-hidden="true"
+                        />
+                      </div>
+                      <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                        <Dialog.Title
+                          as="h3"
+                          className="text-base font-semibold leading-6 text-gray-900"
+                        >
+                          Create Event
+                        </Dialog.Title>
+                        <div className="mt-2">
+                          <form onSubmit={handleSubmit}>
+                            <div>
+                              <label
+                                htmlFor="title"
+                                className="block text-sm font-medium text-gray-700"
+                              >
+                                Title
+                              </label>
+                              <div className="mt-1">
+                                <input
+                                  type="text"
+                                  name="title"
+                                  id="title"
+                                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                  value={newEvent.title}
+                                  onChange={handleChange}
+                                  required
+                                />
+                              </div>
+                            </div>
+
+                            <div className="mt-4">
+                              <label
+                                htmlFor="description"
+                                className="block text-sm font-medium text-gray-700"
+                              >
+                                Description
+                              </label>
+                              <div className="mt-1">
+                                <textarea
+                                  id="description"
+                                  name="description"
+                                  rows={3}
+                                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                  value={newEvent.description}
+                                  onChange={handleChange}
+                                ></textarea>
+                              </div>
+                            </div>
+
+                            <div className="mt-4">
+                              <label
+                                htmlFor="id_resp"
+                                className="block text-sm font-medium text-gray-700"
+                              >
+                                Responsible
+                              </label>
+                              <div className="mt-1">
+                                <select
+                                  id="id_resp"
+                                  name="id_resp"
+                                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                  value={newEvent.id_resp}
+                                  onChange={handleChange}
+                                  required
+                                >
+                                  <option value="">Select a responsible</option>
+                                  {responsables.map((resp) => (
+                                    <option key={resp.id} value={resp.id}>
+                                      {resp.name}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                            </div>
+
+                            <div className="mt-4">
+                              <label className="block text-sm font-medium text-gray-700">
+                                All Day
+                              </label>
+                              <div className="mt-1">
+                                <input
+                                  type="checkbox"
+                                  name="allDay"
+                                  checked={newEvent.allDay}
+                                  onChange={(e) =>
+                                    setNewEvent({
+                                      ...newEvent,
+                                      allDay: e.target.checked,
+                                    })
+                                  }
+                                />
+                              </div>
+                            </div>
+
+                            <div className="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
+                              <button
+                                type="submit"
+                                className="inline-flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-2 sm:text-sm"
+                              >
+                                Save
+                              </button>
+                              <button
+                                type="button"
+                                className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-1 sm:mt-0 sm:text-sm"
+                                onClick={handleCloseModal}
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </form>
+                        </div>
                       </div>
                     </div>
                   </Dialog.Panel>

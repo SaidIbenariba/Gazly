@@ -1,4 +1,36 @@
 add node_modules and env to gitignore 
-- handle prolem of charset in mysql when i stored refreshToken not copy exactly 
+- handle prolem of charset in mysql when i stored refreshToken not copy exactly
+6/9  
+authcontext when jwt expired 1day for accestoken is not delete from session Storage 
+----------
+Updates for ilyass 
+# api 
+ ## meetings 
+	/ and /read same result repeated
+	/ return empty array  .
+        /create  id_dir = user.id,  
+               
+ ## mission 
+    getMissionCounts don't endpoint 
+    getMissionByStatus return empty array
+    getMission you verify params depond on you have 3 case, 1.status  2."" 3.start, id_dir, id_resp 
+    /editMission 
+    /createMission 
+         formData { start:"yy-mm-dd", 
+     end:"yy-mm-dd", 
+    title:"",
+    description:"", 
+    status:"inProgress|| inReview || ....", 
+    id_dir:int,
+    id_resp:int} 
+    
+ ## observation 
+    /latest return empty inside i have data in db 
+
+new api 
+  #users 
+/responsables return all responsables return data [
+  {id,name=firstname.value+lastname.value} 
+]
 
 

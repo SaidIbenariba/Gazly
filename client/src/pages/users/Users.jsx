@@ -1,11 +1,8 @@
-// // import React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
-
+import { Link, useLocation } from "react-router-dom";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { FaTrashAlt } from "react-icons/fa";
-
 import { PencilIcon, UserPlusIcon } from "@heroicons/react/24/solid";
 import {
   Card,
@@ -20,27 +17,16 @@ import {
   IconButton,
   Tooltip,
 } from "@material-tailwind/react";
-// import Button from "../../components/Button";
 import { Spinner } from "@material-tailwind/react";
 import { IoIosRefresh } from "react-icons/io";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const TABS = [
-  {
-    label: "All",
-    value: "all",
-  },
-  {
-    label: "Admin",
-    value: "admin",
-  },
-  {
-    label: "Responsable",
-    value: "responsable",
-  },
-  {
-    label: "Ouvrier",
-    value: "ouvrier",
-  },
+  { label: "All", value: "all" },
+  { label: "Admin", value: "admin" },
+  { label: "Responsable", value: "responsable" },
+  { label: "Ouvrier", value: "ouvrier" },
 ];
 
 export default function Users() {
@@ -50,6 +36,19 @@ export default function Users() {
   const [deletedUser, setDeletedUser] = useState({ deleted: false, id: "" });
   const [search, setSearch] = useState("");
   const [err, setErr] = useState({ exist: false, msg: "" });
+
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state?.message) {
+      if (location.state.type === "success") {
+        toast.success(location.state.message);
+      } else if (location.state.type === "error") {
+        toast.error(location.state.message);
+      }
+    }
+  }, [location]);
+
   useEffect(() => {
     setLoading(true);
     axios
@@ -59,15 +58,14 @@ export default function Users() {
         setLoading(false);
       })
       .catch((err) => {
-        console.log(err);
         setErr({ exist: true, msg: err.message });
         setLoading(false);
         setTableRows([]);
       });
   }, [deletedUser]);
+
   function handleSubmit(e) {
     e.preventDefault();
-    console.log(`search result : ${search}`);
     setLoading(true);
     axios
       .get("http://localhost:5000/api/users/search/" + search)
@@ -76,15 +74,14 @@ export default function Users() {
         setLoading(false);
       })
       .catch((err) => {
-        // console.log(err);
         setErr({ exist: true, msg: err.data.message });
         setLoading(false);
         setTableRows([]);
       });
   }
+
   function handleSearchByrole(e) {
     const role = e.target.value;
-    console.log(role);
     setLoading(true);
     switch (role) {
       case "all":
@@ -117,21 +114,21 @@ export default function Users() {
 
   function handleDelete(e) {
     const id = e.target.id;
-    console.log(id);
     axios
       .delete("http://localhost:5000/api/users/delete/" + id)
       .then((res) => {
-        console.log(res);
         setDeletedUser({ ...deletedUser, deleted: true, id: id });
+        toast.success("User deleted successfully!");
       })
       .catch((err) => {
-        console.log(err);
         setErr({ exist: true, msg: err.message });
-        setDeletedUser({ ...deletedUser, deleted: false, id: "" });
+        toast.error("Failed to delete user.");
       });
   }
+
   return (
     <Card className="h-full w-full" shadow={false}>
+      <ToastContainer />
       <CardHeader floated={false} shadow={false} className="rounded-none">
         <div className="mb-8 flex items-center justify-between gap-8">
           <div>
@@ -159,7 +156,7 @@ export default function Users() {
             </Link>
           </div>
         </div>
-        <div className="flex  flex-wrap items-center justify-between gap-1 gap-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-1 gap-y-4">
           <Tabs value="all" className="w-full md:w-max">
             <TabsHeader>
               {TABS.map(({ label, value }) => (
@@ -174,36 +171,32 @@ export default function Users() {
               ))}
             </TabsHeader>
           </Tabs>
-          <div className="flex flex-row w-full md:w-72">
-            <form
-              onSubmit={handleSubmit}
-              className=" w-11/12 md:10/12 rounded-r-none"
+          <form
+            className="flex w-full shrink-0 gap-2 md:w-max"
+            onSubmit={handleSubmit}
+          >
+            <Input
+              label="Search"
+              icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            <Button
+              size="sm"
+              text="Search"
+              variant="outline"
+              className="button bg-background text-black border border-black hover:bg-gray-50"
             >
-              <Input
-                label="Search"
-                className="flex flex-col justify-center items-center  rounded-r-none border-r-0"
-                icon={<MagnifyingGlassIcon className="h-5 w-5" />}
-                placeholder="search..."
-                onChange={(e) => {
-                  setSearch(e.target.value);
-                }}
-              />
-            </form>
-            <div className="w-1/12 md:w-[40px] flex justify-center items-center bg-black  text-white cursor-pointer rounded-r-md ">
-              <IoIosRefresh />
-            </div>
-          </div>
+              <MagnifyingGlassIcon className="h-5 w-5" />
+            </Button>
+          </form>
         </div>
       </CardHeader>
-
       <CardBody className="overflow-scroll px-0">
-        {/* {deletedUser.deleted && (
-          <span className="text-red-500">User was Deleted</span>
-        )} */}
         <table className="mt-4 w-full min-w-max table-auto text-left">
           <thead>
             <tr>
-              {tableHeads.map((head) => (
+              {tableHeads.map((head, index) => (
                 <th
                   key={head}
                   className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4"
@@ -211,130 +204,101 @@ export default function Users() {
                   <Typography
                     variant="small"
                     color="blue-gray"
-                    className="font-normal leading-none opacity-70"
+                    className="leading-none opacity-70 font-bold"
                   >
-                    {head.toUpperCase()}
+                    {head}
                   </Typography>
                 </th>
               ))}
               <th className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4">
-                <span className="sr-only">Actions</span>
+                <Typography
+                  variant="small"
+                  color="blue-gray"
+                  className="leading-none opacity-70 font-bold"
+                >
+                  ACTION
+                </Typography>
               </th>
             </tr>
           </thead>
           <tbody>
-            {!Loading ? (
-              tableRows.map(
-                ({ id, firstname, lastname, email, role }, index) => {
-                  const isLast = index === tableRows.length - 1;
-                  const classes = isLast
-                    ? "p-4"
-                    : "p-4 border-b border-blue-gray-50";
-
-                  return (
-                    <tr key={id}>
-                      <td className={classes}>
-                        <div className="flex items-center gap-3">
-                          {/* <Avatar src={img} alt={name} size="sm" /> */}
-                          <div className="flex flex-col">
-                            <Typography
-                              variant="small"
-                              color="blue-gray"
-                              className="font-normal"
-                            >
-                              {firstname}
-                            </Typography>
-                            <Typography
-                              variant="small"
-                              color="blue-gray"
-                              className="font-normal opacity-70"
-                            >
-                              {lastname}
-                            </Typography>
-                          </div>
-                        </div>
-                      </td>
-                      <td className={classes}>
-                        <div className="flex flex-col">
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal"
-                          >
-                            {email}
-                          </Typography>
-                        </div>
-                      </td>
-                      <td className={classes}>
-                        <div className="flex flex-col">
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal"
-                          >
-                            {role}
-                          </Typography>
-                        </div>
-                      </td>
-                      {/* <td className={classes}>
-                      <div className="w-max">
-                        <Chip
-                          variant="ghost"
-                          size="sm"
-                          value={online ? "online" : "offline"} // we can use with referesh code
-                          color={online ? "green" : "blue-gray"}
-                        />
-                      </div>
-                    </td> */}
-                      {/* <td className={classes}>
+            {Loading ? (
+              <tr>
+                <td colSpan={4} className="text-center p-4">
+                  <Spinner className="h-12 w-12" />
+                </td>
+              </tr>
+            ) : (
+              tableRows.map(({ id, firstname, lastname, email, role }) => (
+                <tr key={id}>
+                  <td className="p-4 border-b border-blue-gray-50">
+                    <div className="flex items-center gap-3">
+                      <Typography
+                        variant="small"
+                        color="blue-gray"
+                        className="font-semibold"
+                      >
+                        {firstname} {lastname}
+                      </Typography>
+                    </div>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50">
+                    <Typography
+                      variant="small"
+                      color="blue-gray"
+                      className="font-normal"
+                    >
+                      {email}
+                    </Typography>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50">
+                    <div className="w-max">
                       <Typography
                         variant="small"
                         color="blue-gray"
                         className="font-normal"
                       >
-                        {date}
+                        {role}
                       </Typography>
-                    </td> */}
-                      <td className={classes}>
-                        <Link to={`edit/${id}`}>
-                          <Tooltip content="Edit User">
-                            <IconButton variant="text">
-                              <PencilIcon className="h-4 w-4" />
-                            </IconButton>
-                          </Tooltip>
-                        </Link>
-                        <Tooltip content="Delete User">
-                          <IconButton
-                            variant="text"
-                            id={id}
-                            onClick={handleDelete}
-                          >
-                            <FaTrashAlt />
+                    </div>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50">
+                    <div className="flex items-center gap-4">
+                      <Link to={"edit/" + id}>
+                        <Tooltip content="Edit User">
+                          <IconButton variant="text" color="blue-gray">
+                            <PencilIcon className="h-4 w-4" />
                           </IconButton>
                         </Tooltip>
-                      </td>
-                    </tr>
-                  );
-                }
-              )
-            ) : (
-              <Spinner color="red" />
+                      </Link>
+                      <Tooltip content="Delete User">
+                        <IconButton
+                          variant="text"
+                          color="blue-gray"
+                          id={id}
+                          onClick={handleDelete}
+                        >
+                          <FaTrashAlt className="h-4 w-4" />
+                        </IconButton>
+                      </Tooltip>
+                    </div>
+                  </td>
+                </tr>
+              ))
             )}
           </tbody>
         </table>
       </CardBody>
       <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
-        <Typography variant="small" color="blue-gray" className="font-normal">
-          Page 1 of 10
-        </Typography>
-        <div className="flex gap-2">
-          <Button variant="outlined" size="sm">
-            Previous
-          </Button>
-          <Button variant="outlined" size="sm">
-            Next
-          </Button>
-        </div>
+        <Button
+          variant="outlined"
+          color="blue-gray"
+          size="sm"
+          className="flex items-center gap-2"
+        >
+          <IoIosRefresh className="h-4 w-4" />
+          Refill
+        </Button>
       </CardFooter>
     </Card>
   );

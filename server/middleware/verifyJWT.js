@@ -12,6 +12,7 @@ export const verifyJWT = (req, res, next) => {
     return res.status(401).json("we can't find authorization header");
   const token = authHeader.split(" ")[1];
   jwt.verify(token, process.env.ACCES_TOKEN_SECRET, (err, decoded) => {
+    console.log(err);
     if (err) return res.status(400).json(`Is not authorized`);
     req.id = decoded.UserInfo.id;
     req.role = Object.keys(ROLES_LIST).find(
