@@ -15,7 +15,7 @@ router.get("/missionCounts", getMissionCounts);
 router.get("/:status?", getMissions);
 router.get("/:start/:id_dir/:id_resp",getMissions); 
 // router.get("/get/:mission")
-// router.get("/", getMissions);
+router.get("/", getMissions);
 router.post("/createMission", createMission);
 router.post("/edit",editMission); 
 router.get("/search/:searchBy/:values", missionSearch);

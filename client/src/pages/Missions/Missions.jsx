@@ -71,6 +71,7 @@ const MissionCard = ({ missionm ,onEdit, onDelete  }) => {
 };
 const Missions = () => {
   const status = useParams();
+  
   const [stat, setStat] = useState(status ? status.status : null);
   const [missions, setMissions] = useState([]);
   const tableHeads = ["RESPONSABLE", "DIRECTEUR", "DESCRIPTION", "STARTDATE"];
