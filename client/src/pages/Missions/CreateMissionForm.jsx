@@ -31,42 +31,6 @@ const CreateMissionForm = () => {
     }
     fetchResponsable();
   }, []);
-  useEffect(() => {
-    console.log(mission);
-    if (user.role == "admin") {
-      axios 
-        .get(`http://localhost:5000/api/users/responsables/${mission.id_resp}`)
-        .then((res) => {
-          const users = res.data.reduce((acc, user) => {
-            acc[user.id] = user;
-            return acc;
-          }, {});
-
-          setMission((prevValues) => ({
-            ...prevValues,
-            id_resp: users[id_resp]?.id || "",
-            // id_dir: users[id_dir]?.id || "",
-          }));
-        })
-        .catch((err) => console.log(err));
-    }else if(mission.id_dir) { 
-      axios
-        .get(`http://localhost:5000/api/users/responsable/${mission.id_dir}`)
-        .then((res) => {
-          const users = res.data.reduce((acc, user) => {
-            acc[user.id] = user;
-            return acc;
-          }, {});
-
-          setMission((prevValues) => ({
-            ...prevValues,
-            // id_resp: users[id_resp]?.id || "",
-            id_dir: users[id_dir]?.id || "",
-          }));
-        })
-        .catch((err) => console.log(err));
-    }
-  }, [mission]);
   const missionFields = [
     { label: "Start Date", name: "start", type: "date", required:true },
     { label: "End Date", name: "end", type: "date",required:true },
@@ -121,7 +85,7 @@ const CreateMissionForm = () => {
             Home
           </Link>
         </nav>
-        <Form fields={missionFields} values={mission} onSubmit={handleCreateMission} />
+        <Form fields={missionFields} initialValues={mission} onSubmit={handleCreateMission} />
       </div>
     </div>
   );

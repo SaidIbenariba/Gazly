@@ -1,5 +1,7 @@
 import { db } from "../connect_db.js";
-
+export const editObservation = (req, res) =>{ 
+  
+}
 export const getObservations = (req, res) => {
   const sql =
     "SELECT o.*,ws.name,ws.x,ws.y,ws.id,u.id,u.firstname,u.lastname FROM observation o INNER JOIN workspace ws ON o.id_WS = ws.id INNER JOIN Users u ON ws.id_resp = u.id WHERE DATE(o.date) = CURDATE()";
@@ -12,7 +14,7 @@ export const getObservations = (req, res) => {
     { 
       `date`
 `feedback`
-`id_WS` 
+`id_ws` 
 `id_resp`
 `status` 
     }
@@ -145,7 +147,7 @@ export const getObservationsOfWorkSpace = (req, res) => {
 
 export const createObservation = (req, res) => {
   const userRole = req.role ; 
-  if(userrole == "responsable")  {
+  if(userRole == "responsable")  {
   const sql =
     "INSERT INTO observation (date,`feedback`,`id_WS`,`id_resp`,`status`) VALUE(NOW(),?,?,?,?) ";
   const newTache = {
@@ -159,6 +161,6 @@ export const createObservation = (req, res) => {
     return res.status(200).json({ succes: `New Meeting created ` });
   });
 }else if ( userRole == "admin") { 
-  
+    
 }
 };

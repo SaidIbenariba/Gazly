@@ -13,41 +13,27 @@ import axios from 'axios';import Form from '../../components/form';
 const EditObservationForm = () => {
   const { date, id_ws, id_resp } = useParams();
   const [error, setError] = useState({ exist: false, msg: "" });
-  const [responsables, setResponsables] = useState([]);
   const [observation, setObservation] = useState({
     date: "",
     feedback: "",
     id_ws: "",
     id_resp: "",
-    status: "pending",
   });
 
-  useEffect(() => {
-    axios
-      .get(`http://localhost:5000/api/observations/${date}/${id_ws}/${id_resp}`)
-      .then((res) => setObservation(res.data))
-      .catch((err) => console.log(err));
 
-    axios
-      .get("http://localhost:5000/api/users/responsables")
-      .then((res) => setResponsables(res.data))
-      .catch((err) => console.log(err));
-  }, [date, id_ws, id_resp]);
 
   const observationFields = [
-    { label: "Date", name: "date", type: "date" },
     { label: "Feedback", name: "feedback" },
-    { label: "Workspace ID", name: "id_ws" },
-    {
-      label: "Responsable", name: "id_resp", inputType: "select",
-      options: responsables.map((r) => ({ label: `${r.nom} ${r.prenom}`, value: r.id }))
-    },
-    { label: "Status", name: "status", inputType: "select", options: ["pending", "completed", "archived"] },
-  ];
 
+  ];
+  useEffect(()=>{
+    axios.get(`http://localhost:5000/api/observations/${date}/${id_ws}/${id_resp}`)
+    .then((res)=>setObservation(res.data))
+    .catch((err)=>{console.log(err)}); 
+  })
   const handleUpdateObservation = (data) => {
     axios
-      .put(`http://localhost:5000/api/observations/${date}/${id_ws}/${id_resp}`, data)
+      .post(`http://localhost:5000/api/observations/edit/${date}/${id_ws}/${id_resp}`, data)
       .then((res) => console.log(res))
       .catch((err) => {
         console.log(err);

@@ -38,7 +38,7 @@
           // }
         ];
         useEffect(()=>{
-          axios.get(`http://localhost:5000/api/mission/${start}/${id_resp}/${id_dir}`)
+          axios.get(`http://localhost:5000/api/missions/${start}/${id_resp}/${id_dir}`)
       .then(response => {
         setMission(response.data);
       })
@@ -47,32 +47,22 @@
       });
         },[start, id_resp, id_dir])
     useEffect(()=>{ 
-      /*{
-        id
-        name
-      }*/
-      // function fetchResponsables() { 
-      //   axios.get(`http://localhost:5000/api/users/responsables`)
-      //   .then((res)=>setResponsables(res.data))
-      //   .catch((err)=>console.log(err)) ; 
-      // }
+     
+      function fetchResponsables() { 
+        axios.get(`http://localhost:5000/api/users/responsables`)
+        .then((res)=>setResponsables(res.data))
+        .catch((err)=>console.log(err)) ; 
+      }
        
-      /*{ 
-        id_resp 
-        name 
-      }*/
-      // function selectReponsable(id) { 
-      //   axios.get(`http://localhost:5000/api/users/responsables/${id}`)
-      //   .then((res)=>setFormValues({formValues,resp:{id_resp:res.data[0].id_resp,name:res.data[0].name}}))
-      //   .catch((err)=>console.log(err)) ; 
-      // }
+    
       function fetchMissions () { 
           axios.get(`http://localhost:5000/api/missions/${start}/${id_dir}/${id_resp}`)
-          .then((res)=>setFormValues({formValues,end:res.data[0].end,title:res.data[0].title,description:res.data[0].description,status:res.data[0].status}))
+          .then((res)=>setMission({...mission,end:res.data[0].end,title:res.data[0].title,description:res.data[0].description,status:res.data[0].status}))
           .catch((err)=>console.log(err)); 
       }
       fetchMissions(); 
-    },[formValues])
+      // fetchResponsables(); 
+    },[mission])
 
     const handleEditMission = (formData) => {
       axios
@@ -80,9 +70,10 @@
         .then((res) => {
           console.log("Mission created successfully:", res.data);
           // Update missions state with the newly created mission
+          con
           setMissions([...missions, res.data]);
           // Reset form values
-          setFormValues({});
+          // setMission({});
         })
         .catch((err) => console.log("Error creating mission:", err));
     };
@@ -100,7 +91,7 @@
             Home
           </Link>
         </nav>
-        <Form fields={missionFields} values={formValues} onSubmit={handleEditMission}/>
+        <Form fields={missionFields} initialValues={mission} onSubmit={handleEditMission} isEditMode={true}/>
       </div>
     </div>
   </>

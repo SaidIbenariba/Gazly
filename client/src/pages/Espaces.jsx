@@ -93,18 +93,12 @@ const ObservationCard = ({ observation }) => {
 // main component
 const Espaces = () => {
   const [observations, setObservations] = useState([]);
+  const [selectedEspace,setSelectedEspace] = useState(null); 
   const [espaces, setEspaces] = useState([
     {
       position: [34.030795, -6.842883],
       name: "Factory 1",
       id: 1,
-
-      observations: [
-        {
-          user: { firstname: "jake", lastname: "genie" },
-          feedback: "evrything is perfect",
-        },
-      ],
     },
     { position: [34.023431, -6.855104], name: "Factory 2", id: 2 },
     { position: [34.022029, -6.817465], name: "Factory 3" },

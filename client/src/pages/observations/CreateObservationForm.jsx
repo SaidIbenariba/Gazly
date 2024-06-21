@@ -16,37 +16,41 @@ const CreateObservationForm = () =>
     const isAdmin = useVerifyRole(["admin"]); 
     const isRes = useVerifyRole(["responsable"]); 
   const [error, setError] = useState({ exist: false, msg: "" });
-  const [responsables, setResponsables] = useState([]);
-  const [formValues, setFormValues] = useState({
+  const [espaces, setEspaces] = useState([]);
+  const [obervation, setObservation] = useState({ 
     date: "",
     feedback: "",
     id_ws: "",
-    id_resp: "",
     status: "pending",
   });
-  if(isAdmin) { 
-  useEffect(() => {
-    axios
-      .get("http://localhost:5000/api/users/responsables")
-      .then((res) => setResponsables(res.data))
-      .catch((err) => console.log(err));
-  }, []);
-}
+  // if(isAdmin) { 
+  // useEffect(() => {
+  //   axios
+  //     .get("http://localhost:5000/api/users/responsables")
+  //     .then((res) => setResponsables(res.data))
+  //     .catch((err) => console.log(err));
+  // }, []);
+    useEffect(()=>{
+      axios.get(
+        "http://localhost:5000/api/WorkSpaces"
+      ).then((res) =>setEspaces(res.data))
+      .catch((err)=>console.log(err)); 
+    })
 
   const observationFields = [
-    { label: "Date", name: "date", type: "datetime-local" },
-    { label: "Feedback", name: "feedback" },
-    { label: "Workspace ID", name: "id_ws" },
-    {
-      label: "Responsable", name: "id_resp", inputType: "select",
-      options: responsables.map((r) => ({ label: `${r.nom} ${r.prenom}`, value: r.id }))
-    },
+    { label: "Date", name: "date", type: "datetime-local" },   
+    { label: "Feedback", name: "feedback" },  
     { label: "Status", name: "status", inputType: "select", options: ["pending", "completed", "archived"] },
+    {label: "WorkSpaces", name:"id_ws", inputType:"select" , 
+      options: espaces.map(
+        espace => ({label:espace.name, value:espace.id})  
+      )
+    }
   ];
 
   const handleCreateObservation = (data) => {
     axios
-      .post("http://localhost:5000/api/observations", data)
+      .post("http://localhost:5000/api/observations/createObservation", data)
       .then((res) => console.log(res))
       .catch((err) => {
         console.log(err);
