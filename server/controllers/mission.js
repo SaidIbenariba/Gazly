@@ -81,7 +81,7 @@ export const getMissions = (req, res) => {
   }
   db.query(sql, queryParams, (err, results) => {
     if (err) {
-      console.error("Database query error: ", err);
+      console.error("Database query error: ", results);
       return res.status(500).json({ error: "Cannot connect to database" });
     }
 
