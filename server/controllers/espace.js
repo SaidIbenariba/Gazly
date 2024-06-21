@@ -53,6 +53,11 @@ export const deleteWorkSpace = (req, res) => {
   });
 };
 export const WorkSpaces = (req, res) => {
+  /**
+   * position 
+   * name 
+   * id 
+   */
   const sql =
     "SELECT ws.*,r.firstname,r.lastname FROM WorkSpace ws INNER JOIN users r ON  ws.id_resp= r.id";
   db.query(sql, (err, users) => {

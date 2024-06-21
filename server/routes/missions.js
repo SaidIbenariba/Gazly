@@ -5,7 +5,7 @@ import {
   missionSearch,
   getMissionCounts,
   defaultMissionSearch,
-  editMission, 
+  editMission
 } from "../controllers/mission.js";
 import { verifyJWT } from "../middleware/verifyJWT.js";
 const router = express.Router();

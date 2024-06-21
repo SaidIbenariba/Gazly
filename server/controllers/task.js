@@ -69,18 +69,6 @@ export const getTasksForResp = (req, res) => {
           return res.status(200).json(result);
         });
     };
-    // data form 
-    /**
-       {
-    date: '2024-06-14T08:30',
-    duree: '2 hours',
-    description: 'Task 1 description',
-    status: 'inprogress',
-    id_ouv: 1,
-    id_resp: 1
-  },
-     */
-    // check if url has a status params   
     export const tasks = (req, res) => {
         const sql = "SELECT * FROM Task";
         db.query(sql, (err, users) => {

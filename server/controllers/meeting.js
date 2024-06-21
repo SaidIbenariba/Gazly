@@ -9,35 +9,19 @@ export const respSearch = (req, res) => {
 };
 
 export const createMeeting = (req, res) => {
-  const userId = req.id;
-  console.log(req.role);
   const sql =
     "INSERT INTO meeting (`start`,`end`,`title`,`description`,`id_resp`,`id_Adir`,`allDay`) VALUE(?,?,?,?,?,?,?) ";
-  //  body data object
-  /*
-    {
-    allDay: true, 
-description: "d",
-end: Thu Jun 13 2024 00:00:00 GMT+0100 (UTC+01:00) {},
-start: Wed Jun 12 2024 00:00:00 GMT+0100 (UTC+01:00) {}
-title: "title"
-responsable:id, 
-} */
   const newTache = {
-    startdate: req.body.start,
-    enddate: req.body.end,
-    title: req.body.title,
+    startdate: req.body.startdate,
+    enddate: req.body.enddate,
     Description: req.body.description,
-    id_resp: req.body.responsable.id,
-    id_dir: userId,
+    id_resp: req.body.id_resp,
+    id_dir: req.body.id_dir,
     allDay: req.body.allDay,
   };
-
-  console.log(newTache);
-
-  db.query(sql, [Object.values(newTache)], (err, result) => {
-    if (err) return res.sendStatus(500);
-    res.status(200).json({ succes: `New Meeting created ` });
+  db.query(sql, [Object.values(newTache)], (err, res) => {
+    if (err) return res.status(500).json(err);
+    return res.status(200).json({ succes: `New Meeting created ` });
   });
 };
 export const editMeeting = (req, res) => {
@@ -65,7 +49,7 @@ export const getMeetings = (req, res) => {
   const userId = req.id;
   const userRole = req.role;
   let sql = `SELECT m.*, r.firstname, r.lastname FROM meeting m INNER JOIN users r ON m.id_resp = r.id WHERE DATE(m.start) = CURDATE()`;
-
+  
   if (userRole == "admin") {
     sql += " AND id_dir = ?";
   } else if (userRole == "responsable") {
@@ -73,8 +57,7 @@ export const getMeetings = (req, res) => {
   }
 
   if (userId) {
-    db.query(sql, [userId], (err, results) => {
-      // Passed userId as an array
+    db.query(sql, [userId], (err, results) => {  // Passed userId as an array
       if (err) {
         console.error("Database query error: ", err);
         return res.status(500).json("Cannot connect to database");
@@ -96,13 +79,11 @@ export const getMeetings = (req, res) => {
         end: formatDate(row.end),
         user: `${row.firstname} ${row.lastname}`,
       }));
-      console.log(`meeting result${formattedResults}`);
+      
       return res.json(formattedResults);
     });
   } else {
-    return res
-      .status(400)
-      .json("Missing required parameter: id_dir or id_resp");
+    return res.status(400).json("Missing required parameter: id_dir or id_resp");
   }
 };
 
@@ -123,7 +104,7 @@ export const Meetings = (req, res) => {
     WHERE 
       DATE(m.start) = CURDATE()
   `;
-
+  
   if (userRole === "admin") {
     sql += " AND id_dir = ?";
   } else if (userRole === "responsable") {
@@ -131,8 +112,7 @@ export const Meetings = (req, res) => {
   }
 
   if (userId) {
-    db.query(sql, [userId], (err, results) => {
-      // Pass userId as an array for query parameters
+    db.query(sql, [userId], (err, results) => { // Pass userId as an array for query parameters
       if (err) {
         console.error("Database query error: ", err);
         return res.status(500).json("Cannot connect to database");
@@ -148,16 +128,16 @@ export const Meetings = (req, res) => {
         start: formatDate(row.start),
         end: formatDate(row.end),
         user: {
-          firstname: row.firstname,
-          lastname: row.lastname,
-        },
+          firstname:row.firstname,
+          lastname:row.lastname
+        }
       }));
+
+      console.log(formattedResults);
       return res.json(formattedResults);
     });
   } else {
-    return res
-      .status(400)
-      .json("Missing required parameter: id_dir or id_resp");
+    return res.status(400).json("Missing required parameter: id_dir or id_resp");
   }
 };
 

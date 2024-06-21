@@ -4,7 +4,7 @@ import {
     getObservations,
     getObservationsOfWorkSpace,
     createObservation,
-
+    editObservation
 } from "../controllers/observation.js";
 const router = express.Router();
 router.get("/lastest",getObservationsDash);
