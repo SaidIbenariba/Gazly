@@ -1,7 +1,5 @@
 import { db } from "../connect_db.js";
-export const editMission = ( req, res) => { 
 
-}
 
 export const getMissionCounts = (req, res) => {
   const userId = req.id;
@@ -50,17 +48,6 @@ export const getMissionCounts = (req, res) => {
 };
 
 export const getMissions = (req, res) => {
-  /**
-   {
-          start: start,
-          end: "",
-          title: "",
-          description: "",
-          status: "",
-          id_dir: id_dir,
-          id_resp: id_resp
-    }
-   */
   const userId = req.id;
   const userRole = req.role;
   let sql = "";
@@ -88,7 +75,7 @@ export const getMissions = (req, res) => {
         "SELECT * FROM mission WHERE id_dir = ? ";
     } else if (userRole === "responsable") {
       sql =
-        "SELECT * FROM mission WHERE id_dir = ? ";
+        "SELECT * FROM mission WHERE id_resp = ? ";
     }
     queryParams = [userId];
   }
@@ -105,15 +92,15 @@ export const getMissions = (req, res) => {
           month: "2-digit",
           day: "2-digit",
       };
-      const reg = /\//g; 
-      return jsDate.toLocaleString("en-GB", options).replace(reg,"-");
+      return jsDate.toLocaleString("en-GB", options);
   };
 
     const formattedResults = results.map((row) => ({
-      ...row,
+      ...row, 
       start: formatDate(row.start),
       end: formatDate(row.end),
     }));
+    console.log(userId,userRole);
     console.log(status,start, id_dir, id_resp); 
     console.log("missions : ");
     console.log(formattedResults);
@@ -164,37 +151,40 @@ console.log(userId)
   });
 };*/
 export const createMission = (req, res) => {
-  const id = req.id; 
-  const role = req.role ; 
-  const sql =
-    "INSERT INTO mission (`start`,`end`,`title`,`description`,`id_dir`,`id_resp`) VALUES(?,?,?,?,?,?) ";
-  const newMission = {
-    start: req.body.start,
-    end: req.body.end,
-    title: req.body.title,
-    Description: req.body.description,
-    id_dir: id,
-    id_resp: req.body.id_resp,
-  };
-  console.log(req.id); 
-  console.log([Object.values(newMission)]);  
+  const userId=req.id;
+  const sql = `
+    INSERT INTO mission (start, end, title, description, id_dir, id_resp)
+    VALUES (STR_TO_DATE(?, '%d/%m/%Y'), STR_TO_DATE(?, '%d/%m/%Y'), ?, ?, ?, ?)
+`;
+const newMission = {
+  start: req.body.start,
+  end: req.body.end,
+  title: req.body.title,
+  Description: req.body.description,
+  id_dir: userId,
+  id_resp: req.body.id_resp,
+}; 
+   console.log('SQL Query:', newMission);
+
   db.query(sql, [Object.values(newMission)], (err, result) => {
     if (err) return res.status(500).json(err);
     return res.status(200).json({ succes: `New Mission created ` });
+    
   });
 };
     export const editMission = (req, res) => {
         const q =
-          "UPDATE mission SET end=?, description=?,  WHERE id_dir = ? AND start = ? AND id_resp = ?";
+          "UPDATE mission SET end=?, description=?,title=?,status=?,  WHERE id_dir = ? AND start = ? AND id_resp = ?";
         const values = {
-            start: req.params.start,
             end: req.body.end,
             Description: req.body.description,
-            status: req.body.description,
+            title:req.body.title,
+            status: req.body.status,
             id_dir: req.params.id_dir,
+            start: req.params.start, 
             id_resp: req.params.id_resp,
           };
-        db.query(q, values, (err, result) => {
+        db.query(q, [Object.values(values)], (err, result) => {
             if (err) return res.sendStatus(500);
             return res.status(200).json(result);
           });
