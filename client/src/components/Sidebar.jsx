@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 // import { BsArrowLeftCircle, BsArrow90DegLeft } from "react-icons/bs";
-import { MdKeyboardDoubleArrowLeft, MdOutlineWork } from "react-icons/md";
+import { MdKeyboardDoubleArrowLeft, MdOutlineWork, MdSensorDoor } from "react-icons/md";
 import { HiMiniViewfinderCircle } from "react-icons/hi2";
 
 import { AiFillPieChart } from "react-icons/ai";
@@ -12,8 +12,10 @@ import { ImUsers } from "react-icons/im";
 import Logo from "../components/ui/Logo";
 import HamburgerButton from "./HamburgerMenuButton/HamburgerButton";
 import { SidebarCloseIcon } from "lucide-react";
-import { FaCalendarAlt, FaMap } from "react-icons/fa";
+import { FaCalendarAlt, FaMap, FaTasks } from "react-icons/fa";
 import { useAuth } from "../hooks/useAuth";
+import { FiWind } from "react-icons/fi";
+
 import useVerifyRole from "../hooks/useVerifyRoles";
 const Sidebar = () => {
   const { user } = useAuth();
@@ -42,6 +44,9 @@ const Sidebar = () => {
     { title: "Missions", path: "missions", src: <MdOutlineWork /> },
     { title: "Observations", path: "observations", src: <HiMiniViewfinderCircle /> },
     { title: "Espaces", path: "espaces", src: <FaMap /> },
+    {title :"Tasks", path:"tasks", src:<FaTasks/>},
+    {title:"Measures", path:"measures", src:<FiWind/>},  
+    {title:"Sensors", path:"sensors", src:<MdSensorDoor/>},  
     {
       title: "Profile",
       path: `profile`,

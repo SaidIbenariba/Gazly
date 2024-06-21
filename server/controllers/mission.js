@@ -1,5 +1,7 @@
 import { db } from "../connect_db.js";
+export const editMission = ( req, res) => { 
 
+}
 
 export const getMissionCounts = (req, res) => {
   const userId = req.id;
@@ -92,7 +94,8 @@ export const getMissions = (req, res) => {
           month: "2-digit",
           day: "2-digit",
       };
-      return jsDate.toLocaleString("en-GB", options);
+      const reg = /\//g; 
+      return jsDate.toLocaleString("en-GB", options).replace(reg,"-");
   };
 
     const formattedResults = results.map((row) => ({
@@ -150,17 +153,21 @@ console.log(userId)
   });
 };*/
 export const createMission = (req, res) => {
+  const id = req.id; 
+  const role = req.role ; 
   const sql =
     "INSERT INTO mission (`start`,`end`,`title`,`description`,`id_dir`,`id_resp`) VALUES(?,?,?,?,?,?) ";
-  const newTache = {
+  const newMission = {
     start: req.body.start,
     end: req.body.end,
     title: req.body.title,
     Description: req.body.description,
-    id_ouv: req.body.id_dir,
+    id_dir: id,
     id_resp: req.body.id_resp,
   };
-  db.query(sql, [Object.values(newTache)], (err, result) => {
+  console.log(req.id); 
+  console.log([Object.values(newMission)]);  
+  db.query(sql, [Object.values(newMission)], (err, result) => {
     if (err) return res.status(500).json(err);
     return res.status(200).json({ succes: `New Mission created ` });
   });

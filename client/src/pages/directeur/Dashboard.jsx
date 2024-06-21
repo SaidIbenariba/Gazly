@@ -68,8 +68,8 @@ const Dashboard = () => {
   const [meetings, setMeetings] = useState([]);
   const [observations, setObservations] = useState([]);
   const [missionCounts, setMissionCounts] = useState({
-    inProgress: 0,
-    inReview: 0,
+    inProgress: 3,
+    inReview: 9,
     onHold: 0,
     completed: 0,
   });
@@ -146,12 +146,13 @@ const Dashboard = () => {
   return (
     <>
       {console.log("Dashboard conpo nent")}
-      <div className="flex flex-col gap-10 justify-center items-center">
-        <div className="flex flex-col justify-start items-center">
+      <div className="flex flex-col gap-10 justify-center items-center lg:items-start">
+        <div className="flex flex-col justify-start items-center md:items-start gap-4">
           <div
-            className="flex flex-col sm:flex-row flex-wrap justify-center gap-5 w-fit items-start"
+            className="flex flex-col sm:flex-col md:flex-row justify-center gap-5 w-fit items-center md:items-start "
             id="cart-container"
           >
+          {/* <div className="grid sm:grid-col lg:grid-cols-3  grid-rows-1 "> */}
             {/* <div className="flex flex-col flex-wrap justify-start items-start gap-5 w-fit"> */}
             {/* <Card className="flex flex-col p-5 items-start justify-between w-[180px] h-fit">
                 <div className="flex flex-row  items-center justify-between w-full">
@@ -170,58 +171,6 @@ const Dashboard = () => {
                   <span className=" text-xs font-extralight"> sensor1</span>
                 </div>
               </Card> */}
-
-            <Card className="flex flex-col p-2 gap-1 w-fit h-fit">
-              <div className="text-xs font-semi-bold text-yellow-400">
-                {formattedDate}
-              </div>{" "}
-              {meetings.map((meet) => {
-                return (
-                  <Card
-                    className="flex flex-row items-center rounded-none pr-1 justify-start bg-blue-100 shadow-none w-fit"
-                    key={meet.id}
-                  >
-                    <PiLineVertical size className="h-10  text-blue-400" />
-                    <div
-                      className="flex flex-row gap-10 items-center "
-                      id="event-description"
-                    >
-                      <span className=" text-sm font-bold" id="title">
-                        {meet.title}
-                      </span>
-                      <div
-                        className=" text-[10px] font-extralight flex flex-col"
-                        id="duration"
-                      >
-                        <span>{meet.start}</span> {/* Start  date  */}
-                        <span>{meet.end}</span> {/**13:45 */}
-                        {/* End  date  */}
-                      </div>
-                    </div>
-                  </Card>
-                );
-              })}
-              <Card className="flex flex-row items-center rounded-none pr-1 justify-start bg-yellow-100 shadow-none w-[165px]">
-                <PiLineVertical size className="h-10  text-yellow-400" />
-                <div
-                  className="flex flex-row gap-10 items-center"
-                  id="event-description"
-                >
-                  <span className=" text-sm font-bold" id="title">
-                    Title
-                  </span>
-                  <div
-                    className="text-[10px] font-extralight flex flex-col"
-                    id="description"
-                  >
-                    <span>13:15</span> {/* Start  date  */}
-                    <span>13:45</span>
-                    {/* End  date  */}
-                  </div>
-                </div>
-              </Card>
-            </Card>
-            {/* </div> */}
             <Card className="shadow-none flex ">
               <div className="text-md font-semibold mb-2">Missions Summary</div>
               {/* status{In Progress, In Review, On Hold, Completed} */}
@@ -247,21 +196,70 @@ const Dashboard = () => {
                 }
               </div>
             </Card>
+            <div className="flex flex-col md:flex-row gap-4">
+            
+            {/* </div> */}
+            
+            <Card className="flex flex-col p-2 gap-1 w-fit h-fit">
+              <h2 className="text-md font-semibold mb-2">Observation List</h2>
+              {/* Observations and Feedback: Include a section for observations and feedback collected from different sources, such as workers `responsable when done a observation can make feedback */}
+              {observations.length == 0 ? 
+              (
+                <p className="font-thin text-red-500 bg-red-100 rounded-md">There are no Observations</p>
+
+              ) : (
+                observations.map((observation) => {
+                  <ObservationCard
+                    key={observation.id}
+                    observation={observation}
+                  />;
+                })
+              )
+            }
+            </Card>
+            <Card className="flex flex-col p-2 gap-1 w-fit h-fit">
+              <div className="text-xs font-semi-bold text-yellow-400">
+                {formattedDate}
+              </div>{" "}
+              {meetings.length == 0 ?  (
+                <p className="font-thin text-red-500 bg-red-100 rounded-md">There are no meetings</p>
+              ):
+              (
+                meetings.map((meet) => {
+                  return (
+                    <Card
+                      className="flex flex-row items-center rounded-none pr-1 justify-start bg-blue-100 shadow-none w-fit"
+                      key={meet.id}
+                    >
+                      <PiLineVertical size className="h-10  text-blue-400" />
+                      <div
+                        className="flex flex-row gap-10 items-center "
+                        id="event-description"
+                      >
+                        <span className=" text-sm font-bold" id="title">
+                          {meet.title}
+                        </span>
+                        <div
+                          className=" text-[10px] font-extralight flex flex-col"
+                          id="duration"
+                        >
+                          <span>{meet.start}</span> {/* Start  date  */}
+                          <span>{meet.end}</span> {/**13:45 */}
+                          {/* End  date  */}
+                        </div>
+                      </div>
+                    </Card>
+                  );
+                })
+              )
+              }
+              
+            </Card>
+            </div>
           </div>
-          <div className="flex flex-wrap gap-10 justify-start ">
+          <div className="w-full">
             <Line />
             {/* just a graphe were showing some date about level gaz    */}
-
-            <Card>
-              <h2>Observation List</h2>
-              {/* Observations and Feedback: Include a section for observations and feedback collected from different sources, such as workers `responsable when done a observation can make feedback */}
-              {observations.map((observation) => {
-                <ObservationCard
-                  key={observation.id}
-                  observation={observation}
-                />;
-              })}
-            </Card>
           </div>
         </div>
       </div>

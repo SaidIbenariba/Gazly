@@ -1,4 +1,5 @@
 import { db } from "../connect_db.js";
+
 export const getObservations = (req, res) => {
   const sql =
     "SELECT o.*,ws.name,ws.x,ws.y,ws.id,u.id,u.firstname,u.lastname FROM observation o INNER JOIN workspace ws ON o.id_WS = ws.id INNER JOIN Users u ON ws.id_resp = u.id WHERE DATE(o.date) = CURDATE()";
@@ -6,7 +7,16 @@ export const getObservations = (req, res) => {
     if (err) {
       return res.status(500).json("Cannot connect to database");
     }
-
+   // observation object 
+   /**
+    { 
+      `date`
+`feedback`
+`id_WS` 
+`id_resp`
+`status` 
+    }
+    */
     const formatDate = (mysqlDate) => {
       const jsDate = new Date(mysqlDate);
       const options = {
@@ -134,6 +144,8 @@ export const getObservationsOfWorkSpace = (req, res) => {
 };
 
 export const createObservation = (req, res) => {
+  const userRole = req.role ; 
+  if(userrole == "responsable")  {
   const sql =
     "INSERT INTO observation (date,`feedback`,`id_WS`,`id_resp`,`status`) VALUE(NOW(),?,?,?,?) ";
   const newTache = {
@@ -146,4 +158,7 @@ export const createObservation = (req, res) => {
     if (err) return res.status(500).json(err);
     return res.status(200).json({ succes: `New Meeting created ` });
   });
+}else if ( userRole == "admin") { 
+  
+}
 };

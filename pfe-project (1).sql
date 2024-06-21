@@ -122,7 +122,7 @@ CREATE TABLE IF NOT EXISTS `mission` (
   `start` datetime NOT NULL,
   `end` datetime NOT NULL,
   `title` varchar(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `discription` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `id_dir` int NOT NULL,
   `id_resp` int NOT NULL,
   `status` enum('inProgress','inReview','onHold','completed','expired') CHARACTER SET utf8mb4 COLLATE utf8mb4_icelandic_ci NOT NULL,
@@ -241,11 +241,11 @@ INSERT INTO `sensor` (`id`, `type`, `id_WS`) VALUES
 --
 
 DROP TABLE IF EXISTS `task`;
-CREATE TABLE IF NOT EXISTS `task` (
+CREATE TABLE IF NOT EXISTS `task` ( 
   `date` datetime NOT NULL,
   `duree` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `status` enum('done','inprogress','expired') CHARACTER SET utf8mb4 COLLATE utf8mb4_icelandic_ci NOT NULL,
+  `status` enum('done','inprogress',"expired") CHARACTER SET utf8mb4 COLLATE utf8mb4_icelandic_ci NOT NULL,
   `id_ouv` int NOT NULL,
   `id_resp` int NOT NULL,
   PRIMARY KEY (`date`,`id_ouv`,`id_resp`),

@@ -10,6 +10,7 @@ const FormField = ({
   options = [],
   inputType = "",
   name,
+  required = false 
 }) => {
   return (
     <>
@@ -17,22 +18,56 @@ const FormField = ({
         {label}
       </Typography>
       {inputType === "select" ? (
-        <Select
-          value={value || ""}
+        //  { 
+          required ? (
+            <Select
+            value={value || ""}
+            className="input"
+            labelProps={{
+              className: "before:content-none after:content-none",
+            }}
+            onChange={(value) => handleChange(value, name)}
+            aria-required = "true"
+          >
+            {options.map((option) => (
+              <Option key={option.value} value={option.value}>
+                {option.label}
+              </Option>
+            ))}
+          </Select>
+          ) : (
+            <Select
+            value={value || ""}
+            className="input"
+            labelProps={{
+              className: "before:content-none after:content-none",
+            }}
+            onChange={(value) => handleChange(value, name)}
+          >
+            {options.map((option) => (
+              <Option key={option.value} value={option.value}>
+                {option.label}
+              </Option>
+            ))}
+          </Select>
+          )
+  
+      ) : (
+        (required  ? (
+          <Input
+          type={type}
+          size="lg"
+          value={value}
           className="input"
           labelProps={{
             className: "before:content-none after:content-none",
           }}
           onChange={(e) => handleChange(e.target.value, name)}
-        >
-          {options.map((option) => (
-            <Option key={option.value} value={option.value}>
-              {option.label}
-            </Option>
-          ))}
-        </Select>
-      ) : (
-        <Input
+          // {required ? }
+          required 
+        />
+        ):(
+          <Input
           type={type}
           size="lg"
           value={value}
@@ -42,6 +77,8 @@ const FormField = ({
           }}
           onChange={(e) => handleChange(e.target.value, name)}
         />
+        ))
+     
       )}
     </>
   );
@@ -83,6 +120,7 @@ const Form = ({ fields, onSubmit, initialValues, isEditMode }) => {
               options={field.options}
               handleChange={handleChange}
               inputType={field.inputType}
+              required={field.required}
             />
           ))}
           <Button type="submit" className="button w-full mt-10" text={`save`}>

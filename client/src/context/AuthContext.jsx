@@ -8,30 +8,35 @@ import { useAuth } from "../hooks/useAuth";
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
-    const storedToken =
-      localStorage.getItem("accessToken") ||
-      sessionStorage.getItem("accessToken");
-    // console.log(user);
-    console.log(storedToken);
+  // const [error, setError] = useState()
+  // const [user, setUser] = useState(() => {
+  //   const storedToken =
+  //     localStorage.getItem("accessToken") ||
+  //     sessionStorage.getItem("accessToken");
+  //   // console.log(user);
+  //   console.log(storedToken);
 
-    if (storedToken) {
-      try {
-        const decodedUser = jwtDecode(storedToken);
-        axios.defaults.headers.common[
-          "Authorization"
-        ] = `Bearer ${storedToken}`;
-        return decodedUser.UserInfo;
-        // console.log(decodedUser.UserInfo);
-      } catch (error) {
-        console.error("Token decoding failed:", error);
-        localStorage.removeItem("accessToken");
-        sessionStorage.removeItem("accessToken");
-      }
-    } else {
-      return null;
-    }
-  });
+  //   if (storedToken) {
+  //     try {
+  //       const decodedUser = jwtDecode(storedToken);
+  //       axios.defaults.headers.common[
+  //         "Authorization"
+  //       ] = `Bearer ${storedToken}`;
+  //       return decodedUser.UserInfo;
+  //       // console.log(decodedUser.UserInfo);
+  //     } catch (error) {
+  //       console.error("Token decoding failed:", error);
+  //       localStorage.removeItem("accessToken");
+  //       sessionStorage.removeItem("accessToken");
+  //     }
+  //   } else {
+  //     return null;
+  //   }
+  // });
+  const [user, setUser] = useState({
+    id:1,
+    role:"admin"
+  })
   const [loading, setLoading] = useState(false);
   const nav = useNavigate();
   /**data reviece it { email: "",
@@ -60,7 +65,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
   const login = async (formData) => {
     setLoading(true);
-
+    
     try {
       const response = await axios.post(
         "http://localhost:5000/auth/login",

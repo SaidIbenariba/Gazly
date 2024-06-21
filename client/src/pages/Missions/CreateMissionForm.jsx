@@ -2,11 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import Form from '../../components/form';
-
+import { useAuth } from '../../hooks/useAuth';
 const CreateMissionForm = () => {
+  // const {user} = useAuth() 
+  const {user} = useAuth(); 
   const [error, setError] = useState({ exist: false, msg: "" });
   const [responsables, setResponsables] = useState([]);
-  const [formValues, setFormValues] = useState({
+  const [selectResponsable,setSelectResponsable] = useState(null);
+  const [mission, setMission] = useState({
     start: "",
     end: "",
     title: "",
@@ -15,22 +18,58 @@ const CreateMissionForm = () => {
     id_dir: "",
     id_resp: ""
   });
-
+ 
   useEffect(() => {
     function fetchResponsable() {
       axios
-        .get("http://localhost:5000/api/users/responsables")
+        .get("http://localhost:5000/api/users/search-role/" + "responsable")
         .then((res) => {
-          setResponsables(res.data);
+          setResponsables(res.data); 
+          console.log(res.data); 
         })
         .catch((err) => console.log(err));
     }
     fetchResponsable();
   }, []);
+  useEffect(() => {
+    console.log(mission);
+    if (user.role == "admin") {
+      axios 
+        .get(`http://localhost:5000/api/users/responsables/${mission.id_resp}`)
+        .then((res) => {
+          const users = res.data.reduce((acc, user) => {
+            acc[user.id] = user;
+            return acc;
+          }, {});
 
+          setMission((prevValues) => ({
+            ...prevValues,
+            id_resp: users[id_resp]?.id || "",
+            // id_dir: users[id_dir]?.id || "",
+          }));
+        })
+        .catch((err) => console.log(err));
+    }else if(mission.id_dir) { 
+      axios
+        .get(`http://localhost:5000/api/users/responsable/${mission.id_dir}`)
+        .then((res) => {
+          const users = res.data.reduce((acc, user) => {
+            acc[user.id] = user;
+            return acc;
+          }, {});
+
+          setMission((prevValues) => ({
+            ...prevValues,
+            // id_resp: users[id_resp]?.id || "",
+            id_dir: users[id_dir]?.id || "",
+          }));
+        })
+        .catch((err) => console.log(err));
+    }
+  }, [mission]);
   const missionFields = [
-    { label: "Start Date", name: "start", type: "date" },
-    { label: "End Date", name: "end", type: "date" },
+    { label: "Start Date", name: "start", type: "date", required:true },
+    { label: "End Date", name: "end", type: "date",required:true },
     { label: "Title", name: "title" },
     { label: "Description", name: "description" },
     {
@@ -44,17 +83,20 @@ const CreateMissionForm = () => {
     },
     {
       label: "Responsable", name: "id_resp", inputType: "select",
-      options: responsables.map(responsable => ({ label: responsable.name, value: responsable.id }))
+      options: responsables.map(responsable => ({ label: responsable.firstname+ " " + responsable.lastname, value: responsable.id })), 
+      required:true
     }
   ];
+  // console.log(responsables.map(responsable => ({ label: responsable.name, value: responsable.id }))); 
 
   const handleCreateMission = (formData) => {
+    console.log(formData); 
     axios
       .post("http://localhost:5000/api/missions/createMission", formData)
       .then((res) => {
         console.log("Mission created successfully:", res.data);
         // Reset form values
-        setFormValues({
+        setMission({
           start: "",
           end: "",
           title: "",
@@ -79,7 +121,7 @@ const CreateMissionForm = () => {
             Home
           </Link>
         </nav>
-        <Form fields={missionFields} values={formValues} onSubmit={handleCreateMission} />
+        <Form fields={missionFields} values={mission} onSubmit={handleCreateMission} />
       </div>
     </div>
   );

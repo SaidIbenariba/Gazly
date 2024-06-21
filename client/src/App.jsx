@@ -18,32 +18,33 @@ const App = () => {
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route element={<PrivateRoutes />} path="/private/*" />
+      {/* <Route element={<PrivateRoutes />} path="/private/*" /> */}
+      <Route path="/private/*" element={<AdminRoutes/>}/>
       <Route path="*" element={<Notfound />} />
     </Routes>
   );
 };
-const PrivateRoutes = () => {
-  const { user } = useAuth();
-  const isAdmin = useVerifyRole(["admin"]);
-  const isResponsable = useVerifyRole(["responsable"]);
-  const isOuvrier = useVerifyRole(["ouvrier"]);
-  console.log("private routes");
-  console.log(user);
-  if (!user) {
-    // console.log(user);
-    return <Navigate to="/login" />;
-  }
-  return (
-    <Routes>
-      {/* <Route path="1/*" element={<AdminRoutes />} /> */}
-      {isAdmin && <Route path="/*" element={<AdminRoutes />} />}
-      {isResponsable && <Route path="/*" element={<ResponsableRoutes />} />}
-      {isOuvrier && <Route path="/*" element={<OuvrierRoutes />} />}
-      <Route path="profile" element={<Profile />} />
-      <Route path="*" element={<Notfound />} />
-    </Routes>
-  );
-};
+// const PrivateRoutes = () => {
+//   const { user } = useAuth();
+//   const isAdmin = useVerifyRole(["admin"]);
+//   const isResponsable = useVerifyRole(["responsable"]);
+//   const isOuvrier = useVerifyRole(["ouvrier"]);
+//   console.log("private routes");
+//   console.log(user);
+//   if (!user) {
+//     // console.log(user);
+//     return <Navigate to="/login" />;
+//   }
+//   return (
+//     <Routes>
+//       {/* <Route path="1/*" element={<AdminRoutes />} /> */}
+//       {isAdmin && <Route path="/*" element={<AdminRoutes />} />}
+//       {isResponsable && <Route path="/*" element={<ResponsableRoutes />} />}
+//       {isOuvrier && <Route path="/*" element={<OuvrierRoutes />} />}
+//       <Route path="profile" element={<Profile />} />
+//       <Route path="*" element={<Notfound />} />
+//     </Routes>
+//   );
+// };
 
 export default App;

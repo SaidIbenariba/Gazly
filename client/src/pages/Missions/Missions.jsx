@@ -1,5 +1,5 @@
 // // import React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Select, Option, Button, usePrevious } from "@material-tailwind/react";
@@ -17,6 +17,9 @@ import {
   Tabs,
   TabsHeader,
 } from "@material-tailwind/react";
+import { TrashIcon, PencilIcon } from "@heroicons/react/24/solid";
+
+
 // import Button from "../components/Button";
 
 const TABS = [
@@ -41,9 +44,56 @@ const TABS = [
     value: "completed",
   },
 ];
-const MissionCard = ({ missionm ,onEdit, onDelete  }) => {
+const demoData = [ 
+  {
+    start: '2024-06-01 09:00:00',
+    end: '2024-06-15 17:00:00',
+    title: 'Mission Alpha',
+    description: 'Description for Mission Alpha',
+    id_dir: 1,
+    id_resp: 101,
+    status: 'inProgress',
+  },
+  {
+    start: '2024-06-05 10:00:00',
+    end: '2024-06-20 18:00:00',
+    title: 'Mission Beta',
+    description: 'Description for Mission Beta',
+    id_dir: 2,
+    id_resp: 102,
+    status: 'inReview',
+  },
+  {
+    start: '2024-06-10 08:00:00',
+    end: '2024-06-25 16:00:00',
+    title: 'Mission Gamma',
+    description: 'Description for Mission Gamma',
+    id_dir: 3,
+    id_resp: 103,
+    status: 'onHold',
+  },
+  {
+    start: '2024-06-15 11:00:00',
+    end: '2024-06-30 19:00:00',
+    title: 'Mission Delta',
+    description: 'Description for Mission Delta',
+    id_dir: 4,
+    id_resp: 104,
+    status: 'completed',
+  },
+  {
+    start: '2024-06-20 07:00:00',
+    end: '2024-07-05 15:00:00',
+    title: 'Mission Epsilon',
+    description: 'Description for Mission Epsilon',
+    id_dir: 5,
+    id_resp: 105,
+    status: 'expired',
+  },
+]
+const MissionCard = ({ mission ,onEdit, onDelete  }) => {
   return (
-    <Card className="mt-6 w-72 cursor-pointer">
+    <Card className="mt-6 w-72 cursor-pointer z-0">
       {/* <CardHeader className=" h-1/3" shadow={false}>
           {/* <img
             src="https://images.unsplash.com/photo-1540553016722-983e48a2cd10?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80"
@@ -54,15 +104,16 @@ const MissionCard = ({ missionm ,onEdit, onDelete  }) => {
             Mission title
           </Typography>
         </CardHeader> */}
-      <CardBody>
+      <CardBody className="z-0">
         <Typography variant="h5" color="blue-gray" className="mb-2">
           {mission.title}
         </Typography>
+        <Typography>{mission.start}</Typography>
         <Typography>{mission.description}</Typography>
         <Typography>{mission.reponsable}</Typography>
         <div className="flex justify-between mt-4">
-          <Button onClick={() => onEdit(mission)}>Edit</Button>
-          <Button onClick={() => onDelete(mission.id)}>Delete</Button>
+          <Button className='text-black bg-transparent shadow-none' onClick={() => onEdit(mission)}><PencilIcon strokeWidth={6} className="h-4 w-4"/></Button>
+          <Button className='text-black bg-transparent shadow-none' onClick={() => onDelete(mission.id)}><TrashIcon strokeWidth={6} className="h-4 w-4"/></Button>
         </div>
 
       </CardBody>
@@ -78,15 +129,62 @@ const Missions = () => {
   const [openFilter, setOpenFilter] = useState(false);
   const [searchBy, setSearchBy] = useState("");
   const [values, setValues] = useState({ value: "" });
+  const filterMenuRef = useRef(null); 
+  const filterButtonRef = useRef(null); 
+
   const history = useNavigate(); 
+
+
+  useEffect(() => {
+    console.log(stat);
+    if (stat && stat != "all") {
+      console.log("find missions depend on status");
+        axios
+          .get("http://localhost:5000/api/missions/" + stat)
+          .then((res) => setMissions(res.data))
+          .catch((err) => console.log(err));
+        setOpenFilter(false);
+    } else {
+      console.log("find All missions");
+      axios
+        .get("http://localhost:5000/api/missions/")
+        .then((res) => {
+          setMissions(res.data);
+          console.log(res);
+        })
+        .catch((err) => console.log(err));
+      setOpenFilter(false);
+    }
+  }, [status, stat]);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        filterMenuRef.current && 
+        !filterMenuRef.current.contains(event.target) &&
+        !filterButtonRef.current.contains(event.target)
+      ) {
+        setOpenFilter(false);
+      }
+    };
+    
+    if (openFilter) {
+      window.addEventListener('click', handleClickOutside);
+    }
+
+    return () => {
+      window.removeEventListener('click', handleClickOutside);
+    };
+  }, [openFilter]);
   useEffect(() => {
     // Fetch missions data from the server
-    axios
-      .get("http://localhost:5000/api/missions")
-      .then((res) => setMissions(res.data))
-      .catch((err) => console.log(err));
+    fetchMissions(); 
   }, []);
-
+  const fetchMissions= ()=> { 
+    axios
+    .get("http://localhost:5000/api/missions")
+    .then((res) => setMissions(res.data))
+    .catch((err) => console.log(err));
+  }
   const handleDragEnd = (result) => {
     // Destructure the result object
     const { destination, source, draggableId } = result;
@@ -137,35 +235,15 @@ const Missions = () => {
     }
   }
 
-  useEffect(() => {
-    console.log(stat);
-    if (stat && stat != "all") {
-      console.log("find missions depend on status");
-        axios
-          .get("http://localhost:5000/api/missions/" + stat)
-          .then((res) => setMissions(res.data))
-          .catch((err) => console.log(err));
-        setOpenFilter(false);
-    } else {
-      console.log("find All missions");
-      axios
-        .get("http://localhost:5000/api/missions/")
-        .then((res) => {
-          setMissions(res.data);
-          console.log(res);
-        })
-        .catch((err) => console.log(err));
-      setOpenFilter(false);
-    }
-  }, [status, stat]);
+
   const handleEditMission = (mission) => {
     // Navigate to the edit mission page
-    history(`/missions/edit/${mission.start}/${mission.id_dir}/${mission.id_resp}`);
+    history(`edit/${mission.start}/${mission.id_dir}/${mission.id_resp}`);
   };
 
   const handleCreateMission = () => {
     // Navigate to the create mission page
-    history("/missions/create");
+    history("create");
   };
 
   const handleDeleteMission = (missionId) => {
@@ -174,7 +252,7 @@ const Missions = () => {
   };
   return (
     <Card className="h-full w-full relative" shadow={false}>
-      <CardHeader floated={false} shadow={false} className="rounded-none">
+      <CardHeader floated={false} shadow={false} className="rounded-none z-50">
         <div className="mb-8 flex items-center justify-between gap-8">
           <div>
             <Typography variant="h5" color="blue-gray">
@@ -216,32 +294,12 @@ const Missions = () => {
               ))}
             </TabsHeader>
           </Tabs>
-          <div className="flex flex-row gap-5 items-center">
+          <div className="flex flex-row gap-5 items-center z-10">
             {/* icon filter when open form  */}
-            <Button onClick={() => setOpenFilter(!openFilter)}>
+            <Button ref={filterButtonRef} onClick={() => setOpenFilter(!openFilter)}>
               <IoFilter />
             </Button>
-            {openFilter && (
-              <div className="w-72 absolute z-50 bg-background top-0 right-52">
-                <form onSubmit={handleFilter}>
-                  <Select
-                    label="Select Filter"
-                    onChange={(e) => {
-                      setSearchBy(e);
-                    }}
-                  >
-                    <Option value="duration">Duration</Option>
-                    <Option value="startdate">Start Date</Option>
-                  </Select>
-                  <Input
-                    label="Search"
-                    onChange={(e) => {
-                      setValues({ ...values, value: e.target.value });
-                    }}
-                  />
-                </form>
-              </div>
-            )}
+            
 
             <div className="w-full md:w-72">
               <form onSubmit={handleFilter}>
@@ -261,33 +319,36 @@ const Missions = () => {
         </div>
       </CardHeader>
       <div className="w-full flex flex-wrap gap-4 relative z-0 mx-5 justify-center lg:justify-start">
-        <DragDropContext onDragEnd={handleDragEnd}>
-          <Droppable droppableId="missions">
-            {(provided) => (
-              <div {...provided.droppableProps} ref={provided.innerRef}>
-                {missions.map((mission, index) => (
-                  <Draggable
-                    key={mission.id}
-                    draggableId={mission.id.toString()}
-                    index={index}
+        {missions.length == 0 ? (
+          <p className="font-thin text-red-500 bg-red-100 rounded-md px-2">no missions </p>
+        ):
+      (
+        missions.map((mission, index) => (
+          <MissionCard mission={mission} onEdit={handleEditMission} onDelete={handleDeleteMission} />
+      ))
+      )}
+            </div>
+            {openFilter && (
+              <div ref={filterMenuRef} className="w-72 absolute z-50 bg-background top-24 right-4 shadow-lg p-4">
+                <form onSubmit={handleFilter}>
+                  <Select
+                    label="Select Filter"
+                    onChange={(e) => {
+                      setSearchBy(e);
+                    }}
                   >
-                    {(provided) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                      >
-                        <MissionCard mission={mission} onEdit={handleEditMission} onDelete={handleDeleteMission} />
-                      </div>
-                    )}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
+                    <Option value="duration">Duration</Option>
+                    <Option value="startdate">Start Date</Option>
+                  </Select>
+                  <Input
+                    label="Search"
+                    onChange={(e) => {
+                      setValues({ ...values, value: e.target.value });
+                    }}
+                  />
+                </form>
               </div>
             )}
-          </Droppable>
-        </DragDropContext>
-      </div>
       <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4 mt-6">
         <Typography variant="small" color="blue-gray" className="font-normal">
           Page 1 of 10

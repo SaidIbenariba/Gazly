@@ -1,13 +1,19 @@
 import mysql from "mysql";
 
 export const db = mysql.createConnection({
-  host: "localhost",
-  // port: "3308", // change in your local code not here
+  host: "localhost", // lamp-mysql8
+  // port:"3306",
   user: "root",
   password: "",
-  database: "pfe-project",
+  database: "pfe_project",
 });
+
 db.connect((err) => {
-  if (err) console.log(err);
+  if (err) {
+    console.error("Error connecting to MySQL database:", err);
+    return;
+  }
   console.log("Connected to MySQL database");
 });
+
+export default db;

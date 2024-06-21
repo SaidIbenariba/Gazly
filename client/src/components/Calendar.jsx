@@ -11,11 +11,12 @@ import axios from "axios";
 import { useAuth } from "../hooks/useAuth";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Spinner } from "@material-tailwind/react";
 
 export default function Calendar() {
   const [responsables, setResponsables] = useState([{ id: 1, name: "said" }]);
   const [allEvents, setAllEvents] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [newEvent, setNewEvent] = useState({
@@ -29,22 +30,17 @@ export default function Calendar() {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [feedbackMessage, setFeedbackMessage] = useState(null);
   const { user } = useAuth();
-
+  useEffect(()=>{
+    console.log(allEvents); 
+  },[selectedEvent, newEvent]); 
   useEffect(() => {
-    axios
-      .get("http://localhost:5000/api/meetings/")
-      .then((res) => {
-        setAllEvents(res.data);
-        setLoading(false);
-      })
-      .catch((err) => console.log(err));
-
-    axios
-      .get("http://localhost:5000/api/users/responsables")
-      .then((res) => {
-        setResponsables(res.data);
-      })
-      .catch((err) => console.log(err));
+    fetchMeetings(); 
+    // axios
+    //   .get("http://localhost:5000/api/users/responsables")
+    //   .then((res) => {
+    //     setResponsables(res.data);
+    //   })
+    //   .catch((err) => console.log(err));
   }, [user]);
 
   useEffect(() => {
@@ -61,7 +57,17 @@ export default function Calendar() {
       });
     }
   }, []);
+   function fetchMeetings() { 
+    axios
+    .get("http://localhost:5000/api/meetings/")
+    .then((res) => {
+      console.log(res.data); 
+      setAllEvents(res.data);
+      setLoading(false);
+    })
+    .catch((err) => console.log(err));
 
+   }
   const handleSelection = (arg) => {
     setNewEvent({
       ...newEvent,
@@ -100,6 +106,8 @@ export default function Calendar() {
   }
 
   function handleDelete() {
+    console.log(selectedEvent.id); 
+    // delete also from database 
     if (window.confirm("Are you sure you want to delete this event?")) {
       setAllEvents(allEvents.filter((event) => event.id !== selectedEvent.id));
       setShowViewModal(false);
@@ -147,9 +155,9 @@ export default function Calendar() {
   };
 
   function handleSubmit(e) {
-    e.preventDefault();
+    // add it also in database                                                                                                                      
+    e.preventDefault();                                                                                                                                                                                                                                                                                                                                                                                                                         
     const event = { ...newEvent };
-
     // axios
     //   .post("http://localhost:5000/api/meetings/create", event)
     //   .then((res) => {
@@ -167,6 +175,7 @@ export default function Calendar() {
       description: "",
       id_resp: null,
     });
+    console.log(newEvent); 
     // })
     // .catch((err) => {
     //   setFeedbackMessage({ type: "error", message: "Error creating event" });
@@ -185,7 +194,9 @@ export default function Calendar() {
                 <div
                   className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full"
                   role="status"
-                ></div>
+                >
+                  <Spinner/>
+                </div>
               </div>
             ) : (
               <FullCalendar
@@ -207,10 +218,10 @@ export default function Calendar() {
                 eventClick={(data) => handleEventClick(data)}
               />
             )}
-          </div>
+          </div>   
         </div>
 
-        {feedbackMessage && (
+        {/* {feedbackMessage && (
           <div
             className={`alert ${
               feedbackMessage.type === "success"
@@ -220,7 +231,7 @@ export default function Calendar() {
           >
             {feedbackMessage.message}
           </div>
-        )}
+        )} */}
 
         <Transition.Root show={showViewModal} as={Fragment}>
           <Dialog as="div" className="relative z-10" onClose={setShowViewModal}>

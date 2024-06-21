@@ -35,7 +35,7 @@ app.use(cookieParser());
 
 app.use("/auth", authRoutes);
 app.use("/refresh", refreshRoutes);
-app.use(verifyJWT);
+// app.use(verifyJWT);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/sensor", sensorRoutes);
 app.use("/api/observations", observationRoutes);

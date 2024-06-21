@@ -86,7 +86,7 @@ const Edit = () => {
             <h1 className="text-3xl font-bold text-text dark:text-text">
               Edit User
             </h1>
-            <Link to="/users" className="button">
+            <Link to="/private/users" className="button">
               Home
             </Link>
           </nav>

@@ -4,13 +4,19 @@ import Espaces from "../Espaces";
 import UsersRoutes from "../routes/UsersRoutes";
 import Missions from "../Missions/Missions";
 import Planning from "../Planning";
-import Observations from "../Observations";
+// import Observations from "../Observations";
 import DashboardLayout from "../directeur/DashboardLayout";
 import CreateMissionForm from "../Missions/CreateMissionForm";
 import EditMissionForm from "../Missions/EditMissionForm";
 import ObservationsTable from "../observations/ObservationsTable";
 import EditObservationForm from "../observations/EditObservationForm";
 import CreateObservationForm from "../observations/CreateObservationForm";
+import TasksTable from "../tasks/TasksTable";
+import EditTaskForm from "../tasks/EditTaskForm";
+import CreateTaskForm from "../tasks/CreateTaskForm";
+import MeasuresTable from "../measures/MeasuresTable";
+import SensorTable from "../Sensors/SensorsTable";
+
 export default function AdminRoutes() {
   return (
     <Routes>
@@ -24,10 +30,19 @@ export default function AdminRoutes() {
         <Route path="missions/create" element={<CreateMissionForm />} />
         <Route path="missions/edit/:start/:id_dir/:id_resp" element={<EditMissionForm />} />
         {/* <Route path="observations" element={<Observations/>}/> */}
-        <Route path="observations" exact component={ObservationsTable} />
-        <Route path="observations/create" exact component={CreateObservationForm} />
-        <Route path="observations/edit/:date/:id_ws/:id_resp" exact component={EditObservationForm} />
-        <Route path="observations/*" element={<Observations />} />
+        <Route path="observations" element={<ObservationsTable/>} />
+        <Route path="observations/create" element={<CreateObservationForm/>} />
+        <Route path="observations/edit/:date/:id_ws/:id_resp" element={<EditObservationForm/>} />
+        <Route path="observations/*" element={<ObservationsTable />} />
+        {/* measures routes */}
+        <Route path="measures" element={<MeasuresTable/>} />
+        {/* Sensors routes */}
+        <Route path="sensors" element={<SensorTable/>}/>
+        {/* tasks Routes */}
+        <Route path="tasks" element={<TasksTable/>}/>
+        <Route path="tasks/create" element={<CreateTaskForm/>} />
+        <Route path="tasks/edit/:date/:id_resp/:id_ouv" element={<EditTaskForm/>} />
+        <Route path="tasks/*" element={<TasksTable />} />
         <Route path="planning" element={<Planning />} />
       </Route>
     </Routes>

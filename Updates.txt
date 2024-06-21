@@ -26,11 +26,29 @@ Updates for ilyass
     
  ## observation 
     /latest return empty inside i have data in db 
-
+## observation 
+  createObservation 
+      you have to case  
+         admin date chose or now 
+         resp now() only he can't pick a date 
+         
 new api 
   #users 
 /responsables return all responsables return data [
   {id,name=firstname.value+lastname.value} 
 ]
+
+
+// update for testing 
+i use add default user to authentificatio context 
+i disable verifyJwt 
+
+// affectation 
+create user affect workspace 
+edit user
+
+// automate measure and mission using stored procedure/ function 
+
+
 
 
