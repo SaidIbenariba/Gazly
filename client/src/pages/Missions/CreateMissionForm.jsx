@@ -12,7 +12,7 @@ const CreateMissionForm = () => {
   const [mission, setMission] = useState({
     start: "",
     end: "",
-    title: "",
+    title: "", 
     description: "",
     status: "",
     id_dir: "",
@@ -60,6 +60,7 @@ const CreateMissionForm = () => {
       .then((res) => {
         console.log("Mission created successfully:", res.data);
         // Reset form values
+        nav("/private/missions"); 
         setMission({
           start: "",
           end: "",

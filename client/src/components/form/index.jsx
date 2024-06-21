@@ -29,9 +29,9 @@ const FormField = ({
             onChange={(value) => handleChange(value, name)}
             aria-required = "true"
           >
-            {options.map((option) => (
-              <Option key={option.value} value={option.value}>
-                {option.label}
+            {options.map((option,index) => (
+              <Option key={index} value={String(option.value)}>
+                {option.label}  
               </Option>
             ))}
           </Select>
@@ -85,11 +85,12 @@ const FormField = ({
 };
 
 const Form = ({ fields, onSubmit, initialValues, isEditMode }) => {
-  const [formValues, setFormValues] = useState(initialValues || {});
+  const [formValues, setFormValues] = useState({});
 
   useEffect(() => {
     setFormValues(initialValues || {});
   }, [initialValues]);
+  console.log("initial values of form ", formValues); 
 
   const handleChange = (value, fieldName) => {
     setFormValues({ ...formValues, [fieldName]: value });

@@ -90,7 +90,7 @@ const Edit = () => {
               Home
             </Link>
           </nav>
-          <Form fields={formFields} onSubmit={handleSubmit} values={values} />
+          <Form fields={formFields} onSubmit={handleSubmit} values={values} isEditMode={true} />
         </div>
       </div>
     </>

@@ -175,16 +175,10 @@ const Missions = () => {
       window.removeEventListener('click', handleClickOutside);
     };
   }, [openFilter]);
-  useEffect(() => {
-    // Fetch missions data from the server
-    fetchMissions(); 
-  }, []);
-  const fetchMissions= ()=> { 
-    axios
-    .get("http://localhost:5000/api/missions")
-    .then((res) => setMissions(res.data))
-    .catch((err) => console.log(err));
-  }
+  useEffect(()=>{
+    console.log(missions); 
+  },[missions])
+
   const handleDragEnd = (result) => {
     // Destructure the result object
     const { destination, source, draggableId } = result;

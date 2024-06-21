@@ -1,12 +1,11 @@
-  import { useParams } from 'react-router-dom';
+  import { useNavigate, useParams } from 'react-router-dom';
   import React, { useState, useEffect } from 'react';
   import { Link } from 'react-router-dom';
   import axios from 'axios';
   import Form from '../../components/form';
   const EditMissionForm = () => { 
+    const {start, id_dir, id_resp} = useParams(); 
     const [err,setErr] = useState({exist:false, msg:""}); 
-      const {start, id_dir, id_resp} = useParams(); 
-
       const [responsables, setResponsables] = useState([]); 
       // const [responsables, setResponsables] = useState([{ id: 1, name: "said" }]);
       const [mission, setMission] = useState({
@@ -37,9 +36,12 @@
           //   options: responsables.map(responsable => ({ label: responsable.name, value: responsable.id }))
           // }
         ];
+        const nav = useNavigate(); 
+        
         useEffect(()=>{
           axios.get(`http://localhost:5000/api/missions/${start}/${id_resp}/${id_dir}`)
       .then(response => {
+         console.log(response.data); 
         setMission(response.data);
       })
       .catch(error => {
@@ -57,7 +59,7 @@
     
       function fetchMissions () { 
           axios.get(`http://localhost:5000/api/missions/${start}/${id_dir}/${id_resp}`)
-          .then((res)=>setMission({...mission,end:res.data[0].end,title:res.data[0].title,description:res.data[0].description,status:res.data[0].status}))
+          .then((res)=>{setMission({...mission,end:res.data[0].end,title:res.data[0].title,description:res.data[0].description,status:res.data[0].status})})
           .catch((err)=>console.log(err)); 
       }
       fetchMissions(); 
@@ -66,13 +68,13 @@
 
     const handleEditMission = (formData) => {
       axios
-        .post(`http://localhost:5000/api/missions/editMission/${start}/${id_dir}/${id_resp}`, formData)
+        .put(`http://localhost:5000/api/missions/edit/${start}/${id_dir}/${id_resp}`, formData)
         .then((res) => {
-          console.log("Mission created successfully:", res.data);
+          console.log("Mission updated successfully:", res.data);
           // Update missions state with the newly created mission
-          con
-          setMissions([...missions, res.data]);
-          // Reset form values
+          nav("/private/missions");  
+          setMission([...missions, res.data]);  
+          // Reset form values.
           // setMission({});
         })
         .catch((err) => console.log("Error creating mission:", err));
@@ -87,7 +89,7 @@
           <h1 className=" text-3xl font-bold text-text dark:text-text">
             Add Mission
           </h1>
-          <Link to="/private/users" className="button">
+          <Link to="/private/missions " className="button">
             Home
           </Link>
         </nav>

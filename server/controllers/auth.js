@@ -48,13 +48,14 @@ export const register = async (req, res) => {
     
     const userId = result.insertId;
 
-                const insertDirecteurQuery = 'INSERT INTO ${roleTable} (user_id) VALUES (?)';
+                const insertDirecteurQuery = 'INSERT INTO director(id) VALUES (?)';
                 db.query(insertDirecteurQuery, [userId], (err, result) => {
                   if (err) return res.status(500).json(err);
-                });
+                  console.log(result); 
+                });  
              
     
-    return res.status(200).json({ succes: `New User  created ` });
+    // return res.status(200).json({ succes: `New User  created ` });
 
   });
   });

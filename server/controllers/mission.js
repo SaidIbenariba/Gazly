@@ -59,49 +59,45 @@ export const getMissions = (req, res) => {
     console.log(start, id_dir, id_resp); 
     sql =
         "SELECT * FROM mission WHERE id_dir = ? AND start = ? AND id_resp = ? ";
-        queryParams = [id_dir,start,id_resp];
+        queryParams = [id_dir,start,id_resp]; 
   }else if (status) {
-    if (userRole === "admin") {
+    if (userRole == "admin") {
       sql =
         "SELECT * FROM mission WHERE id_dir = ? AND status = ?";
-    } else if (userRole === "responsable") {
+    } else if (userRole == "responsable") {
       sql =
         "SELECT * FROM mission WHERE id_resp = ? AND status = ?";
     }
     queryParams = [userId, status];
   } else {
-    if (userRole === "admin") {
+    console.log("get all Missions"); 
+    if (userRole == "admin") {
       sql =
         "SELECT * FROM mission WHERE id_dir = ? ";
-    } else if (userRole === "responsable") {
+    } else if (userRole == "responsable") {
       sql =
         "SELECT * FROM mission WHERE id_resp = ? ";
     }
     queryParams = [userId];
   }
-  db.query(sql, queryParams, (err, results) => {
+  db.query(sql, queryParams, (err, result) => {
     if (err) {
       console.error("Database query error: ", err);
       return res.status(500).json({ error: "Cannot connect to database" });
     }
+    function formatDate(dateStr) {
+      const date = new Date(dateStr);
+      const year = date.getFullYear();
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
 
-    const formatDate = (mysqlDate) => {
-      const jsDate = new Date(mysqlDate);
-      const options = {
-          year: "2-digit",
-          month: "2-digit",
-          day: "2-digit",
-      };
-      return jsDate.toLocaleString("en-GB", options);
-  };
-
-    const formattedResults = results.map((row) => ({
+    const formattedResults = result.map((row) => ({
       ...row, 
       start: formatDate(row.start),
       end: formatDate(row.end),
     }));
-    console.log(userId,userRole);
-    console.log(status,start, id_dir, id_resp); 
     console.log("missions : ");
     console.log(formattedResults);
     return res.json(formattedResults);
@@ -152,44 +148,46 @@ console.log(userId)
 };*/
 export const createMission = (req, res) => {
   const userId=req.id;
+  // console.log(userId); 
   const sql = `
-    INSERT INTO mission (start, end, title, description, id_dir, id_resp)
-    VALUES (STR_TO_DATE(?, '%d/%m/%Y'), STR_TO_DATE(?, '%d/%m/%Y'), ?, ?, ?, ?)
+  INSERT INTO mission (start, end, title, description, id_dir, id_resp)
+  VALUES (?, ?, ?, ?, ?, ?)
 `;
 const newMission = {
   start: req.body.start,
   end: req.body.end,
   title: req.body.title,
-  Description: req.body.description,
+  description: req.body.description,
   id_dir: userId,
-  id_resp: req.body.id_resp,
+  id_resp: Number(req.body.id_resp),
 }; 
    console.log('SQL Query:', newMission);
 
-  db.query(sql, [Object.values(newMission)], (err, result) => {
-    if (err) return res.status(500).json(err);
+  db.query(sql, [...Object.values(newMission)], (err, result) => {
+    if (err) {console.log(err);  return res.status(500).json(err); } 
     return res.status(200).json({ succes: `New Mission created ` });
     
   });
 };
     export const editMission = (req, res) => {
+
         const q =
           "UPDATE mission SET end=?, description=?,title=?,status=?,  WHERE id_dir = ? AND start = ? AND id_resp = ?";
         const values = {
             end: req.body.end,
-            Description: req.body.description,
+            description: req.body.description,
             title:req.body.title,
             status: req.body.status,
             id_dir: req.params.id_dir,
             start: req.params.start, 
             id_resp: req.params.id_resp,
           };
-        db.query(q, [Object.values(values)], (err, result) => {
-            if (err) return res.sendStatus(500);
+        db.query(q, [...Object.values(values)], (err, result) => {
+            if (err) console.log(err); 
             return res.status(200).json(result);
           });
     };
-export const missionSearch = (req, res) => {
+export const missionSearch = (req, res) => {  
   const userId = req.id;
   const userRole = req.role;
   let q = "";
