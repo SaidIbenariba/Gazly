@@ -19,7 +19,7 @@
           id_resp: id_resp
         });
         const missionFields = [
-          { label: "Start Date", name: "start", type: "date" },
+          // { label: "Start Date", name: "start", type: "date" },
           { label: "End Date", name: "end", type: "date" },
           { label: "Title", name: "title" },
           { label: "Description", name: "description" },

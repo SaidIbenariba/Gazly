@@ -50,6 +50,17 @@ export const getMissionCounts = (req, res) => {
 };
 
 export const getMissions = (req, res) => {
+  /**
+   {
+          start: start,
+          end: "",
+          title: "",
+          description: "",
+          status: "",
+          id_dir: id_dir,
+          id_resp: id_resp
+    }
+   */
   const userId = req.id;
   const userRole = req.role;
   let sql = "";
@@ -172,6 +183,22 @@ export const createMission = (req, res) => {
     return res.status(200).json({ succes: `New Mission created ` });
   });
 };
+    export const editMission = (req, res) => {
+        const q =
+          "UPDATE mission SET end=?, description=?,  WHERE id_dir = ? AND start = ? AND id_resp = ?";
+        const values = {
+            start: req.params.start,
+            end: req.body.end,
+            Description: req.body.description,
+            status: req.body.description,
+            id_dir: req.params.id_dir,
+            id_resp: req.params.id_resp,
+          };
+        db.query(q, values, (err, result) => {
+            if (err) return res.sendStatus(500);
+            return res.status(200).json(result);
+          });
+    };
 export const missionSearch = (req, res) => {
   const userId = req.id;
   const userRole = req.role;
