@@ -114,17 +114,19 @@ const ObservationsTable = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchObservations();
+    fetchObservations(status);
+    console.log("status changed ");
   }, [status,deleteObservation]);
   useEffect(()=>{
     console.log(observations); 
   },[observations]); 
 
-  const fetchObservations = () => {
+  const fetchObservations = (status) => {
+    console.log(status) ;
     if (status && status !== "all") {
       axios
-        .get("http://localhost:5000/api/observations/" + status)
-        .then((res) => setObservations(res.data))
+        .get("http://localhost:5000/api/observations/status/" + status)
+        .then((res) =>setObservations(res.data))
         .catch((err) => console.log(err));
     } else {
       axios

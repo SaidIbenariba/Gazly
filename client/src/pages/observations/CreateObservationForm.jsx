@@ -34,7 +34,7 @@ const CreateObservationForm = () =>
     useEffect(()=>{
       axios.get(
         "http://localhost:5000/api/WorkSpaces"
-      ).then((res) => console.log(res.data))
+      ).then((res) => setEspaces(res.data))
       .catch((err)=>console.log(err)); 
     },[])
   
@@ -50,9 +50,13 @@ const CreateObservationForm = () =>
   ];
 
   const handleCreateObservation = (data) => {
+    // console.log(data) ;
+    console.log("handle create observation"); 
     axios
-      .post("http://localhost:5000/api/observations/createObservation", data)
-      .then((res) => {console.log(res);         nav("/private/observations"); } 
+      .post("http://localhost:5000/api/observations/create", data)
+      .then((res) => {
+        console.log(res);      
+           nav("/private/observations"); } 
     )
       .catch((err) => {
         console.log(err);

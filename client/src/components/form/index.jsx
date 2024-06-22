@@ -44,8 +44,8 @@ const FormField = ({
             }}
             onChange={(value) => handleChange(value, name)}
           >
-            {options.map((option) => (
-              <Option key={option.value} value={option.value}>
+            {options.map((option, index) => (
+              <Option key={index} value={option.value}>
                 {option.label}
               </Option>
             ))}

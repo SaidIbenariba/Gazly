@@ -57,6 +57,7 @@ export const getMissionCounts = (req, res) => {
 };
 
 export const getMissions = (req, res) => {
+  console.log("get Mission contreoller");
   const userId = req.id;
   const userRole = req.role;
   let sql = "";
@@ -258,17 +259,18 @@ const newMission = {
     };
 
 export const defaultMissionSearch = (req, res) => {
+  console.log("default search"); 
   const userId = req.id;
   const userRole = req.role;
   let q = "";
   if (userRole === 'admin') {
-  q = "SELECT * FROM mission WHERE id_dir = ?";
+  q = "SELECT * FROM mission m WHERE id_dir = ?";
 } else if (userRole === 'responsable') {
-  q = "SELECT * FROM mission WHERE id_resp = ?";
+  q = "SELECT * FROM mission m WHERE id_resp = ?";
 }const queryParams = [userId];
-const searchValue = req.body.values;
+const searchValue = req.body;
   console.log("searchValue ");
-  console.log(q); 
+  console.log(searchValue); 
   let conditions = [];
 
   // Check if the searchValue is a valid date
@@ -278,7 +280,7 @@ const searchValue = req.body.values;
     conditions.push("m.start = ? OR m.end = ?");
     queryParams.push(searchValue, searchValue);
   } else {
-    conditions.push("m.title LIKE ? OR m.discription LIKE ? OR m.status LIKE ?");
+    conditions.push("m.title LIKE ? OR m.description LIKE ? OR m.status LIKE ?");
     queryParams.push(`%${searchValue}%`,`%${searchValue}%`,`%${searchValue}%`);
   }
 
@@ -287,8 +289,7 @@ const searchValue = req.body.values;
   }
   db.query(q, queryParams, (err, results) => {
     if (err) {
-      return res.status(500).json("Cannot connect to database");
-    }
+ return res.status(400).json(err);    }
 
     function formatDate(dateStr) {
       const date = new Date(dateStr);

@@ -15,26 +15,32 @@ export const getObservations = (req, res) => {
   const status = req.params.status;
   const id_ws = req.params.id_ws;
   const id_resp = req.params.id_resp;
+  console.log(req.params); 
   let sql="";
   let queryParams = [];
-  console.log(req.params.status);  
+  console.log("search observaation when status = ");
+  console.log(status); 
+  // reponsable 
+  // see only there observations 
+  // only responsable can crud observations  
   if(status && id_ws && id_resp){
-     sql = "SELECT o.* FROM observation o  WHERE status=? AND id_ws=? AND id_resp=?";
+     sql = "SELECT o.* FROM observation o  WHERE status = ? AND id_ws = ? AND id_resp = ?";
     queryParams = [status,id_ws,id_resp];
   }else if(status){
-     sql = "SELECT o.* FROM observation o  WHERE status=? ";
+    // console.log(status);
+     sql = "SELECT o.* FROM observation o  WHERE status = ? ";
     queryParams = [status];
     console.log("status");
   }else if(id_ws){
-    sql = "SELECT o.* FROM observation o  WHERE id_ws=?";
+    sql = "SELECT o.* FROM observation o  WHERE id_ws = ?";
    queryParams = [id_ws];
  }
     else{
-     sql = "SELECT o.* FROM observation o  ";
-
+     sql = "SELECT o.* FROM observation o ";
   }
-    db.query(sql, (err, results) => {
+    db.query(sql,queryParams, (err, results) => {
       if (err) {
+        // console.log(err) ;  
         return res.status(400).json("error mysql");
       }
   
@@ -150,20 +156,24 @@ export const getObservations = (req, res) => {
   
   
   export const createObservation = (req, res) => {
-    const sql ="INSERT INTO observation (date,`feedback`,`id_WS`,`id_resp`,`status`) VALUE(?,?,?,?,?) ";
-    const newObservation = {
+    const userId = req.id;
+    const userRole = req.role ; 
+    const sql ="INSERT INTO observation (date,`feedback`,`id_ws`,`id_resp`,`status`) VALUE(?,?,?,?,?) ";
+    if(userRole == "responsable") { 
+    const newObservation = {  
       date: req.body.date,
       feedback: req.body.feedback,
-      id_WS: req.body.id_WS,
-      id_resp: req.body.id_resp,
-      status: req.body.status,
+      id_ws: req.body.id_ws,
+      id_resp: userId,
+      status: req.body.status,   
     };
     db.query(sql, [...Object.values(newObservation)], (err, result) => {
-      if (err) return res.status(500).json(err);
+      if (err) {console.log(err); return res.status(400).json(err);  }
       return res
         .status(200)
         .json({ succes: `New Meeting created ` });
     });
+  } 
     };
     export const editObservation =(req,res) =>{
       const q =
