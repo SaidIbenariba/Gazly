@@ -89,9 +89,9 @@ export const getMissions = (req, res) => {
     }
     queryParams = [userId];
   }
-  db.query(sql, queryParams, (err, result) => {
+  db.query(sql, queryParams, (err, result) => {  
     if (err) {
-      console.error("Database query error: ", results);
+      console.error("Database query error: ", result);
       return res.status(500).json({ error: "Cannot connect to database" });
     }
     function formatDate(dateStr) {
@@ -197,90 +197,78 @@ const newMission = {
             return res.status(200).json(result);
           });
     };
-export const missionSearch = (req, res) => {  
-  const userId = req.id;
-  const userRole = req.role;
-  let q = "";
-  if (userRole === 'admin') {
-  q = "SELECT m.*, CONCAT(r.firstname, ' ', r.lastname) as directeur FROM mission m INNER JOIN users r ON m.id_resp = r.id WHERE m.id_dir = ? ";
-} else if (userRole === 'responsable') {
-  q = "SELECT m.*, CONCAT(r.firstname, ' ', r.lastname) as responsable FROM mission m INNER JOIN users r ON m.id_dir = r.id WHERE m.id_resp = ?";
-}const queryParams = [userId];
-console.log("value to search with "); 
-console.log(req.body); 
-console.log("searchBy ")
-console.log(req.params.searchBy); 
-  let conditions = [];
-  if (req.params.searchBy === 'title') {
-      conditions.push("m.title LIKE ?");
-      queryParams.push(`%${req.params.values}%`);
-  }
-  if (req.params.searchBy === 'startdate') {
-      conditions.push("m.startdate = ?");
-      queryParams.push(req.params.values);
-  }
-  if (req.params.searchBy === 'enddate') {
-      conditions.push("m.enddate = ?");
-      queryParams.push(req.params.values);
-  }
-  if (req.params.searchBy === 'firstname') {
-      conditions.push("r.firstname LIKE ?");
-      queryParams.push(`%${req.params.values}%`);
-  }
-  if (req.params.searchBy === 'lastname') {
-      conditions.push("r.lastname LIKE ?");
-      queryParams.push(`%${req.params.values}%`);
-  }
-  if (conditions.length > 0) {
-      q += " AND " + conditions.join(" AND ");
-  }
-
-  db.query(q, queryParams, (err, results) => {  // Corrected from 'users' to 'results'
-    if (err) {
-      return res.status(500).json("Cannot connect to database");
-    }
-
-    const formatDate = (mysqlDate) => {
-      const jsDate = new Date(mysqlDate);
-      const options = {
-        weekday: 'short',
-        year: 'numeric',
-        month: 'short',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        timeZoneName: 'short',
-      };
-      return jsDate.toLocaleString('en-GB', options);
+    export const missionSearch = (req, res) => {
+      const userId = req.id;
+      const userRole = req.role;
+      let q = "";
+      if (userRole === 'admin') {
+      q = "SELECT * FROM mission WHERE id_dir = ? ";
+    } else if (userRole === 'responsable') {
+      q = "SELECT * FROM mission WHERE id_resp = ? ";
+    }const queryParams = [userId];
+    
+      let conditions = [];
+      if (req.params.searchBy === 'title') {
+          conditions.push("title LIKE ?");
+          queryParams.push(`%${req.params.values}%`);
+      }
+      if (req.params.searchBy === 'start') {
+          conditions.push("start = ?");
+          queryParams.push(req.params.values);
+      }
+      if (req.params.searchBy === 'end') {
+          conditions.push("end = ?");
+          queryParams.push(req.params.values);
+      }
+      /*if (req.params.searchBy === 'firstname') {
+          conditions.push("r.firstname LIKE ?");
+          queryParams.push(`%${req.params.values}%`);
+      }
+      if (req.params.searchBy === 'lastname') {
+          conditions.push("r.lastname LIKE ?");
+          queryParams.push(`%${req.params.values}%`);
+      }*/
+      if (conditions.length > 0) {
+          q += " AND " + conditions.join(" AND ");
+      }
+    
+      db.query(q, queryParams, (err, results) => {  // Corrected from 'users' to 'results'
+        if (err) {
+          return res.status(500).json("Cannot connect to database");
+        }
+    
+        function formatDate(dateStr) {
+          const date = new Date(dateStr);
+          const year = date.getFullYear();
+          const day = String(date.getDate()).padStart(2, '0');
+          const month = String(date.getMonth() + 1).padStart(2, '0');
+          return `${year}-${month}-${day}`;
+        }
+    
+    
+        const formattedResults = results.map(row => ({
+          ...row,
+          start: formatDate(row.start),
+          end: formatDate(row.end),
+          
+        }));
+        console.log(formattedResults);
+        return res.json(formattedResults);
+      });
     };
-
-    const formattedResults = results.map(row => ({
-      ...row,
-      start: formatDate(row.start),
-      end: formatDate(row.end),
-      user: [
-       row.firstname,
-        row.lastname,
-      ],
-    }));
-
-    return res.json(formattedResults);
-  });
-};
 
 export const defaultMissionSearch = (req, res) => {
   const userId = req.id;
   const userRole = req.role;
   let q = "";
   if (userRole === 'admin') {
-  q = "SELECT m.*, CONCAT(r.firstname, ' ', r.lastname) as directeur FROM mission m INNER JOIN users r ON m.id_resp = r.id WHERE m.id_dir = ? ";
+  q = "SELECT * FROM mission WHERE id_dir = ?";
 } else if (userRole === 'responsable') {
-  q = "SELECT m.*, CONCAT(r.firstname, ' ', r.lastname) as responsable FROM mission m INNER JOIN users r ON m.id_dir = r.id WHERE m.id_resp = ?";
+  q = "SELECT * FROM mission WHERE id_resp = ?";
 }const queryParams = [userId];
-const searchValue = req.body;
+const searchValue = req.body.values;
   console.log("searchValue ");
-  console.log(searchValue); 
+  console.log(q); 
   let conditions = [];
 
   // Check if the searchValue is a valid date
@@ -290,8 +278,8 @@ const searchValue = req.body;
     conditions.push("m.start = ? OR m.end = ?");
     queryParams.push(searchValue, searchValue);
   } else {
-    conditions.push("m.title LIKE ? OR m.discription LIKE ? OR m.status LIKE ? OR r.firstname LIKE ? OR r.lastname LIKE ?");
-    queryParams.push(`%${searchValue}%`,`%${searchValue}%`,`%${searchValue}%`,`%${searchValue}%`,`%${searchValue}%`);
+    conditions.push("m.title LIKE ? OR m.discription LIKE ? OR m.status LIKE ?");
+    queryParams.push(`%${searchValue}%`,`%${searchValue}%`,`%${searchValue}%`);
   }
 
   if (conditions.length > 0) {
@@ -314,12 +302,9 @@ const searchValue = req.body;
       ...row,
       start: formatDate(row.start),
       end: formatDate(row.end),
-      user: [
-       row.firstname,
-        row.lastname,
-      ],
+      
     }));
-
+    console.log(formattedResults);
     return res.json(formattedResults);
   });
 };

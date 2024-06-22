@@ -56,7 +56,7 @@ export const getWorkSpace = (req, res) => {
         });
     };
     export const WorkSpaces = (req, res) => {
-        const sql = "SELECT ws.*,r.firstname,r.lastname FROM WorkSpace ws INNER JOIN users r ON  ws.id_resp= r.id";
+        const sql = "SELECT ws.*,r.firstname,r.lastname FROM workspace ws INNER JOIN users r ON  ws.id_resp= r.id";
         db.query(sql,(err, workSpaces) => {
           if (err) console.log(err); 
           const formattedResults = workSpaces.map(row => ({

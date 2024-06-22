@@ -17,15 +17,17 @@ export const getObservations = (req, res) => {
   const id_resp = req.params.id_resp;
   let sql="";
   let queryParams = [];
+  console.log(req.params.status);  
   if(status && id_ws && id_resp){
      sql = "SELECT o.* FROM observation o  WHERE status=? AND id_ws=? AND id_resp=?";
     queryParams = [status,id_ws,id_resp];
   }else if(status){
      sql = "SELECT o.* FROM observation o  WHERE status=? ";
-    queryParams = [status,id_ws,id_resp];
+    queryParams = [status];
+    console.log("status");
   }else if(id_ws){
     sql = "SELECT o.* FROM observation o  WHERE id_ws=?";
-   queryParams = [status,id_ws,id_resp];
+   queryParams = [id_ws];
  }
     else{
      sql = "SELECT o.* FROM observation o  ";
@@ -37,32 +39,16 @@ export const getObservations = (req, res) => {
       }
   
       
-      const formatDate = (mysqlDate) => {
-        const jsDate = new Date(mysqlDate);
-        const options = {
-          weekday: 'short',
-          year: 'numeric',
-          month: 'short',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-          timeZoneName: 'short',
-        };
-        return jsDate.toLocaleString('en-GB', options);
-      };
+      function formatDate(dateStr) {
+        const date = new Date(dateStr);
+        const year = date.getFullYear();
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      }
   
       const formattedResults = results.map(row => ({
         ...row,
-        
-        observations:[{
-          user: {
-         firstname:row.firstname,
-         lastname:row.lastname,
-        },
-        feedback:row.feedback,
-        }],
-        
         date: formatDate(row.date),
         
       }));

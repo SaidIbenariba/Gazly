@@ -5,9 +5,10 @@ export const db = mysql.createConnection({
   port: "3306", // change in your local code not here
   user: "root",
   password: "",
-  database: "pfe_project",
+  database: "pfe-project",
 });
-db.connect((err) => {
+db.connect((err) => {    
   if (err) console.log(err);
+  else 
   console.log("Connected to MySQL database");
 });

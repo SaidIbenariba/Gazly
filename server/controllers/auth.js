@@ -35,7 +35,7 @@ export const register = async (req, res) => {
       "INSERT INTO users (`firstname`,`lastname` ,`email`,`password`,`role`) VALUES(?) ";
 
     const newUser = {
-      firstName: req.body.firstname,
+      firstname: req.body.firstname,  
       lastname: req.body.lastname,
       email: req.body.email,
       password: hashedPassword,
