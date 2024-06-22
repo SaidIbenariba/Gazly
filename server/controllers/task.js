@@ -70,8 +70,14 @@ export const getTasksForResp = (req, res) => {
         });
     };
     export const getTasks = (req, res) => {
-      const sql = "SELECT * FROM task";
-      db.query(sql, (err, tasks) => {
+      let sql = "SELECT * FROM task";
+      const status = req.params.status; 
+      let queryParams=[]; 
+      if(status) { 
+        sql+= " WHERE status = ? "
+        queryParams.push(status); 
+      }
+      db.query(sql,queryParams, (err, tasks) => {
         if (err) {
           console.error("Database query error: ", err);
           return res.status(500).json({ error: "Cannot connect to database" });
@@ -90,7 +96,7 @@ export const getTasksForResp = (req, res) => {
           start: task.start ? formatDate(task.start) : null,
           end: task.end ? formatDate(task.end) : null,
         }));
-    
+        console.log(queryParams); 
         console.log("tasks:");
         console.log(formattedTasks);
         return res.json(formattedTasks);

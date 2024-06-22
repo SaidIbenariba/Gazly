@@ -9,7 +9,7 @@ import {
 } from "../controllers/task.js";
 const router = express.Router();
 router.get("/", getTasks);
-router.get("/:status?", getTasks);
+router.get("/status/:status?", getTasks);
 router.get("/:start?/:id_resp?/:id_ouv?", getTasks);
 router.get("/respSearch/:id_ouv", respSearch);
 router.get("/ouvrSearch/:date", ouvSearch);

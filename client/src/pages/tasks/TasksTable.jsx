@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect} from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
@@ -21,6 +21,7 @@ import {
 import { IoIosRefresh } from "react-icons/io";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { editTask } from "../../../../server/controllers/task";
 
 const TABS = [
   { label: "All", value: "all" },
@@ -49,7 +50,7 @@ const demoTasks = [
 ];
 
 const TasksTable = () => {
-  const [tasks, setTasks] = useState(demoTasks);
+  const [tasks, setTasks] = useState([]);
   const [editMode, setEditMode] = useState(null);
   const [editedTask, setEditedTask] = useState({});
   const [loading, setLoading] = useState(false); 
@@ -58,7 +59,10 @@ const TasksTable = () => {
   const [activeTab, setActiveTab] = useState("all");
 
   const tableHeads = ["Date", "Duree", "Description", "Status", "Actions"];
-
+  
+useEffect(()=>{
+  handleSearchByRole(); 
+},[])
   const handleEdit = (task) => {
     setEditMode(task.date);
     setEditedTask(task);
@@ -75,19 +79,25 @@ const TasksTable = () => {
 
   const handleSave = () => {
     setTasks(tasks.map(task => task.date === editedTask.date ? editedTask : task));
+    console.log(editTask); 
     setEditMode(null);
   };
 
-  const handleSearchByRole = (status) => {
+  const handleSearchByRole = (status = "") => {
     setActiveTab(status);
     setLoading(true);
+    console.log(status) ;
     let url = "http://localhost:5000/api/tasks";
-    if (status !== "all") {
-      url = `${url}/${status}`;
+    if (status !== "all"
+    ) {
+      url = `${url}/status/${status}`;
+      console.log(url); 
     }
+    console.log(url); 
     axios
       .get(url)
       .then((res) => {
+        console.log(res); 
         setTasks(res.data);
         setLoading(false);
       })
@@ -115,6 +125,7 @@ const TasksTable = () => {
   };
 
   return (
+
     <Card className="h-full w-full" shadow={false}>
       <ToastContainer />
       <CardHeader floated={false} shadow={false} className="rounded-none">
@@ -185,6 +196,7 @@ const TasksTable = () => {
             <Spinner />
           </div>
         ) : (
+           
           <table className="mt-4 w-full min-w-max table-auto text-left">
             <thead>
               <tr>
@@ -204,82 +216,86 @@ const TasksTable = () => {
                 ))}
               </tr>
             </thead>
-            <tbody>
-              {tasks.map((task) => (
-                <tr key={task.date}>
-                  <td>
-                    {editMode === task.date ? (
-                      <input
-                        type="datetime-local"
-                        name="date"
-                        value={editedTask.date}
-                        onChange={handleChange}
-                        className="border p-1"
-                      />
-                    ) : (
-                      task.date
-                    )}
-                  </td>
-                  <td>
-                    {editMode === task.date ? (
-                      <input
-                        type="text"
-                        name="duree"
-                        value={editedTask.duree}
-                        onChange={handleChange}
-                        className="border p-1"
-                      />
-                    ) : (
-                      task.duree
-                    )}
-                  </td>
-                  <td>
-                    {editMode === task.date ? (
-                      <input
-                        type="text"
-                        name="description"
-                        value={editedTask.description}
-                        onChange={handleChange}
-                        className="border p-1"
-                      />
-                    ) : (
-                      task.description
-                    )}
-                  </td>
-                  <td>
-                    {editMode === task.date ? (
-                      <Select
-                        name="status"
-                        value={editedTask.status}
-                        onChange={(e) => handleChange({ target: { name: 'status', value: e } })}
-                        className="border p-1"
-                      >
-                        <Option value="done">Done</Option>
-                        <Option value="inprogress">In Progress</Option>
-                        <Option value="expired">Expired</Option>
-                      </Select>
-                    ) : (
-                      task.status
-                    )}
-                  </td>
-                  <td>
-                    {editMode === task.date ? (
-                      <Button onClick={handleSave}>
-                        <FaSave />
-                      </Button>
-                    ) : (
-                      <>
-                        <Button onClick={() => handleEdit(task)}>
-                          <FaEdit />
+            <tbody> 
+               { tasks.length == 0 ? ( 
+                <p>no tasks</p>
+               ) : ( 
+                tasks.map((task) => (
+                  <tr key={task.date}>
+                    <td>
+                      {editMode === task.date ? (
+                        <input
+                          type="datetime-local"
+                          name="date"
+                          value={editedTask.date}
+                          onChange={handleChange}
+                          className="border p-1"
+                        />
+                      ) : (
+                        task.date
+                      )}
+                    </td>
+                    <td>
+                      {editMode === task.date ? (
+                        <input
+                          type="text"
+                          name="duree"
+                          value={editedTask.duree}
+                          onChange={handleChange}
+                          className="border p-1"
+                        />
+                      ) : (
+                        task.duree
+                      )}
+                    </td>
+                    <td>
+                      {editMode === task.date ? (
+                        <input
+                          type="text"
+                          name="description"
+                          value={editedTask.description}
+                          onChange={handleChange}
+                          className="border p-1"
+                        />
+                      ) : (
+                        task.description
+                      )}
+                    </td>
+                    <td>
+                      {editMode === task.date ? (
+                        <Select
+                          name="status"
+                          value={editedTask.status}
+                          onChange={(e) => handleChange({ target: { name: 'status', value: e } })}
+                          className="border p-1"
+                        >
+                          <Option value="done">Done</Option>
+                          <Option value="inprogress">In Progress</Option>
+                          <Option value="expired">Expired</Option>
+                        </Select>
+                      ) : (
+                        task.status
+                      )}
+                    </td>
+                    <td>
+                      {editMode === task.date ? (
+                        <Button onClick={handleSave}>
+                          <FaSave />
                         </Button>
-                        <Button onClick={() => handleDelete(task.id_ouv)}>
-                          <FaTrash />
-                        </Button>
-                      </>
-                    )}
-                  </td>
-                </tr>
-              ))}
+                      ) : (
+                        <>
+                          <Button onClick={() => handleEdit(task)}>
+                            <FaEdit />
+                          </Button>
+                          <Button onClick={() => handleDelete(task.id_ouv)}>
+                            <FaTrash />
+                          </Button>
+                        </>
+                      )}
+                    </td>
+                  </tr>
+                ))
+               )}
             </tbody>
           </table>
         )}
