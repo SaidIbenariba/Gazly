@@ -52,3 +52,24 @@ edit user
 
 
 
+// updates 
+mission 
+createMission 
+ error  'Cannot add or update a child row: a foreign key constraint fails (`pfe_project`.`mission`, CONSTRAINT `id_dir_miss` FOREIGN KEY (`id_dir`) REFERENCES `director` (`id`) ON DELETE CASCADE ON UPDATE CASCADE)', 
+ 
+#Missions api 
+##search fix  
+#observations 
+## getObservations 4 cases 
+##data form ? observation  { observation[..]} ?? 
+## date form 2024-06-03 10:00:00 
+#workspaces 
+error in sql query (
+  sqlMessage: "Table 'pfe_project.WorkSpace' doesn't exist", )  
+  	
+ 
+ 
+
+
+
+

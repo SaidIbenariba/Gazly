@@ -50,12 +50,12 @@ export const getTasksForResp = (req, res) => {
     };
     export const editTask = (req, res) => {
         const q =
-          "UPDATE Task SET duree=?, description=?, id_ouv=?, id_resp=?  WHERE id_ouv= ? ";
+          "UPDATE Task SET duree=?, description=?, WHERE id_ouv= ? AND id_resp= ?";
         const values = {
             Duree: req.body.duree,
             Description: req.body.description,
-            id_ouv: req.body.id_ouv,
-            id_resp: req.body.id_resp,
+            id_ouv: req.params.id_ouv,
+            id_resp: req.params.id_resp,
           };
         db.query(q, values, (err, result) => {
             if (err) return res.sendStatus(500);
@@ -69,10 +69,31 @@ export const getTasksForResp = (req, res) => {
           return res.status(200).json(result);
         });
     };
-    export const tasks = (req, res) => {
-        const sql = "SELECT * FROM Task";
-        db.query(sql, (err, users) => {
-          if (err) res.status(500).json("Can not connect to database");
-          return res.json(users);
-        });
-      };
+    export const getTasks = (req, res) => {
+      const sql = "SELECT * FROM task";
+      db.query(sql, (err, tasks) => {
+        if (err) {
+          console.error("Database query error: ", err);
+          return res.status(500).json({ error: "Cannot connect to database" });
+        }
+    
+        const formatDate = (mysqlDate) => {
+          const jsDate = new Date(mysqlDate);
+          const year = jsDate.getFullYear();
+          const month = String(jsDate.getMonth() + 1).padStart(2, '0');
+          const day = String(jsDate.getDate()).padStart(2, '0');
+          return `${year}-${month}-${day}`;
+        };
+    
+        const formattedTasks = tasks.map((task) => ({
+          ...task,
+          start: task.start ? formatDate(task.start) : null,
+          end: task.end ? formatDate(task.end) : null,
+        }));
+    
+        console.log("tasks:");
+        console.log(formattedTasks);
+        return res.json(formattedTasks);
+      });
+    };
+    

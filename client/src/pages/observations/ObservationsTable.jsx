@@ -17,83 +17,108 @@ const TABS = [
   { label: "Archived", value: "archive" },
 ];
 
-const ObservationCard = ({ observation, onEdit, onDelete }) => (
-  <Card className="mt-6 w-72 cursor-pointer z-0">
-    <CardBody>
-      <Typography variant="h5" color="blue-gray" className="mb-2">
-        {observation.feedback}
-      </Typography>
-      <Typography>{new Date(observation.date).toLocaleDateString()}</Typography>
-      <Typography>{observation.status}</Typography>
-      <div className="flex justify-between mt-4">
+const ObservationCard = ({ observation, onEdit, onDelete }) => {
+  const getStatusStyles = (status) => {
+    switch (status) {
+      case 'pending':
+        return 'bg-blue-100 text-blue-800'; // Background and text colors for inProgress
+      case 'completed':
+        return 'bg-yellow-100 text-yellow-800'; // Background and text colors for inReview
+      case 'archive':
+        return 'bg-gray-100 text-gray-800';
+      default:
+        return 'bg-gray-100 text-gray-800'; // Default background and text colors
+    }
+  };
+  return (
+    <Card className="hover:shadow-lg hover:border-none rounded-lg overflow-hidden w-72 h-fit cursor-pointer group border border-gray-200 shadow-none">
+      <CardBody className="p-4">
+        <Typography variant="h5" color="blue-gray" className="mb-2 font-bold text-xl">
+          {observation.feedback}
+        </Typography>
+        <Typography className="mb-2 text-sm">{observation.date}</Typography>
+        <Typography className="mb-2">Responsible: {observation.id_resp}</Typography>
+        <Typography className="mb-2">workspace: {observation.id_ws}</Typography>
+       
+        
+        {/* Status label with dynamic styles */}
+        <span className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${getStatusStyles(observation.status)}`}>
+          {observation.status}
+        </span>
+        
+        <div className="flex justify-start gap-2 mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
         <Button className='text-black bg-transparent shadow-none' onClick={() => onEdit(observation)}>
-          <PencilIcon strokeWidth={6} className="h-4 w-4" />
+          <PencilIcon stroke="1" className="h-5 w-5 mr-1"/> 
         </Button>
         <Button className='text-black bg-transparent shadow-none' onClick={() => onDelete(observation)}>
-          <TrashIcon strokeWidth={6} className="h-4 w-4" />
+          <TrashIcon className="h-5 w-5 mr-1"/> 
         </Button>
       </div>
-    </CardBody>
-  </Card>
-);
-
+      </CardBody>
+    </Card>
+  ) 
+};
+const demoData = [ 
+  {
+    date: "2024-06-15 10:00:00",
+    feedback: "Feedback for observation 1",
+    id_ws: 1,
+    id_resp: 100,
+    status: "pending",
+  },
+  {
+    date: "2024-06-16 11:30:00",
+    feedback: "Feedback for observation 2",
+    id_ws: 2,
+    id_resp: 101,
+    status: "completed",
+  },
+  {
+    date: "2024-06-17 14:45:00",
+    feedback: "Feedback for observation 3",
+    id_ws: 1,
+    id_resp: 102,
+    status: "archive",
+  },
+  {
+    date: "2024-06-18 09:20:00",
+    feedback: "Feedback for observation 4",
+    id_ws: 3,
+    id_resp: 100,
+    status: "pending",
+  },
+  {
+    date: "2024-06-19 15:55:00",
+    feedback: "Feedback for observation 5",
+    id_ws: 2,
+    id_resp: 101,
+    status: "completed",
+  },
+  {
+    date: "2024-06-20 08:10:00",
+    feedback: "Feedback for observation 6",
+    id_ws: 3,
+    id_resp: 102,
+    status: "archive",
+  },
+]
 const ObservationsTable = () => {
-  const [observations, setObservations] = useState([
-    {
-      date: "2024-06-15 10:00:00",
-      feedback: "Feedback for observation 1",
-      id_ws: 1,
-      id_resp: 100,
-      status: "pending",
-    },
-    {
-      date: "2024-06-16 11:30:00",
-      feedback: "Feedback for observation 2",
-      id_ws: 2,
-      id_resp: 101,
-      status: "completed",
-    },
-    {
-      date: "2024-06-17 14:45:00",
-      feedback: "Feedback for observation 3",
-      id_ws: 1,
-      id_resp: 102,
-      status: "archive",
-    },
-    {
-      date: "2024-06-18 09:20:00",
-      feedback: "Feedback for observation 4",
-      id_ws: 3,
-      id_resp: 100,
-      status: "pending",
-    },
-    {
-      date: "2024-06-19 15:55:00",
-      feedback: "Feedback for observation 5",
-      id_ws: 2,
-      id_resp: 101,
-      status: "completed",
-    },
-    {
-      date: "2024-06-20 08:10:00",
-      feedback: "Feedback for observation 6",
-      id_ws: 3,
-      id_resp: 102,
-      status: "archive",
-    },
-  ]);
-
+  const [observations, setObservations] = useState([]);
   const [status, setStatus] = useState("all");
   const [searchBy, setSearchBy] = useState("");
   const [values, setValues] = useState({ value: "" });
   const [openFilter, setOpenFilter] = useState(false);
+  const [deleteObservation, setDeleteObservation] = useState(false); 
   const filterMenuRef = useRef(null);
   const filterButtonRef = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchObservations();
-  }, [status]);
+  }, [status,deleteObservation]);
+  useEffect(()=>{
+    console.log(observations); 
+  },[observations]); 
 
   const fetchObservations = () => {
     if (status && status !== "all") {
@@ -135,9 +160,13 @@ const ObservationsTable = () => {
   };
 
   const handleDeleteObservation = (observation) => {
+    console.log(observation);
+   
     axios
       .delete(`http://localhost:5000/api/observations/delete/${observation.date}/${observation.id_ws}/${observation.id_resp}`)
-      .then(() => fetchObservations())
+      .then((res) =>  {setDeleteObservation(true); 
+        console.log(res); 
+      }  )
       .catch((err) => console.log(err));
   };
 
@@ -155,7 +184,7 @@ const ObservationsTable = () => {
   };
 
   return (
-    <Card className="h-full w-full relative" shadow={false}>
+    <Card className="flex flex-col gap-4 h-full w-full relative" shadow={false}>
       <CardHeader floated={false} shadow={false} className="rounded-none z-10">
         <div className="mb-8 flex items-center justify-between gap-8">
           <div>

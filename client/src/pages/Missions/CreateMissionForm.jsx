@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Form from '../../components/form';
 import { useAuth } from '../../hooks/useAuth';
@@ -18,7 +18,7 @@ const CreateMissionForm = () => {
     id_dir: "",
     id_resp: ""
   });
- 
+ const nav = useNavigate(); 
   useEffect(() => {
     function fetchResponsable() {
       axios
@@ -61,15 +61,15 @@ const CreateMissionForm = () => {
         console.log("Mission created successfully:", res.data);
         // Reset form values
         nav("/private/missions"); 
-        setMission({
-          start: "",
-          end: "",
-          title: "",
-          description: "",
-          status: "inProgress",
-          id_dir: "",
-          id_resp: ""
-        });
+        // setMission({
+        //   start: "",
+        //   end: "",
+        //   title: "",
+        //   description: "",
+        //   status: "inProgress",
+        //   id_dir: "",
+        //   id_resp: ""
+        // });
       })
       .catch((err) => console.log("Error creating mission:", err));
   };
@@ -82,7 +82,7 @@ const CreateMissionForm = () => {
           <h1 className="text-3xl font-bold text-text dark:text-text">
             Add Mission
           </h1>
-          <Link to="/private/users" className="button">
+          <Link to="/private/missions" className="button">
             Home
           </Link>
         </nav>

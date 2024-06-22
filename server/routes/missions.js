@@ -5,7 +5,8 @@ import {
   missionSearch,
   getMissionCounts,
   defaultMissionSearch,
-  editMission
+  editMission, 
+  deleteMission
 } from "../controllers/mission.js";
 import { verifyJWT } from "../middleware/verifyJWT.js";
 const router = express.Router();
@@ -17,7 +18,7 @@ router.get("/:start?/:id_dir?/:id_resp?",getMissions);
 router.get("/", getMissions);
 router.post("/createMission", createMission);
 router.put("/edit/:start/:id_dir/:id_resp",editMission); 
-router.get("/search/:searchBy/:values", missionSearch);
-router.get("/defaultSearch/:values", defaultMissionSearch);
-
+router.get("/search/:searchBy", missionSearch);
+router.get("/defaultSearch", defaultMissionSearch);
+router.delete("/delete/:start/:id_dir/:id_resp",deleteMission)
 export default router;

@@ -92,32 +92,45 @@ const demoData = [
   },
 ]
 const MissionCard = ({ mission ,onEdit, onDelete  }) => {
+  const getStatusStyles = (status) => {
+    switch (status) {
+      case 'inProgress':
+        return 'text-blue-500 bg-blue-100'; // Example tailwind CSS class for blue text
+      case 'inReview':
+        return 'text-yellow-500 bg-yellow-100'; // Example tailwind CSS class for yellow text
+      case 'onHold':
+        return 'text-red-500 bg-red-100'; // Example tailwind CSS class for red text
+      case 'completed':
+        return 'text-green-500 bg-green-100'; // Example tailwind CSS class for green text
+      default:
+        return 'text-gray-500 bg-gray-100'; // Default color if status doesn't match
+    }
+  };
   return (
-    <Card className="mt-6 w-72 cursor-pointer z-0">
-      {/* <CardHeader className=" h-1/3" shadow={false}>
-          {/* <img
-            src="https://images.unsplash.com/photo-1540553016722-983e48a2cd10?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80"
-            alt="card-image"
-            className="w-30"
-          /> *
-          <Typography variant="h5" color="blue-gray" className="mb-2">
-            Mission title
-          </Typography>
-        </CardHeader> */}
-      <CardBody className="z-0">
-        <Typography variant="h5" color="blue-gray" className="mb-2">
-          {mission.title}
-        </Typography>
-        <Typography>{mission.start}</Typography>
-        <Typography>{mission.description}</Typography>
-        <Typography>{mission.reponsable}</Typography>
-        <div className="flex justify-between mt-4">
-          <Button className='text-black bg-transparent shadow-none' onClick={() => onEdit(mission)}><PencilIcon strokeWidth={6} className="h-4 w-4"/></Button>
-          <Button className='text-black bg-transparent shadow-none' onClick={() => onDelete(mission.id)}><TrashIcon strokeWidth={6} className="h-4 w-4"/></Button>
-        </div>
-
-      </CardBody>
-    </Card>
+    <Card className="hover:shadow-lg hover:border-none rounded-lg overflow-hidden w-72 h-fit cursor-pointer group border border-gray-200 shadow-none">
+    <CardBody className="p-4">
+      <Typography variant="h5" color="blue-gray" className="mb-2 font-bold text-xl">
+        {mission.title}
+      </Typography>
+      <Typography className="mb-2 text-sm">{mission.start}</Typography>
+      <Typography className="mb-2">{mission.description}</Typography>
+      <Typography className="mb-2">Responsible: {mission.responsible}</Typography>
+      
+      {/* Status label with dynamic styles */}
+      <span className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${getStatusStyles(mission.status)}`}>
+        {mission.status}
+      </span>
+      
+      <div className="flex justify-start gap-2 mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+        <Button className='text-black bg-transparent shadow-none' onClick={() => onEdit(mission)}>
+          <PencilIcon stroke="1" className="h-5 w-5 mr-1"/> 
+        </Button>
+        <Button className='text-black bg-transparent shadow-none' onClick={() => onDelete(mission)}>
+          <TrashIcon className="h-5 w-5 mr-1"/> 
+        </Button>
+      </div>
+    </CardBody>
+  </Card>
   );
 };
 const Missions = () => {
@@ -131,6 +144,7 @@ const Missions = () => {
   const [values, setValues] = useState({ value: "" });
   const filterMenuRef = useRef(null); 
   const filterButtonRef = useRef(null); 
+  const [deletedMission,setDeletedMission] = useState(false);
 
   const history = useNavigate(); 
 
@@ -155,7 +169,7 @@ const Missions = () => {
         .catch((err) => console.log(err));
       setOpenFilter(false);
     }
-  }, [status, stat]);
+  }, [status, stat,deletedMission]);
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -221,6 +235,7 @@ const Missions = () => {
         setOpenFilter(false);
         break;
       default:
+        console.log("defautl search"); 
         axios
           .get("http://localhost:5000/api/missions/defaultSearch", values) // keyword
           .then((res) => setMissions(res.data))
@@ -240,12 +255,18 @@ const Missions = () => {
     history("create");
   };
 
-  const handleDeleteMission = (missionId) => {
+  const handleDeleteMission = (mission) => {
     // Send a DELETE request to your API to delete the mission with the specified ID
     // After successful deletion, update the missions state to remove the deleted mission
+    console.log(mission); 
+    
+    axios.delete(`http://localhost:5000/api/missions/delete/${mission.start}/${mission.id_dir}/${mission.id_resp}`)
+    .then((res)=>setDeletedMission(true))
+    .catch((err)=>console.log(err)); 
+
   };
   return (
-    <Card className="h-full w-full relative" shadow={false}>
+    <Card className="flex flex-col gap-4 h-full w-full relative" shadow={false}>
       <CardHeader floated={false} shadow={false} className="rounded-none z-50">
         <div className="mb-8 flex items-center justify-between gap-8">
           <div>

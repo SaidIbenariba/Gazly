@@ -6,7 +6,7 @@
     status: req.body.status,
  */
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Form from '../../components/form';
 import useVerifyRole from '../../hooks/useVerifyRoles';
@@ -17,12 +17,13 @@ const CreateObservationForm = () =>
     const isRes = useVerifyRole(["responsable"]); 
   const [error, setError] = useState({ exist: false, msg: "" });
   const [espaces, setEspaces] = useState([]);
-  const [obervation, setObservation] = useState({ 
+  const [observation, setObservation] = useState({ 
     date: "",
     feedback: "",
     id_ws: "",
     status: "pending",
   });
+  const nav = useNavigate() ;
   // if(isAdmin) { 
   // useEffect(() => {
   //   axios
@@ -33,14 +34,14 @@ const CreateObservationForm = () =>
     useEffect(()=>{
       axios.get(
         "http://localhost:5000/api/WorkSpaces"
-      ).then((res) =>setEspaces(res.data))
+      ).then((res) => console.log(res.data))
       .catch((err)=>console.log(err)); 
-    })
-
+    },[])
+  
   const observationFields = [
     { label: "Date", name: "date", type: "datetime-local" },   
-    { label: "Feedback", name: "feedback" },  
-    { label: "Status", name: "status", inputType: "select", options: ["pending", "completed", "archived"] },
+    { label: "Feedback", name: "feedback", inputType: "area" },  
+    // { label: "Status", name: "status", inputType: "select", options: [ { label: "Pending", value: "pending" },{label:"Completed", value:"completed"},{label:"Archive", value:"archive"}] },
     {label: "WorkSpaces", name:"id_ws", inputType:"select" , 
       options: espaces.map(
         espace => ({label:espace.name, value:espace.id})  
@@ -51,7 +52,8 @@ const CreateObservationForm = () =>
   const handleCreateObservation = (data) => {
     axios
       .post("http://localhost:5000/api/observations/createObservation", data)
-      .then((res) => console.log(res))
+      .then((res) => {console.log(res);         nav("/private/observations"); } 
+    )
       .catch((err) => {
         console.log(err);
         setError({ exist: true, msg: err.message });
@@ -66,19 +68,16 @@ const CreateObservationForm = () =>
 
       <nav className="flex justify-between">
         <h1 className=" text-3xl font-bold text-text dark:text-text">
-          Add Mission
+          Add Observation
         </h1>
         <Link to="/private/observations" className="button">
           Home
         </Link>
       </nav>
     <Form
-      formTitle={"Create Observation"}
-      fields={observationFields}
-      formValues={formValues}
-      setFormValues={setFormValues}
-      onSubmit={handleCreateObservation}
-      error={error}
+     fields={observationFields}
+     onSubmit={handleCreateObservation}
+     initialValues={observation}
     />
     </div>
     </div>

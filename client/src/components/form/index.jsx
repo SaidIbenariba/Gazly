@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Input, Typography, Card, Select, Button, Option } from "@material-tailwind/react";
+import { Input, Typography, Card, Select, Button, Option, Textarea } from "@material-tailwind/react";
 import axios from "axios";
 
 const FormField = ({
@@ -52,10 +52,10 @@ const FormField = ({
           </Select>
           )
   
-      ) : (
-        (required  ? (
-          <Input
-          type={type}
+      ) : ( 
+          inputType == "area" ? ( 
+            <Textarea
+            type={type}
           size="lg"
           value={value}
           className="input"
@@ -63,33 +63,40 @@ const FormField = ({
             className: "before:content-none after:content-none",
           }}
           onChange={(e) => handleChange(e.target.value, name)}
-          // {required ? }
-          required 
-        />
-        ):(
-          <Input
-          type={type}
-          size="lg"
-          value={value}
-          className="input"
-          labelProps={{
-            className: "before:content-none after:content-none",
-          }}
-          onChange={(e) => handleChange(e.target.value, name)}
-        />
-        ))
-     
+            />
+          ) :   (required  ? (
+            <Input
+            type={type}
+            size="lg"
+            value={value}
+            className="input"
+            labelProps={{
+              className: "before:content-none after:content-none",
+            }}
+            onChange={(e) => handleChange(e.target.value, name)}
+            // {required ? }
+            required 
+          />
+          ):(
+            <Input
+            type={type}
+            size="lg"
+            value={value}
+            className="input"
+            labelProps={{
+              className: "before:content-none after:content-none",
+            }}
+            onChange={(e) => handleChange(e.target.value, name)}
+          />
+          ))
       )}
     </>
   );
 };
 
 const Form = ({ fields, onSubmit, initialValues, isEditMode }) => {
-  const [formValues, setFormValues] = useState({});
-
-  useEffect(() => {
-    setFormValues(initialValues || {});
-  }, [initialValues]);
+  const [formValues, setFormValues] = useState(initialValues);
+  
   console.log("initial values of form ", formValues); 
 
   const handleChange = (value, fieldName) => {
@@ -100,7 +107,9 @@ const Form = ({ fields, onSubmit, initialValues, isEditMode }) => {
     e.preventDefault();
     if (isEditMode) {
       // If in edit mode, call edit mission handler
+      // console.log(formValues); 
       onSubmit(formValues);
+      
     } else {
       // If in create mode, call create mission handler
       onSubmit(formValues);

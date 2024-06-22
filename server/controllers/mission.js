@@ -1,6 +1,15 @@
 import { db } from "../connect_db.js";
 
+export const deleteMission = (req, res) =>{
+  const {start, id_dir, id_resp} = req.params; 
 
+  const sql = "DELETE FROM mission WHERE start = ? AND id_dir = ?  AND id_resp = ?"
+  db.query(sql,[start,id_dir, id_resp],(err,result)=>{
+    if(err) return res.sendStatus(400); 
+    return res.json({succes:"missions was deleted"}) ;
+  })
+  console.log(req.params); 
+}
 export const getMissionCounts = (req, res) => {
   const userId = req.id;
   const userRole = req.role;
@@ -82,7 +91,7 @@ export const getMissions = (req, res) => {
   }
   db.query(sql, queryParams, (err, result) => {
     if (err) {
-      console.error("Database query error: ", err);
+      console.error("Database query error: ", results);
       return res.status(500).json({ error: "Cannot connect to database" });
     }
     function formatDate(dateStr) {
@@ -98,8 +107,8 @@ export const getMissions = (req, res) => {
       start: formatDate(row.start),
       end: formatDate(row.end),
     }));
-    console.log("missions : ");
-    console.log(formattedResults);
+    // console.log("missions : ");
+    // console.log(formattedResults);
     return res.json(formattedResults);
   });
 };
@@ -172,7 +181,7 @@ const newMission = {
     export const editMission = (req, res) => {
 
         const q =
-          "UPDATE mission SET end=?, description=?,title=?,status=?,  WHERE id_dir = ? AND start = ? AND id_resp = ?";
+          "UPDATE mission SET end=?, description=?,title=?,status=?  WHERE id_dir = ? AND start = ? AND id_resp = ?";
         const values = {
             end: req.body.end,
             description: req.body.description,
@@ -182,8 +191,9 @@ const newMission = {
             start: req.params.start, 
             id_resp: req.params.id_resp,
           };
+          console.log([...Object.values(values)]); 
         db.query(q, [...Object.values(values)], (err, result) => {
-            if (err) console.log(err); 
+            if (err) return res.status(400).json(err);  
             return res.status(200).json(result);
           });
     };
@@ -196,7 +206,10 @@ export const missionSearch = (req, res) => {
 } else if (userRole === 'responsable') {
   q = "SELECT m.*, CONCAT(r.firstname, ' ', r.lastname) as responsable FROM mission m INNER JOIN users r ON m.id_dir = r.id WHERE m.id_resp = ?";
 }const queryParams = [userId];
-
+console.log("value to search with "); 
+console.log(req.body); 
+console.log("searchBy ")
+console.log(req.params.searchBy); 
   let conditions = [];
   if (req.params.searchBy === 'title') {
       conditions.push("m.title LIKE ?");
@@ -265,8 +278,9 @@ export const defaultMissionSearch = (req, res) => {
 } else if (userRole === 'responsable') {
   q = "SELECT m.*, CONCAT(r.firstname, ' ', r.lastname) as responsable FROM mission m INNER JOIN users r ON m.id_dir = r.id WHERE m.id_resp = ?";
 }const queryParams = [userId];
-const searchValue = req.params.values;
-  
+const searchValue = req.body;
+  console.log("searchValue ");
+  console.log(searchValue); 
   let conditions = [];
 
   // Check if the searchValue is a valid date
@@ -288,20 +302,13 @@ const searchValue = req.params.values;
       return res.status(500).json("Cannot connect to database");
     }
 
-    const formatDate = (mysqlDate) => {
-      const jsDate = new Date(mysqlDate);
-      const options = {
-        weekday: 'short',
-        year: 'numeric',
-        month: 'short',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        timeZoneName: 'short',
-      };
-      return jsDate.toLocaleString('en-GB', options);
-    };
+    function formatDate(dateStr) {
+      const date = new Date(dateStr);
+      const year = date.getFullYear();
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
 
     const formattedResults = results.map(row => ({
       ...row,
