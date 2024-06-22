@@ -70,14 +70,36 @@ export const getTasksForResp = (req, res) => {
         });
     };
     export const getTasks = (req, res) => {
-      let sql = "SELECT * FROM task";
-      const status = req.params.status; 
-      let queryParams=[]; 
-      if(status) { 
-        sql+= " WHERE status = ? "
-        queryParams.push(status); 
-      }
-      db.query(sql,queryParams, (err, tasks) => {
+      const userId = req.id;
+  const userRole = req.role;
+  let sql = "";
+  let queryParams = [];
+  const status = req.params.status;
+  const { date, id_ouv, id_resp } = req.params;
+  if(date && id_ouv && id_resp) { 
+    sql =
+        "SELECT * FROM task WHERE id_ouv = ? AND date = ? AND id_resp = ? ";
+        queryParams = [id_ouv,date,id_resp]; 
+  }else if (status) {
+    if (userRole == "responsable") {
+      sql =
+        "SELECT * FROM task WHERE id_resp = ? AND status = ?";
+    } else if (userRole == "ouvrier") {
+      sql =
+        "SELECT * FROM task WHERE id_ouv = ? AND status = ?";
+    }
+    queryParams = [userId, status];
+  } else {
+    if (userRole == "responsable") {
+      sql =
+        "SELECT * FROM task WHERE id_resp = ? ";
+    } else if (userRole == "ouvrier") {
+      sql =
+        "SELECT * FROM task WHERE id_ouv = ? ";
+    }
+    queryParams = [userId];
+  }
+      db.query(sql, (err, tasks) => {
         if (err) {
           console.error("Database query error: ", err);
           return res.status(500).json({ error: "Cannot connect to database" });
@@ -93,10 +115,9 @@ export const getTasksForResp = (req, res) => {
     
         const formattedTasks = tasks.map((task) => ({
           ...task,
-          start: task.start ? formatDate(task.start) : null,
-          end: task.end ? formatDate(task.end) : null,
+          date: task.date ? formatDate(task.date) : null,
         }));
-        console.log(queryParams); 
+    
         console.log("tasks:");
         console.log(formattedTasks);
         return res.json(formattedTasks);
