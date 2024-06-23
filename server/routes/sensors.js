@@ -1,5 +1,9 @@
 import express from "express";
-import {} from "../controllers/sensor.js";
+import {
+    getSensor,
+} from "../controllers/sensor.js";
 const router = express.Router();
-router.get("");
+router.get("/", getSensor);
+router.get("/:id_ws", getSensor);
+
 export default router;

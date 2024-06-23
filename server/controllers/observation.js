@@ -12,6 +12,8 @@ export const deleteObservation = (req, res) => {
 }
 
 export const getObservations = (req, res) => {
+  const userId = req.id;
+  const userRole = req.role;
   const status = req.params.status;
   const id_ws = req.params.id_ws;
   const id_resp = req.params.id_resp;
@@ -20,23 +22,34 @@ export const getObservations = (req, res) => {
   let queryParams = [];
   console.log("search observaation when status = ");
   console.log(status); 
-  // reponsable 
-  // see only there observations 
-  // only responsable can crud observations  
   if(status && id_ws && id_resp){
      sql = "SELECT o.* FROM observation o  WHERE status = ? AND id_ws = ? AND id_resp = ?";
     queryParams = [status,id_ws,id_resp];
   }else if(status){
-    // console.log(status);
-     sql = "SELECT o.* FROM observation o  WHERE status = ? ";
-    queryParams = [status];
-    console.log("status");
+    if (userRole === 'admin') {
+      sql = "SELECT o.* FROM observation o  WHERE status = ? ";
+      queryParams = [status];
+    } else if (userRole === 'responsable') {
+      sql = "SELECT o.* FROM observation o  WHERE status = ? AND id_resp=?";
+      queryParams = [status,userId];
+    }
   }else if(id_ws){
+    if (userRole === 'admin') {
+      sql = "SELECT o.* FROM observation o  WHERE id_ws = ?";
+      queryParams = [id_ws];
+    } else if (userRole === 'responsable') {
+      sql = "SELECT o.* FROM observation o  WHERE id_ws = ? AND id_resp=?";
+      queryParams = [id_ws,userId];
+    }
     sql = "SELECT o.* FROM observation o  WHERE id_ws = ?";
    queryParams = [id_ws];
  }
     else{
-     sql = "SELECT o.* FROM observation o ";
+      if (userRole === 'admin') {
+        sql = "SELECT o.* FROM observation o ";
+      } else if (userRole === 'responsable') {
+        sql = "SELECT o.* FROM observation o WHERE id_resp=?";
+      }
   }
     db.query(sql,queryParams, (err, results) => {
       if (err) {

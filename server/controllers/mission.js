@@ -57,7 +57,6 @@ export const getMissionCounts = (req, res) => {
 };
 
 export const getMissions = (req, res) => {
-  console.log("get Mission contreoller");
   const userId = req.id;
   const userRole = req.role;
   let sql = "";
