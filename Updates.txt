@@ -67,6 +67,30 @@ createMission
 error in sql query (
   sqlMessage: "Table 'pfe_project.WorkSpace' doesn't exist", )  
   	
+22/6 	
+  	
+# observation 
+  getObservations ( user role ) - admin return all observations 
+  - responsable retunr observations/${id_resp} 
+#  CRUD workspaces 
+   get  /  workspaces 
+   put  /edit/:id  editWorspace( body values ) 
+   post /create  createWorkspace ( body values ) 
+   delete  /delete/:id 
+
+# Sensors 
+   / getSensors
+   /edit/:id 
+   /create  ( arduino ) 
+   /delete/:id 
+   
+   # Measures 
+   / getMeasures 
+   form data 
+   id_cap 
+   id_ws
+
+## add allert for every actions made 
  
  
 

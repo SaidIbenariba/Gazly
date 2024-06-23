@@ -1,7 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 // eslint-disable-next-line no-undef
-const flowbite = require("flowbite-react/tailwind");
-const withMT = require("@material-tailwind/react/utils/withMT");
+import flowbite from 'flowbite-react/tailwind';
+import withMT from '@material-tailwind/react/utils/withMT';
 export default withMT({
   content: [
     "./index.html",

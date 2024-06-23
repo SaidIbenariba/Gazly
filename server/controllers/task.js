@@ -50,13 +50,13 @@ export const getTasksForResp = (req, res) => {
     };
     export const editTask = (req, res) => {
         const q =
-          "UPDATE Task SET duree=?, description=?, WHERE id_ouv= ? AND id_resp= ?";
+          "UPDATE Task SET duree=?, description=?, WHERE id_ouv= ? A  ND id_resp= ?";
         const values = {
             Duree: req.body.duree,
             Description: req.body.description,
             id_ouv: req.params.id_ouv,
             id_resp: req.params.id_resp,
-          };
+          };  
         db.query(q, values, (err, result) => {
             if (err) return res.sendStatus(500);
             return res.status(200).json(result);
