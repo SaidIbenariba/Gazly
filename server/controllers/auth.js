@@ -101,7 +101,7 @@ export const login = async (req, res) => {
   const sql = "SELECT * FROM users WHERE email = ?";
   // { userId: }
   db.query(sql, req.body.email, (err, data) => {
-    if (err) return res.status(500).json(err);
+    if (err) console.log(err); 
     if (data.length == 0) return res.status(404).json("Email not found !");
     const checkPassword = bcrypt.compareSync(
       req.body.password,

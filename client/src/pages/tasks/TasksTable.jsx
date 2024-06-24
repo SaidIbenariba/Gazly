@@ -1,8 +1,8 @@
-import React, { useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { FaTrashAlt, FaEdit, FaSave, FaTrash } from 'react-icons/fa';
+import { FaTrashAlt, FaEdit, FaSave, FaTrash } from "react-icons/fa";
 import { UserPlusIcon } from "@heroicons/react/24/solid";
 import {
   Card,
@@ -17,11 +17,13 @@ import {
   Select,
   Option,
   Spinner,
+  Checkbox,
 } from "@material-tailwind/react";
 import { IoIosRefresh } from "react-icons/io";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { editTask } from "../../../../server/controllers/task";
+import TaskEditModal from "./TaskEditModal"; // Import the modal component
+import {TrashIcon,PencilIcon} from "@heroicons/react/24/outline";
 
 const TABS = [
   { label: "All", value: "all" },
@@ -30,74 +32,46 @@ const TABS = [
   { label: "Expired", value: "expired" },
 ];
 
-const demoTasks = [
-  {
-    date: '2024-06-14T08:30',
-    duree: '2 hours',
-    description: 'Task 1 description',
-    status: 'inprogress',
-    id_ouv: 1,
-    id_resp: 1
-  },
-  {
-    date: '2024-06-15T10:00',
-    duree: '3 hours',
-    description: 'Task 2 description',
-    status: 'done',
-    id_ouv: 2,
-    id_resp: 1
-  }
-];
-
 const TasksTable = () => {
   const [tasks, setTasks] = useState([]);
-  const [editMode, setEditMode] = useState(null);
-  const [editedTask, setEditedTask] = useState({});
-  const [loading, setLoading] = useState(false); 
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [err, setErr] = useState({ exist: false, msg: "" });
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState("all");
+  const [hoveredTask, setHoveredTask] = useState(null);
 
   const tableHeads = ["Date", "Duree", "Description", "Status", "Actions"];
-  
-useEffect(()=>{
-  handleSearchByRole(); 
-},[])
+
+  useEffect(() => {
+    handleSearchByRole();
+  }, []);
+
   const handleEdit = (task) => {
-    setEditMode(task.date);
-    setEditedTask(task);
+    setSelectedTask(task);
+    setIsModalOpen(true);
   };
 
   const handleDelete = (id_ouv) => {
-    setTasks(tasks.filter(task => task.id_ouv !== id_ouv));
+    setTasks(tasks.filter((task) => task.id_ouv !== id_ouv));
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setEditedTask({ ...editedTask, [name]: value });
-  };
-
-  const handleSave = () => {
-    setTasks(tasks.map(task => task.date === editedTask.date ? editedTask : task));
-    console.log(editTask); 
-    setEditMode(null);
+  const handleSave = (editedTask) => {
+    setTasks(tasks.map((task) => (task.date === editedTask.date ? editedTask : task)));
+    setIsModalOpen(false);
   };
 
   const handleSearchByRole = (status = "") => {
     setActiveTab(status);
     setLoading(true);
-    console.log(status) ;
     let url = "http://localhost:5000/api/tasks";
-    if (status !== "all"
-    ) {
+    if (status !== "all") {
       url = `${url}/status/${status}`;
-      console.log(url); 
     }
-    console.log(url); 
     axios
       .get(url)
       .then((res) => {
-        console.log(res); 
         setTasks(res.data);
         setLoading(false);
       })
@@ -124,33 +98,48 @@ useEffect(()=>{
       });
   };
 
-  return (
+  const handleCheckboxChange = (task) => {
+    const updatedTasks = tasks.map((t) => {
+      if (t.id_ouv === task.id_ouv) {
+        return { ...t, completed: !t.completed };
+      }
+      return t;
+    });
+    setTasks(updatedTasks);
+  };
+  const handleMouseEnter = (task) => {
+    setHoveredTask(task.id_ouv);
+  };
 
+  const handleMouseLeave = () => {
+    setHoveredTask(null);
+  };
+
+  return (
     <Card className="h-full w-full" shadow={false}>
       <ToastContainer />
       <CardHeader floated={false} shadow={false} className="rounded-none">
         <div className="mb-8 flex items-center justify-between gap-8">
           <div>
             <Typography variant="h5" color="blue-gray">
-              Users list
+              Tasks List
             </Typography>
             <Typography color="gray" className="mt-1 font-normal">
-              See information about all users
+              Manage your tasks efficiently
             </Typography>
           </div>
           <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
             <Button
               size="sm"
-              text="view all"
+              text="View All"
               variant="outline"
               className="button bg-background text-black border border-black hover:bg-gray-50"
             >
-              view all
+              View All
             </Button>
             <Link to="create">
-              <Button className="button " size="sm" text="Add user">
-                <UserPlusIcon strokeWidth={2} className="h-4 w-4" />
-                Add user
+              <Button className="button" size="sm" text="Add Task">
+                Add Task
               </Button>
             </Link>
           </div>
@@ -161,7 +150,9 @@ useEffect(()=>{
               {TABS.map(({ label, value }) => (
                 <button
                   key={value}
-                  className={`p-2 mx-2 bg-gray-100 rounded-md hover:bg-white ${activeTab === value ? "bg-white" : ""}`}
+                  className={`p-2 mx-2 bg-gray-100 rounded-md hover:bg-white ${
+                    activeTab === value ? "bg-white" : ""
+                  }`}
                   onClick={() => handleSearchByRole(value)}
                 >
                   {label}
@@ -175,9 +166,9 @@ useEffect(()=>{
           >
             <Input
               label="Search"
-              icon={<MagnifyingGlassIcon className="h-5 w-5" />}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
+              icon={<IoIosRefresh className="h-5 w-5" />}
             />
             <Button
               size="sm"
@@ -185,119 +176,71 @@ useEffect(()=>{
               variant="outline"
               className="button bg-background text-black border border-black hover:bg-gray-50"
             >
-              <MagnifyingGlassIcon className="h-5 w-5" />
+              <IoIosRefresh className="h-5 w-5" />
             </Button>
           </form>
         </div>
       </CardHeader>
-      <CardBody className="overflow-scroll px-0">
+      <CardBody className=" overflow-scroll px-0">
         {loading ? (
           <div className="flex justify-center items-center">
             <Spinner />
           </div>
+        ) : tasks.length === 0 ? (
+          <Typography color="blue-gray" className="text-center">
+            No tasks found.
+          </Typography>
         ) : (
-           
-          <table className="mt-4 w-full min-w-max table-auto text-left">
-            <thead>
-              <tr>
-                {tableHeads.map((head) => (
-                  <th
-                    key={head}
-                    className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4"
+          <div className=" flex justify-center space-y-4">
+        {tasks.map((task) => (
+        <div
+          key={task.id_ouv}
+          className="border rounded-lg overflow-hidden  shadow-sm max-w-[1000px] min-w-[500px] w-fit"
+          onMouseEnter={() => handleMouseEnter(task)}
+          onClick={() => handleEdit(task)}
+          onMouseLeave={handleMouseLeave}
+        >
+          <div className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <Checkbox
+                  checked={task.completed}
+                  onChange={() => handleCheckboxChange(task)}
+                />
+                <Typography variant="body" color="blue-gray" className="ml-2">
+                  {task.description}
+                </Typography>
+              </div>
+              {hoveredTask === task.id_ouv && (
+                <div className="flex space-x-2">
+                  <Button
+                    size="sm"
+                    onClick={() => handleEdit(task)}
+                    className="bg-blue-500 text-white hover:bg-blue-600"
                   >
-                    <Typography
-                      variant="small"
-                      color="blue-gray"
-                      className="leading-none opacity-70 font-bold"
-                    >
-                      {head}
-                    </Typography>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody> 
-               { tasks.length == 0 ? ( 
-                <p>no tasks</p>
-               ) : ( 
-                tasks.map((task) => (
-                  <tr key={task.date}>
-                    <td>
-                      {editMode === task.date ? (
-                        <input
-                          type="datetime-local"
-                          name="date"
-                          value={editedTask.date}
-                          onChange={handleChange}
-                          className="border p-1"
-                        />
-                      ) : (
-                        task.date
-                      )}
-                    </td>
-                    <td>
-                      {editMode === task.date ? (
-                        <input
-                          type="text"
-                          name="duree"
-                          value={editedTask.duree}
-                          onChange={handleChange}
-                          className="border p-1"
-                        />
-                      ) : (
-                        task.duree
-                      )}
-                    </td>
-                    <td>
-                      {editMode === task.date ? (
-                        <input
-                          type="text"
-                          name="description"
-                          value={editedTask.description}
-                          onChange={handleChange}
-                          className="border p-1"
-                        />
-                      ) : (
-                        task.description
-                      )}
-                    </td>
-                    <td>
-                      {editMode === task.date ? (
-                        <Select
-                          name="status"
-                          value={editedTask.status}
-                          onChange={(e) => handleChange({ target: { name: 'status', value: e } })}
-                          className="border p-1"
-                        >
-                          <Option value="done">Done</Option>
-                          <Option value="inprogress">In Progress</Option>
-                          <Option value="expired">Expired</Option>
-                        </Select>
-                      ) : (
-                        task.status
-                      )}
-                    </td>
-                    <td>
-                      {editMode === task.date ? (
-                        <Button onClick={handleSave}>
-                          <FaSave />
-                        </Button>
-                      ) : (
-                        <>
-                          <Button onClick={() => handleEdit(task)}>
-                            <FaEdit />
-                          </Button>
-                          <Button onClick={() => handleDelete(task.id_ouv)}>
-                            <FaTrash />
-                          </Button>
-                        </>
-                      )}
-                    </td>
-                  </tr>
-                ))
-               )}
-            </tbody>
-          </table>
+                    <PencilIcon className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={() => handleDelete(task.id_ouv)}
+                    className="bg-red-500 text-white hover:bg-red-600"
+                  >
+                    <TrashIcon className="w-4 h-4" />
+                  </Button>
+                </div>
+              )}
+            </div>
+            <Typography
+              variant="caption"
+              color="gray"
+              className="mt-2 block text-sm"
+            >
+              Due: {new Date(task.date).toLocaleDateString()}
+            </Typography>
+          </div>
+        </div>
+      ))}
+          </div>
         )}
       </CardBody>
       <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
@@ -308,9 +251,16 @@ useEffect(()=>{
           className="flex items-center gap-2"
         >
           <IoIosRefresh className="h-4 w-4" />
-          Refill
+          Refresh
         </Button>
       </CardFooter>
+      {isModalOpen && (
+        <TaskEditModal
+          task={selectedTask}
+          onSave={handleSave}
+          onClose={() => setIsModalOpen(false)}
+        />
+      )}
     </Card>
   );
 };

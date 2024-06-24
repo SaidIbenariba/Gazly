@@ -6,9 +6,9 @@ import {
   Card, CardHeader, CardBody, CardFooter,
   Typography, Input, Select, Option, Tabs, TabsHeader
 } from "@material-tailwind/react";
-import { PlusIcon, MagnifyingGlassIcon } from "@heroicons/react/24/solid";
-import { TrashIcon, PencilIcon } from "@heroicons/react/24/solid";
+import { PlusIcon, MagnifyingGlassIcon, TrashIcon, PencilIcon } from "@heroicons/react/24/solid";
 import { IoFilter } from "react-icons/io5";
+import EditObservationModal from './EditObservationModal'; // Import the modal component
 
 const TABS = [
   { label: "All", value: "all" },
@@ -21,13 +21,13 @@ const ObservationCard = ({ observation, onEdit, onDelete }) => {
   const getStatusStyles = (status) => {
     switch (status) {
       case 'pending':
-        return 'bg-blue-100 text-blue-800'; // Background and text colors for inProgress
+        return 'bg-blue-100 text-blue-800';
       case 'completed':
-        return 'bg-yellow-100 text-yellow-800'; // Background and text colors for inReview
+        return 'bg-yellow-100 text-yellow-800';
       case 'archive':
         return 'bg-gray-100 text-gray-800';
       default:
-        return 'bg-gray-100 text-gray-800'; // Default background and text colors
+        return 'bg-gray-100 text-gray-800';
     }
   };
   return (
@@ -38,95 +38,43 @@ const ObservationCard = ({ observation, onEdit, onDelete }) => {
         </Typography>
         <Typography className="mb-2 text-sm">{observation.date}</Typography>
         <Typography className="mb-2">Responsible: {observation.id_resp}</Typography>
-        <Typography className="mb-2">workspace: {observation.id_ws}</Typography>
-       
-        
-        {/* Status label with dynamic styles */}
+        <Typography className="mb-2">Workspace: {observation.id_ws}</Typography>
         <span className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${getStatusStyles(observation.status)}`}>
           {observation.status}
         </span>
-        
         <div className="flex justify-start gap-2 mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-        <Button className='text-black bg-transparent shadow-none' onClick={() => onEdit(observation)}>
-          <PencilIcon stroke="1" className="h-5 w-5 mr-1"/> 
-        </Button>
-        <Button className='text-black bg-transparent shadow-none' onClick={() => onDelete(observation)}>
-          <TrashIcon className="h-5 w-5 mr-1"/> 
-        </Button>
-      </div>
+          <Button className='text-black bg-transparent shadow-none' onClick={() => onEdit(observation)}>
+            <PencilIcon stroke="1" className="h-5 w-5 mr-1"/>
+          </Button>
+          <Button className='text-black bg-transparent shadow-none' onClick={() => onDelete(observation)}>
+            <TrashIcon className="h-5 w-5 mr-1"/>
+          </Button>
+        </div>
       </CardBody>
     </Card>
-  ) 
+  )
 };
-const demoData = [ 
-  {
-    date: "2024-06-15 10:00:00",
-    feedback: "Feedback for observation 1",
-    id_ws: 1,
-    id_resp: 100,
-    status: "pending",
-  },
-  {
-    date: "2024-06-16 11:30:00",
-    feedback: "Feedback for observation 2",
-    id_ws: 2,
-    id_resp: 101,
-    status: "completed",
-  },
-  {
-    date: "2024-06-17 14:45:00",
-    feedback: "Feedback for observation 3",
-    id_ws: 1,
-    id_resp: 102,
-    status: "archive",
-  },
-  {
-    date: "2024-06-18 09:20:00",
-    feedback: "Feedback for observation 4",
-    id_ws: 3,
-    id_resp: 100,
-    status: "pending",
-  },
-  {
-    date: "2024-06-19 15:55:00",
-    feedback: "Feedback for observation 5",
-    id_ws: 2,
-    id_resp: 101,
-    status: "completed",
-  },
-  {
-    date: "2024-06-20 08:10:00",
-    feedback: "Feedback for observation 6",
-    id_ws: 3,
-    id_resp: 102,
-    status: "archive",
-  },
-]
+
 const ObservationsTable = () => {
   const [observations, setObservations] = useState([]);
   const [status, setStatus] = useState("all");
   const [searchBy, setSearchBy] = useState("");
   const [values, setValues] = useState({ value: "" });
   const [openFilter, setOpenFilter] = useState(false);
-  const [deleteObservation, setDeleteObservation] = useState(false); 
+  const [selectedObservation, setSelectedObservation] = useState(null);
   const filterMenuRef = useRef(null);
   const filterButtonRef = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchObservations(status);
-    console.log("status changed ");
-  }, [status,deleteObservation]);
-  useEffect(()=>{
-    console.log(observations); 
-  },[observations]); 
+  }, [status]);
 
   const fetchObservations = (status) => {
-    console.log(status) ;
     if (status && status !== "all") {
       axios
         .get("http://localhost:5000/api/observations/status/" + status)
-        .then((res) =>setObservations(res.data))
+        .then((res) => setObservations(res.data))
         .catch((err) => console.log(err));
     } else {
       axios
@@ -158,17 +106,13 @@ const ObservationsTable = () => {
   }, [openFilter]);
 
   const handleEditObservation = (observation) => {
-    navigate(`/private/observations/edit/${observation.date}/${observation.id_ws}/${observation.id_resp}`);
+    setSelectedObservation(observation);
   };
 
   const handleDeleteObservation = (observation) => {
-    console.log(observation);
-   
     axios
       .delete(`http://localhost:5000/api/observations/delete/${observation.date}/${observation.id_ws}/${observation.id_resp}`)
-      .then((res) =>  {setDeleteObservation(true); 
-        console.log(res); 
-      }  )
+      .then((res) => fetchObservations(status))
       .catch((err) => console.log(err));
   };
 
@@ -271,6 +215,13 @@ const ObservationsTable = () => {
             <Button type="submit">Filter</Button>
           </form>
         </div>
+      )}
+      {selectedObservation && (
+        <EditObservationModal
+          observation={selectedObservation}
+          onClose={() => setSelectedObservation(null)}
+          onSave={() => fetchObservations(status)}
+        />
       )}
       <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4 mt-6">
         <Typography variant="small" color="blue-gray" className="font-normal">

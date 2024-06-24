@@ -37,7 +37,7 @@ app.use("/auth", authRoutes);
 app.use("/refresh", refreshRoutes);
 app.use(verifyJWT);
 app.use("/api/tasks", taskRoutes);
-app.use("/api/sensor", sensorRoutes);
+app.use("/api/sensors", sensorRoutes);
 app.use("/api/observations", observationRoutes);
 app.use("/api/missions", missionRoutes);
 app.use("/api/meetings", meetingRoutes);

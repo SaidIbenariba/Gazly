@@ -9,13 +9,14 @@ import DashboardLayout from "../directeur/DashboardLayout";
 import CreateMissionForm from "../Missions/CreateMissionForm";
 import EditMissionForm from "../Missions/EditMissionForm";
 import ObservationsTable from "../observations/ObservationsTable";
-import EditObservationForm from "../observations/EditObservationForm";
+// import EditObservationForm from "../observations/EditObservationForm";
 import CreateObservationForm from "../observations/CreateObservationForm";
 import TasksTable from "../tasks/TasksTable";
-import EditTaskForm from "../tasks/EditTaskForm";
+// import EditTaskForm from "../tasks/EditTaskForm";
 import CreateTaskForm from "../tasks/CreateTaskForm";
 import MeasuresTable from "../measures/MeasuresTable";
 import SensorTable from "../Sensors/SensorsTable";
+import EditObservationModal from "../observations/EditObservationModal";
 
 export default function AdminRoutes() {
   return (
@@ -32,7 +33,7 @@ export default function AdminRoutes() {
         {/* <Route path="observations" element={<Observations/>}/> */}
         <Route path="observations" element={<ObservationsTable/>} />
         <Route path="observations/create" element={<CreateObservationForm/>} />
-        <Route path="observations/edit/:date/:id_ws/:id_resp" element={<EditObservationForm/>} />
+        <Route path="observations/edit/:date/:id_ws/:id_resp" element={<EditObservationModal/>} />
         <Route path="observations/*" element={<ObservationsTable />} />
         {/* measures routes */}
         <Route path="measures" element={<MeasuresTable/>} />
@@ -41,7 +42,7 @@ export default function AdminRoutes() {
         {/* tasks Routes */}
         <Route path="tasks" element={<TasksTable/>}/>
         <Route path="tasks/create" element={<CreateTaskForm/>} />
-        <Route path="tasks/edit/:date/:id_resp/:id_ouv" element={<EditTaskForm/>} />
+        {/* <Route path="tasks/edit/:date/:id_resp/:id_ouv" element={<EditTaskForm/>} /> */}
         <Route path="tasks/*" element={<TasksTable />} />
         <Route path="planning" element={<Planning />} />
       </Route>

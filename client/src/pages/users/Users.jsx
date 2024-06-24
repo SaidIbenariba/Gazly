@@ -112,8 +112,9 @@ export default function Users() {
     }
   }
 
-  function handleDelete(e) {
-    const id = e.target.id;
+  function handleDelete(id ) {
+    // const id = e.target.id;
+    console.log(id); 
     axios
       .delete("http://localhost:5000/api/users/delete/" + id)
       .then((res) => {
@@ -276,7 +277,7 @@ export default function Users() {
                           variant="text"
                           color="blue-gray"
                           id={id}
-                          onClick={handleDelete}
+                          onClick={()=>handleDelete(id)}
                         >
                           <FaTrashAlt className="h-4 w-4" />
                         </IconButton>

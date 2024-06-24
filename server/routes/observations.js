@@ -10,7 +10,7 @@ const router = express.Router();
 router.get("/lastest",getObservationsDash);
 
 router.get("/espace/:id_ws?", getObservations) ; 
-router.get("/edit/:date/:id_ws/:id_resp",editObservation); 
+router.put("/edit/:date/:id_ws/:id_resp",editObservation); 
 // router.get("/create")
 router.get("/status/:status?",getObservations); 
 router.get("/:date?/:id_ws?/:id_resp?",getObservations); 

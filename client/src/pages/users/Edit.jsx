@@ -19,8 +19,10 @@ const Edit = () => {
     role: "",
   });
   const [err, setErr] = useState({ exist: false, msg: "" });
+  const [loading, setLoading] = useState(false); 
 
   useEffect(() => {
+    setLoading(true); 
     axios
       .get("http://localhost:5000/api/users/read/" + id)
       .then((res) => {
@@ -31,7 +33,8 @@ const Edit = () => {
           role: res.data[0].role,
         });
       })
-      .catch((error) => setErr({ exist: true, msg: error.response.data }));
+      .catch((error) => setErr({ exist: true, msg: error.response.data }))
+      .finally(setLoading(true));
   }, [id]);
 
   const formFields = [
@@ -79,6 +82,8 @@ const Edit = () => {
 
   return (
     <>
+    {loading ? 
+     (<p>is loading</p>) : (
       <div className="flex flex-col h-[100vh] p-2 items-center">
         <div className="flex flex-col ">
           <span className="err">{err.exist && err.msg}</span>
@@ -93,6 +98,9 @@ const Edit = () => {
           <Form fields={formFields} onSubmit={handleSubmit} values={values} isEditMode={true} />
         </div>
       </div>
+     )
+  }
+      
     </>
   );
 };

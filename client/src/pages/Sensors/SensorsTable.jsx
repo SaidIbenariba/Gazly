@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   CardHeader,
@@ -9,10 +9,12 @@ import {
   CardFooter,
   Select,
   Option,
+  Spinner,
 } from "@material-tailwind/react";
 import { IoIosRefresh } from "react-icons/io";
 import { FaEdit, FaSave, FaTrash } from "react-icons/fa";
-
+import axios from "axios"; 
+import { TrashIcon,PencilIcon } from "@heroicons/react/24/outline";
 // Dummy data for initial display
 const demoSensors = [
   { id: 1, type: "Temperature", id_WS: 101 },
@@ -21,14 +23,23 @@ const demoSensors = [
 ];
 
 const SensorTable = () => {
-  const [sensors, setSensors] = useState(demoSensors);
+  const [sensors, setSensors] = useState([]);
   const [editMode, setEditMode] = useState(null);
   const [editedSensor, setEditedSensor] = useState({});
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState({ exist: false, msg: "" });
 
-  const tableHeads = ["ID", "Type", "Weather Station ID", "Actions"];
-
+  const tableHeads = [ "Type", "WorkSpace", "Actions"];
+  useEffect(()=>{
+    fetchSensors() ; 
+  },[]); 
+  const fetchSensors = () => {
+    setLoading(true); 
+    axios.get("http://localhost:5000/api/sensors")
+    .then((res)=>setSensors(res.data))
+    .catch((err)=>console.log(err))
+    .finally(setLoading(false)); 
+  }
   const handleEdit = (sensor) => {
     setEditMode(sensor.id);
     setEditedSensor(sensor);
@@ -64,7 +75,9 @@ const SensorTable = () => {
   };
 
   return (
-    <Card className="h-full w-full" shadow={false}>
+    <> 
+    { loading ? (<Spinner/>) : ( 
+      <Card className="h-full w-full" shadow={false}>
       <CardHeader floated={false} shadow={false} className="rounded-none">
         <div className="mb-8 flex items-center justify-between gap-8">
           <div>
@@ -108,7 +121,7 @@ const SensorTable = () => {
           <tbody>
             {sensors.map((sensor) => (
               <tr key={sensor.id}>
-                <td>
+                {/* <td>
                   <Typography
                     variant="small"
                     color="blue-gray"
@@ -116,7 +129,7 @@ const SensorTable = () => {
                   >
                     {sensor.id}
                   </Typography>
-                </td>
+                </td> */}
                 <td>
                   {editMode === sensor.id ? (
                     <Input
@@ -165,17 +178,27 @@ const SensorTable = () => {
                 </td>
                 <td>
                   {editMode === sensor.id ? (
-                    <Button onClick={handleSave}>
+                    <Button size="sm" onClick={handleSave}>
                       <FaSave />
                     </Button>
                   ) : (
                     <>
-                      <Button onClick={() => handleEdit(sensor)}>
-                        <FaEdit />
-                      </Button>
-                      <Button onClick={() => handleDelete(sensor.id)}>
-                        <FaTrash />
-                      </Button>
+                      <div className="flex space-x-2">
+                  <Button
+                    size="sm"
+                    onClick={() => handleEdit(sensor)}
+                    className="bg-blue-500 text-white hover:bg-blue-600"
+                  >
+                    <PencilIcon className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={() => handleDelete(sensor.id)}
+                    className="bg-red-500 text-white hover:bg-red-600"
+                  >
+                    <TrashIcon className="w-4 h-4" />
+                  </Button>
+                </div>
                     </>
                   )}
                 </td>
@@ -196,6 +219,9 @@ const SensorTable = () => {
         </Button>
       </CardFooter>
     </Card>
+    )}
+    
+    </>
   );
 };
 

@@ -191,6 +191,7 @@ const newMission = {
             start: req.params.start, 
             id_resp: req.params.id_resp,
           };
+          
           console.log([...Object.values(values)]); 
         db.query(q, [...Object.values(values)], (err, result) => {
             if (err) return res.status(400).json(err);  

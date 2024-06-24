@@ -169,6 +169,7 @@ export const getObservations = (req, res) => {
   
   
   export const createObservation = (req, res) => {
+    console.log("create controller");   
     const userId = req.id;
     const userRole = req.role ; 
     const sql ="INSERT INTO observation (date,`feedback`,`id_ws`,`id_resp`,`status`) VALUE(?,?,?,?,?) ";
@@ -179,7 +180,8 @@ export const getObservations = (req, res) => {
       id_ws: req.body.id_ws,
       id_resp: userId,
       status: req.body.status,   
-    };
+    };  
+    console.log(newObservation); 
     db.query(sql, [...Object.values(newObservation)], (err, result) => {
       if (err) {console.log(err); return res.status(400).json(err);  }
       return res
@@ -189,17 +191,23 @@ export const getObservations = (req, res) => {
   } 
     };
     export const editObservation =(req,res) =>{
+      console.log("edit Observation"); 
       const q =
-          "UPDATE observation SET feedback=?,status=?  WHERE date=? AND id_ws=? AND id_resp=?";
+          "UPDATE observation SET feedback = ?,status = ?  WHERE date = ? AND id_ws = ? AND id_resp = ?";
         const values = {
             feedback: req.body.feedback,
             status: req.body.status,
             date: req.params.date, 
-            id_dir: req.params.id_ws,
+            id_ws: req.params.id_ws,
             id_resp: req.params.id_resp,
           };
-        db.query(q, [Object.values(values)], (err, result) => {
-            if (err) return res.sendStatus(500);
+
+          console.log(values); 
+        db.query(q, [...Object.values(values)], (err, result) => {
+            if (err) {
+              console.log(err) ;  
+              return res.sendStatus(400); 
+            }
             return res.status(200).json(result);
           });
     }

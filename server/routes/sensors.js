@@ -4,6 +4,6 @@ import {
 } from "../controllers/sensor.js";
 const router = express.Router();
 router.get("/", getSensor);
-router.get("/:id_ws", getSensor);
+router.get("/workspace/:id_ws", getSensor); 
 
 export default router;
