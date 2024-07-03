@@ -6,9 +6,13 @@ import {
     createWorkSpace,
     editWorkSpace,
     deleteWorkSpace,
+    WorkSpaces,
+    WorkSpacesWithoutRes
 } from "../controllers/espace.js";
 const router = express.Router();
-router.get("/", getWorkSpace);
+router.get("/", WorkSpaces);
+router.get("/noresponsable",WorkSpacesWithoutRes)
+router.get("/read/:WorkSpacenb", getWorkSpace);
 router.get("/read/:id_resp", WorkSpaceSearchByResp);
 router.get("/respSearch/:name", WorkSpaceSearchByName);
 router.post("/createWorkSpace", createWorkSpace);
