@@ -3,13 +3,34 @@ export const constWorkSpacesWithoutRes = (req, res) => {
    
 }
 export const getWorkSpace = (req, res) => {
-    // console.log(req.params);
-    const q = `SELECT * FROM workSpace WHERE WorkSpacenb = ?`;
-    db.query(q, req.params.WorkSpacenb, (err, result) => {
-      if (err) return res.status(500).json(err);
-      return res.status(200).json(result);
-    });
-  };
+  const q = `SELECT w.*, a.* FROM workSpace w LEFT JOIN affectation a ON w.id = a.id_ws AND a.end >= CURDATE()`;
+
+  db.query(q, (err, result) => {
+    if (err) return res.status(500).json(err);
+    const Data = result.map((row) => ({
+      ...row, 
+      position: [row.x, row.y]
+    }));
+    console.log(Data);
+    return res.status(200).json(Data);
+  });
+};
+export const getWorkSpaceHistoric = (req, res) => {
+  const q = `SELECT  a.*,u.* FROM affectation w INNER JOIN user u ON a.id_resp = u.id WHERE id_ws=?`;
+
+  db.query(q,req.params.id_ws, (err, result) => {
+    if (err) return res.status(500).json(err);
+
+    
+
+    /*const Data = result.map((row) => ({
+      ...row, 
+    }));*/
+
+    return res.status(200).json(Data);
+  });
+};
+
   
   export const WorkSpaceSearchByResp = (req, res) => {
     // console.log(req.params);
@@ -57,7 +78,7 @@ export const getWorkSpace = (req, res) => {
           return res.status(200).json(result);
         });
     };
-    export const WorkSpaces = (req, res) => {
+    /*export const WorkSpaces = (req, res) => {
         const sql = "SELECT ws.*,r.firstname,r.lastname FROM workspace ws INNER JOIN users r ON  ws.id_resp= r.id";
         db.query(sql,(err, workSpaces) => {
           if (err) console.log(err); 
@@ -71,4 +92,4 @@ export const getWorkSpace = (req, res) => {
           }));console.log(formattedResults);
           return res.json(formattedResults);
         });
-      };
+      };*/

@@ -70,7 +70,7 @@ export const getTasksForResp = (req, res) => {
         });
     };
     export const getTasks = (req, res) => {
-      const userId = req.id;
+      const userId = 5;//req.id;
   const userRole = req.role;
   let sql = "";
   let queryParams = [];
@@ -84,7 +84,7 @@ export const getTasksForResp = (req, res) => {
         queryParams = [id_ouv,date,id_resp]; 
   }else if (status) {
     console.log("search with status");  
-    if (userRole == "responsable") {
+    if (userRole == "admin") { 
       sql =
         "SELECT * FROM task WHERE id_resp = ? AND status = ?";
     } else if (userRole == "ouvrier") {
@@ -94,9 +94,9 @@ export const getTasksForResp = (req, res) => {
     queryParams = [userId, status];
   } else {
     console.log("get all tasks depend on user "); 
-    if (userRole == "responsable") {
+    if (userRole == "admin") {
       sql =
-        "SELECT * FROM task WHERE id_resp = 5 ";
+        "SELECT * FROM task WHERE id_resp = ? ";
     } else if (userRole == "ouvrier") {
       sql =
         "SELECT * FROM task WHERE id_ouv = ? ";
@@ -107,7 +107,7 @@ export const getTasksForResp = (req, res) => {
   console.log(queryParams);     
       db.query(sql,[queryParams], (err, tasks) => {
         if (err) {
-          console.error("Tasks database query error: ", err);
+          //console.error("Tasks database query error: ", err);
           return res.status(500).json({ error: "Cannot connect to database" });
         }
     
