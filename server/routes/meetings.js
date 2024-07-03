@@ -1,8 +1,6 @@
 import express from "express";
 import {
-  // getMeetingsForResp,
   getMeetings,
-  Meetings,
   respSearch,
   createMeeting,
   editMeeting,
@@ -10,7 +8,7 @@ import {
 } from "../controllers/meeting.js";
 const router = express.Router();
 router.get("/read", getMeetings);
-router.get("/", Meetings);
+router.get("/", getMeetings);
 
 // router.get("/respSearch/:id_Admin", respSearch);
 router.post("/create", createMeeting);

@@ -191,7 +191,6 @@ const newMission = {
             start: req.params.start, 
             id_resp: req.params.id_resp,
           };
-          
           console.log([...Object.values(values)]); 
         db.query(q, [...Object.values(values)], (err, result) => {
             if (err) return res.status(400).json(err);  
@@ -229,7 +228,7 @@ const newMission = {
           conditions.push("r.lastname LIKE ?");
           queryParams.push(`%${req.params.values}%`);
       }*/
-      if (conditions.length > 0) {
+      if (conditions.length > 0) { 
           q += " AND " + conditions.join(" AND ");
       }
     
@@ -253,7 +252,7 @@ const newMission = {
           end: formatDate(row.end),
           
         }));
-        console.log(formattedResults);
+        console.log("result :"+formattedResults);
         return res.json(formattedResults);
       });
     };
@@ -263,12 +262,13 @@ export const defaultMissionSearch = (req, res) => {
   const userId = req.id;
   const userRole = req.role;
   let q = "";
+  
   if (userRole === 'admin') {
   q = "SELECT * FROM mission m WHERE id_dir = ?";
 } else if (userRole === 'responsable') {
   q = "SELECT * FROM mission m WHERE id_resp = ?";
 }const queryParams = [userId];
-const searchValue = req.body;
+const searchValue = req.params.value;
   console.log("searchValue ");
   console.log(searchValue); 
   let conditions = [];

@@ -77,34 +77,27 @@ export const getObservations = (req, res) => {
     });
   };
   export const getObservationsDash = (req, res) => {
-    const sql = "SELECT o.*,concat(u.firstname,' ',u.lastname) AS responsable FROM observation o INNER JOIN users u ON o.id_resp = u.id WHERE DATE(o.date) = CURDATE()";
+    const sql = "SELECT o.* FROM observation o ORDER BY date ASC";
     db.query(sql, (err, results) => {
       if (err) {
-        return res.status(500).json("Cannot connect to database");
+        return res.status(500).json("Cannot connect to database:getObservationsDash");
       }
   
     
-      const formatDate = (mysqlDate) => {
-        const jsDate = new Date(mysqlDate);
-        const options = {
-          weekday: 'short',
-          year: 'numeric',
-          month: 'short',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-          timeZoneName: 'short',
-        };
-        return jsDate.toLocaleString('en-GB', options);
-      };
+      function formatDate(dateStr) {
+        const date = new Date(dateStr);
+        const year = date.getFullYear();
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      }
   
       const formattedResults = results.map(row => ({
         ...row,
         date: formatDate(row.date),
         
-      }));
-      console.log(formattedResults)
+      })); 
+      console.log("observations:"+formattedResults)
   
       return res.json(formattedResults);
     });

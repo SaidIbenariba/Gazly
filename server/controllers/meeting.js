@@ -48,12 +48,12 @@ export const deleteMeeting = (req, res) => {
 export const getMeetings = (req, res) => {
   const userId = req.id;
   const userRole = req.role;
-  let sql = `SELECT m.*, r.firstname, r.lastname FROM meeting m INNER JOIN users r ON m.id_resp = r.id WHERE DATE(m.start) = CURDATE()`;
+  let sql = `SELECT * FROM meeting WHERE`;
   
   if (userRole == "admin") {
-    sql += " AND id_dir = ?";
+    sql += " id_dir = ?";
   } else if (userRole == "responsable") {
-    sql += " AND id_resp = ?";
+    sql += " id_resp = ?";
   }
 
   if (userId) {
@@ -63,20 +63,9 @@ export const getMeetings = (req, res) => {
         return res.status(500).json("Cannot connect to database");
       }
 
-      const formatDate = (mysqlDate) => {
-        const jsDate = new Date(mysqlDate);
-        const options = {
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: false, // 24-hour format
-        };
-        return jsDate.toLocaleString("en-GB", options);
-      };
 
       const formattedResults = results.map((row) => ({
         ...row,
-        start: formatDate(row.start),
-        end: formatDate(row.end),
         user: `${row.firstname} ${row.lastname}`,
       }));
       

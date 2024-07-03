@@ -6,6 +6,8 @@ import { ROLES_LIST } from "../config/roles_list.js";
 dotenv.config();
 // import jwt from "jsonwebtoken";
 export const register = async (req, res) => {
+  const userId = req.id;
+  const userRole = req.role;
   // CHECK USER IF EXISTS OR NOT
   // console.log("register");
   const sql = "SELECT * FROM users WHERE email = ?";
@@ -45,19 +47,22 @@ export const register = async (req, res) => {
     // console.log(newUser);
     db.query(q, [Object.values(newUser)], (err, result) => {
       if (err) return res.status(500).json(err);
-    
-    const userId = result.insertId;
-
-                const insertDirecteurQuery = 'INSERT INTO director(id) VALUES (?)';
-                db.query(insertDirecteurQuery, [userId], (err, result) => {
+    const nuserId = result.insertId;
+    if(userRole=='admin'){
+      const insertDirecteurQuery = 'INSERT INTO director(id) VALUES (?)';
+    }else if (userRole=='responsable'){
+      const insertDirecteurQuery = 'INSERT INTO responsable(id) VALUES (?)';
+    }else{
+      const insertDirecteurQuery = 'INSERT INTO ouvrier(id) VALUES (?)';
+    }  db.query(insertDirecteurQuery, [nuserId], (err, result) => {
                   if (err) return res.status(500).json(err);
                   console.log(result); 
-                });  
+                });
              
     
     // return res.status(200).json({ succes: `New User  created ` });
 
-  });
+  }); 
   });
 };
 // autologin controllers
@@ -101,7 +106,7 @@ export const login = async (req, res) => {
   const sql = "SELECT * FROM users WHERE email = ?";
   // { userId: }
   db.query(sql, req.body.email, (err, data) => {
-    if (err) console.log(err); 
+    if (err) return res.status(500).json(err);
     if (data.length == 0) return res.status(404).json("Email not found !");
     const checkPassword = bcrypt.compareSync(
       req.body.password,
