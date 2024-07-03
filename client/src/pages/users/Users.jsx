@@ -63,11 +63,27 @@ export default function Users() {
         setTableRows([]);
       });
   }, [deletedUser]);
-
+  function fetchUsers() { 
+    setLoading(true); 
+    axios
+          .get("http://localhost:5000/api/users")
+          .then((res) => {
+            setTableRows(res.data);
+            setLoading(false);
+          })
+          .catch((err) => {
+            setErr({ exist: true, msg: err.data.message });
+            setLoading(false);
+            setTableRows([]);
+          }).finally(()=>setLoading(false));
+  }
   function handleSubmit(e) {
     e.preventDefault();
     setLoading(true);
-    axios
+    if(search == "") { 
+      fetchUsers() ; 
+    } else { 
+    axios 
       .get("http://localhost:5000/api/users/search/" + search)
       .then((res) => {
         setTableRows(res.data);
@@ -78,6 +94,7 @@ export default function Users() {
         setLoading(false);
         setTableRows([]);
       });
+    } 
   }
 
   function handleSearchByrole(e) {
@@ -145,7 +162,9 @@ export default function Users() {
               size="sm"
               text="view all"
               variant="outline"
+              value="all"
               className="button bg-background text-black border border-black hover:bg-gray-50"
+              onClick={handleSearchByrole}
             >
               view all
             </Button>

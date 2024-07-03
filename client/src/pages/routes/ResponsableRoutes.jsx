@@ -9,6 +9,7 @@ import ObservationsTable from "../observations/ObservationsTable";
 
 export default function ResponsableRoutes() {
   return (
+    <Routes>
     <Route element={<DashboardLayout />}>
       <Route index element={<Dashboard />} />  
       <Route path="dashboard" element={<Dashboard />} />
@@ -17,5 +18,6 @@ export default function ResponsableRoutes() {
       <Route path="observations/*" element={<ObservationsTable />} />
       <Route path="planning" element={<Planning />} />
     </Route>
+    </Routes>
   );
 }

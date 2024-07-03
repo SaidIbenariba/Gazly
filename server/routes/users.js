@@ -15,6 +15,7 @@ const router = express.Router();
 router.get("/", verifyRoles("admin"), users);
 router.get("/read/:userId", getUser);
 router.get("/search-role/:role", searchByRole);
+// router.get("/search", search)
 router.get("/search/:text", search);
 router.put("/edit/:userId", editUser);
 router.delete("/delete/:userId", deleteUser);

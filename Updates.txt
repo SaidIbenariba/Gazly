@@ -91,9 +91,13 @@ error in sql query (
    id_ws
 
 ## add allert for every actions made 
- 
- 
-
-
-
+  #mission 
+ getMissions return name of responsable 
+ and their id in one object 
+  { name: , id : }
+  
+  
+  
+  
+  
 

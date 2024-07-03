@@ -158,9 +158,10 @@ export default function Calendar() {
     // add it also in database                                                                                                                      
     e.preventDefault();                                                                                                                                                                                                                                                                                                                                                                                                                         
     const event = { ...newEvent };
-    // axios
-    //   .post("http://localhost:5000/api/meetings/create", event)
-    //   .then((res) => {
+    axios
+      .post("http://localhost:5000/api/meetings/create", event)
+      .then((res) => {
+
     setAllEvents([...allEvents, event]);
     setShowModal(false);
     setFeedbackMessage({
@@ -182,6 +183,8 @@ export default function Calendar() {
     //   console.log(err);
     // });
   }
+).catch((err)=>console.log(err)); 
+} 
 
   return (
     <>

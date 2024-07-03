@@ -42,14 +42,14 @@ const Sidebar = () => {
 
     { title: "Planning", path: "planning", src: <FaCalendarAlt /> },
     { title: "Missions", path: "missions", src: <MdOutlineWork /> },
-    { title: "Observations", path: "observations", src: <HiMiniViewfinderCircle /> },
+    // { title: "Observations", path: "observations", src: <HiMiniViewfinderCircle /> },
     { title: "Espaces", path: "espaces", src: <FaMap /> },
     {title :"Tasks", path:"tasks", src:<FaTasks/>},
     {title:"Measures", path:"measures", src:<FiWind/>},  
     {title:"Sensors", path:"sensors", src:<MdSensorDoor/>},  
     {
       title: "Profile",
-      path: `profile`,
+      path: `/profile`,
       src: <CgProfile />,
       gap: "true",
     },
@@ -80,7 +80,13 @@ const Sidebar = () => {
     },
   ];
   const ouvrierMenus = [
-    { title: "Dashboard", path: "dashboard", src: <AiFillPieChart /> },
+    {title :"Tasks", path:"tasks", src:<FaTasks/>},
+    {
+      title: "Profile",
+      path: `/profile`,
+      src: <CgProfile />,
+      gap: "true",
+    },
     {
       title: "Logout",
       path: "/logout",
@@ -89,17 +95,17 @@ const Sidebar = () => {
     },
   ];
   let Menus = [];
-  // if (isAdmin) Menus = adminMenus;
-  // if (isResponsable) Menus = responsableMenus;
-  // if (isOuvrier) Menus = ouvrierMenus;
-  Menus = adminMenus;
+  if (isAdmin) Menus = adminMenus;
+  if (isResponsable) Menus = responsableMenus;
+  if (isOuvrier) Menus = ouvrierMenus;
+  // Menus = adminMenus;
   const isActive = (path) => {
     return location.pathname === "/admin/" + path;
   };
 
-  return (
-    <>
-      <div
+    return (
+      <>
+        <div
         className={`${
           open ? "w-60" : "w-fit"
         } hidden  lg:block relative h-screen duration-300 text-text bg-sidebar border-r border-border dark:bg-sidebar p-4`}

@@ -1,11 +1,13 @@
 import React from "react";
 import Navbar from "../components/Home/Navbar";
 import { Card, Typography } from "@material-tailwind/react";
+import { useAuth } from "../hooks/useAuth";
+
 export default function Home() {
   return (
     <div className="-m-6 max-h-[768px] w-[calc(100%+48px)] overflow-scroll">
       <Navbar />
-      <div className="mx-auto max-w-screen-md py-12">
+      <div className="relative mx-auto max-w-screen-md py-12">
         <Card className="mb-12 overflow-hidden">
           <img
             alt="nature"

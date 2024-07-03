@@ -4,13 +4,19 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import Form from "../../components/form";
 import Button from "../../components/Button";
 const Create = () => {
-  const [values, setValues] = useState({
+  const [user, setUser] = useState({
     firstname: "",
     lastname: "",
     email: "",
     role: "",
     password: "",
   });
+  const [affectation, setAffectation] = useState({ 
+    start: "", 
+    end:"", 
+    id_ws:"",
+    id_resp:"",
+  })
   const [err, setErr] = useState({ exist: false, msg: "" });
   const nav = useNavigate();
   const formFields = [
@@ -44,11 +50,12 @@ const Create = () => {
       ],
     },
   ];
-  function handleSubmit(values) {
+  function handleSubmit(user) {
     axios
-      .post("http://localhost:5000/api/users/create", values)
+      .post("http://localhost:5000/api/users/create", user)
       .then((res) => {
-        nav("/admin/users");
+        console.log(res); 
+        // nav("/private/users");
       })
       .catch((error) => {
         setErr({ exist: true, msg: error.response.data }), console.log(error);
@@ -68,7 +75,7 @@ const Create = () => {
               Home
             </Link>
           </nav>
-          <Form fields={formFields} onSubmit={handleSubmit} values={values} />
+          <Form fields={formFields} onSubmit={handleSubmit} initialValues={user} />
         </div>
       </div>
     </>

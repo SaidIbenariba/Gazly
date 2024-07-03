@@ -1,5 +1,7 @@
 import { db } from "../connect_db.js";
-
+export const constWorkSpacesWithoutRes = (req, res) => {
+   
+}
 export const getWorkSpace = (req, res) => {
     // console.log(req.params);
     const q = `SELECT * FROM workSpace WHERE WorkSpacenb = ?`;

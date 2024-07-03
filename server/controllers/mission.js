@@ -107,6 +107,7 @@ export const getMissions = (req, res) => {
       start: formatDate(row.start),
       end: formatDate(row.end),
     }));
+      
     // console.log("missions : ");
     // console.log(formattedResults);
     return res.json(formattedResults);

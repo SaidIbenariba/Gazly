@@ -26,7 +26,8 @@ const Edit = () => {
     axios
       .get("http://localhost:5000/api/users/read/" + id)
       .then((res) => {
-        setValues({
+        console.log(res.data); 
+        setValues({ ...values, 
           firstname: res.data[0].firstname,
           lastname: res.data[0].lastname,
           email: res.data[0].email,
@@ -34,15 +35,11 @@ const Edit = () => {
         });
       })
       .catch((error) => setErr({ exist: true, msg: error.response.data }))
-      .finally(setLoading(true));
+      .finally(() => setLoading(false));
   }, [id]);
 
   const formFields = [
-    {
-      name: "email",
-      label: "Email",
-      type: "email",
-    },
+    
     {
       name: "firstname",
       label: "FirstName",
@@ -50,6 +47,11 @@ const Edit = () => {
     {
       name: "lastname",
       label: "LastName",
+    },
+    {
+      name: "email",
+      label: "Email",
+      type: "email",
     },
     {
       name: "role",
@@ -95,12 +97,11 @@ const Edit = () => {
               Home
             </Link>
           </nav>
-          <Form fields={formFields} onSubmit={handleSubmit} values={values} isEditMode={true} />
+          <Form fields={formFields} onSubmit={handleSubmit} initialValues={values} isEditMode={true} />
         </div>
       </div>
      )
   }
-      
     </>
   );
 };

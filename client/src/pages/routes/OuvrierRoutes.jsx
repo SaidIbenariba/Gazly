@@ -1,11 +1,14 @@
 import { Route, Routes } from "react-router-dom";
-import Tasks from "../../pages/Tasks";
 import DashboardLayout from "../directeur/DashboardLayout";
+import TasksTable from "../tasks/TasksTable";
 
 export default function OuvrierRoutes() {
   return (
+    <Routes> 
     <Route element={<DashboardLayout />}>
-      <Route element={<Tasks />} path="tasks" />
+    <Route index element={<TasksTable/>}/>
+    <Route  element={<TasksTable />} path="tasks" />
     </Route>
+    </Routes>
   );
 }
