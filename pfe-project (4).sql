@@ -34,6 +34,8 @@ CREATE TABLE IF NOT EXISTS `affectation` (
   `id_ws` int NOT NULL,
   `id_resp` int NOT NULL,
   PRIMARY KEY (`start`,`id_ws`,`id_resp`),
+  UNIQUE KEY `datedebut` (`start`,`id_ws`,`id_resp`),
+  UNIQUE KEY `start` (`start`,`id_ws`,`id_resp`),
   KEY `id_ws_affect` (`id_ws`),
   KEY `id_resp_affect` (`id_resp`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

@@ -87,7 +87,7 @@ export const getWorkSpaceHistoric = (req, res) => {
         const values = {
             name: req.body.name,
           };
-        db.query(q, values, (err, result) => {
+        db.query(q, [Object.values(values)], (err, result) => {
             if (err) return res.sendStatus(500);
             return res.status(200).json(result);
           });
