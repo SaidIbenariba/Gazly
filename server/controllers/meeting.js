@@ -12,12 +12,13 @@ export const createMeeting = (req, res) => {
   if (req.role === "admin") {
     // Convert boolean allDay to integer 
     const allDay = req.body.allDay ? '1' : '0';
-
+    const start = formatDateString(req.body.start); 
+    const end = formatDateString(req.body.end); 
     const sql =
       "INSERT INTO meeting (`start`, `end`, `title`, `description`, `id_resp`, `id_dir`, `allDay`) VALUES (?, ?, ?, ?, ?, ?, ?)";
     const newMeeting = [
-      req.body.start,
-      req.body.end,
+      start,
+      end,
       req.body.title,
       req.body.description,
       req.body.id_resp,
@@ -55,18 +56,7 @@ export const deleteMeeting = (req, res) => {
   const { start, end, id_resp } = req.params;
   console.log("no formated date"); 
   console.log(start,end);  
-  function formatDateString(dateString) {
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    console.log(date); 
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const seconds = String(date.getSeconds()).padStart(2, '0');
   
-    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-  }
   const startFormat =  formatDateString(start);
   const endFormat = formatDateString(end);
   console.log(startFormat); 
@@ -103,10 +93,10 @@ export const getMeetings = (req, res) => {
   
       const formattedResults = results.map((row) => ({
         ...row,
-  
+        start: formatDateString(row.start),
+        end:formatDateString(row.end),
         // user: `${row.firstname || ''} ${row.lastname || ''}`.trim(),
       }));
-      
       console.log(results); 
       return res.json(results);
     });
@@ -192,3 +182,21 @@ export const getAllMeetingsById = (req, res) => {
       .json("Missing required parameter: id_dir or id_resp");
   }
 };
+function formatDateString(dateString) {
+
+  const options = {
+    timeZone: 'Africa/Casablanca',
+    hour12: false,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  };
+  
+  const formatter = new Intl.DateTimeFormat('en-US', options);
+  
+  const convertedDate = formatter.format(dateString);
+  return convertedDate;
+}

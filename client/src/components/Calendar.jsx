@@ -171,21 +171,22 @@ export default function Calendar() {
     e.preventDefault();
   
     // Convert end and start fields to MySQL date format
-    const formattedEvent = {
-      ...newEvent,
-      start: newEvent.start.toISOString().slice(0, 19).replace('T', ' '), // YYYY-MM-DD HH:MM:SS
-      end: newEvent.end.toISOString().slice(0, 19).replace('T', ' '),     // YYYY-MM-DD HH:MM:SS
-    };
-   console.log(formattedEvent); 
-    // try {
-    //   await axios.post("http://localhost:5000/api/meetings/create", formattedEvent);
-    //   setAllEvents([...allEvents, formattedEvent]);
-    //   setShowModal(false);
-    //   toast.success("Event created successfully");
-    //   handleCloseModal();
-    // } catch (err) {
-    //   console.log(err);
-    // }
+    console.log(newEvent); 
+  //   const formattedEvent = {
+  //     ...newEvent,
+  //     start: newEvent.start.toISOString().slice(0, 19).replace('T', ' '), // YYYY-MM-DD HH:MM:SS
+  //     end: newEvent.end.toISOString().slice(0, 19).replace('T', ' '),     // YYYY-MM-DD HH:MM:SS
+  //   };
+  //  console.log(formattedEvent); 
+    try {
+      await axios.post("http://localhost:5000/api/meetings/create", newEvent);
+      setAllEvents([...allEvents, newEvent]);
+      setShowModal(false);
+      toast.success("Event created successfully");
+      handleCloseModal();
+    } catch (err) {
+      console.log(err);
+    }
   };
   return (
     <>

@@ -10,7 +10,7 @@ const TABS = [
   { label: "All", value: "all" },
   { label: "In Review", value: "inReview" },
   { label: "In progress", value: "inProgress" },
-  { label: "In Hold", value: "inHold" },
+  { label: "On Hold", value: "onHold" },
   { label: "Completed", value: "completed" },
 ];
 
@@ -153,7 +153,7 @@ const Missions = () => {
   const handleDeleteMission = async (mission) => {
     try {
       await axios.delete(`http://localhost:5000/api/missions/delete/${mission.start}/${mission.id_dir}/${mission.id_resp}`);
-      setDeletedMission(true);
+      setDeletedMission(!deletedMission);
     } catch (err) {
       console.error(err);
     }

@@ -36,9 +36,10 @@ const MissionCard = ({ status, number }) => {
     </div>
   );
 };
-const ObservationCard = ({ observation }) => {
+const ObservationCard = ({observation} ) => {
+  console.log(observation);
   return (
-    <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl">
+    <div className="max-w-md mx-auto h-[50px] bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl">
       <div className="md:flex">
         <div className="md:flex-shrink-0">
           <img
@@ -51,7 +52,7 @@ const ObservationCard = ({ observation }) => {
           <div className="uppercase tracking-wide text-sm text-indigo-500 font-semibold">
             Observation
           </div>
-          <p className="mt-2 text-gray-500">{observation.responsable}</p>
+          <p className="mt-2 text-gray-500">{observation.id_resp}</p>
           <p className="mt-2 text-gray-500">{observation.feedback}</p>
           <div className="mt-4">
             <a href="#" className="text-indigo-600 hover:text-indigo-500">
@@ -92,7 +93,7 @@ const Dashboard = () => {
         setMissionCounts(missionCountsRes.data);
 
         const meetingsRes = await axios.get(
-          "http://localhost:5000/api/meetings/read/"
+          "http://localhost:5000/api/meetings/"
         );
         console.log(meetingsRes.data);
         setMeetings(meetingsRes.data);
@@ -100,6 +101,8 @@ const Dashboard = () => {
         const observationsRes = await axios.get(
           "http://localhost:5000/api/observations/lastest"
         );
+        console.log("observaations")
+        console.log(observationsRes.data);
         setObservations(observationsRes.data);
 
         const gazLevelRes = await axios.get(
@@ -203,7 +206,7 @@ const Dashboard = () => {
             
             {/* </div> */}
             
-            <Card className="flex flex-col p-2 gap-1 w-fit h-fit">
+            <Card className="flex flex-col p-2 gap-1 w-fit overflow-scroll-y h-[500px]">
               <h2 className="text-md font-semibold mb-2">Observation List</h2>
               {/* Observations and Feedback: Include a section for observations and feedback collected from different sources, such as workers `responsable when done a observation can make feedback */}
               {observations.length == 0 ? 
@@ -211,12 +214,14 @@ const Dashboard = () => {
                 <p className="font-thin text-red-500 bg-red-100 rounded-md">There are no Observations</p>
 
               ) : (
-                observations.map((observation) => {
+                observations.map((observation,index) =>  {
+                  return (
                   <ObservationCard
-                    key={observation.id}
+                    key={index}
                     observation={observation}
-                  />;
-                })
+                  />
+                  )
+})
               )
             }
             </Card>

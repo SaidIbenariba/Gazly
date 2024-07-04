@@ -32,8 +32,8 @@
 ## when deleting also delete from database and edit same 
 
 # missions 
-## fix seach input (handle all cases (without value...  ))  
-## handle title and interface 
+## fix seach input (handle all cases (without value...  ))  done
+## handle title and interface  done
 ## Responsible of mission don't appear in card 
 # espaces 
 ## handle data flow between workspace and observation(of workspace); 

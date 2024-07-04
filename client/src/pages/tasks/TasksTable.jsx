@@ -108,6 +108,7 @@ const TasksTable = () => {
     setTasks(updatedTasks);
   };
   const handleMouseEnter = (task) => {
+    console.log("mouse live"); 
     setHoveredTask(task.id_ouv);
   };
 
