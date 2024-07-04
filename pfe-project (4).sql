@@ -34,8 +34,6 @@ CREATE TABLE IF NOT EXISTS `affectation` (
   `id_ws` int NOT NULL,
   `id_resp` int NOT NULL,
   PRIMARY KEY (`start`,`id_ws`,`id_resp`),
-  UNIQUE KEY `datedebut` (`start`,`id_ws`,`id_resp`),
-  UNIQUE KEY `start` (`start`,`id_ws`,`id_resp`),
   KEY `id_ws_affect` (`id_ws`),
   KEY `id_resp_affect` (`id_resp`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -377,13 +375,13 @@ INSERT INTO `task` (`date`, `duree`, `description`, `status`, `id_ouv`, `id_resp
 
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE IF NOT EXISTS `users` (
-  `id` int NOT NULL AUTO_INCREMENT,
+  `id` int NOT NULL AUTO_INCREMENT,   
   `firstname` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `lastname` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `email` varchar(80) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `password` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `role` enum('admin','responsable','ouvrier') CHARACTER SET utf8mb4 COLLATE utf8mb4_icelandic_ci NOT NULL,
-  `refreshToken` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `refreshToken` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `password` (`password`)
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

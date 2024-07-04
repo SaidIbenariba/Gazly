@@ -38,7 +38,7 @@ const CreateMissionForm = () => {
     { label: "Description", name: "description" },
     {
       label: "Status", name: "status", inputType: "select",
-      options: [
+    options: [
         { label: "InProgress", value: "inProgress" },
         { label: "InReview", value: "inReview" },
         { label: "InHold", value: "inHold" },
@@ -73,7 +73,9 @@ const CreateMissionForm = () => {
       })
       .catch((err) => console.log("Error creating mission:", err));
   };
-
+ const handleChange = (value, fieldName) =>{ 
+  setMission({ ...mission, [fieldName]: value });
+ }
   return (
     <div className="flex flex-col h-[100vh] p-2 items-center">
       <div className="flex flex-col">
@@ -86,7 +88,7 @@ const CreateMissionForm = () => {
             Home
           </Link>
         </nav>
-        <Form fields={missionFields} initialValues={mission} onSubmit={handleCreateMission} />
+        <Form fields={missionFields} initialValues={mission} onSubmit={handleCreateMission} handleChange={handleChange}/>
       </div>
     </div>
   );

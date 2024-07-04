@@ -14,7 +14,7 @@ const TABS = [
   { label: "Completed", value: "completed" },
 ];
 
-const MissionCard = ({ mission, onEdit, onDelete }) => {
+const MissionCard = ({ mission, onEdit, onDelete, keyword }) => {
   const getStatusStyles = (status) => {
     switch (status) {
       case 'inProgress':
@@ -29,14 +29,30 @@ const MissionCard = ({ mission, onEdit, onDelete }) => {
         return 'text-gray-500 bg-gray-100';
     }
   };
+
+  // Function to highlight the keyword in text
+  const highlightKeyword = (text) => {
+    if (!keyword) return text;
+    const parts = text.split(new RegExp(`(${keyword})`, 'gi'));
+    return parts.map((part, index) =>
+      part.toLowerCase() === keyword.toLowerCase() ? (
+        <span key={index} className=" underline decoration-red-600">
+          {part}
+        </span>
+      ) : (
+        part
+      )
+    );
+  };
+
   return (
     <Card className="hover:shadow-lg hover:border-none rounded-lg overflow-hidden w-72 h-fit cursor-pointer group border border-gray-200 shadow-none">
       <CardBody className="p-4">
         <Typography variant="h5" color="blue-gray" className="mb-2 font-bold text-xl">
-          {mission.title}
+          {highlightKeyword(mission.title)}
         </Typography>
         <Typography className="mb-2 text-sm">{mission.start}</Typography>
-        <Typography className="mb-2">{mission.description}</Typography>
+        <Typography className="mb-2">{highlightKeyword(mission.description)}</Typography>
         <Typography className="mb-2">Responsible: {mission.responsible}</Typography>
         <span className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${getStatusStyles(mission.status)}`}>
           {mission.status}
@@ -107,12 +123,23 @@ const Missions = () => {
 
   const handleFilter = async (e) => {
     e.preventDefault();
-    try {
-      const response = await axios.get("http://localhost:5000/api/missions/defaultSearch", value);
-      console.log(response);
+    console.log(value);
+    if(value.length == 0) { 
+      try {
+      const response = await axios.get('http://localhost:5000/api/missions/');
+      setMissions(response.data);
     } catch (err) {
       console.error(err);
     }
+  
+    }else { 
+    try {
+      const response = await axios.get("http://localhost:5000/api/missions/defaultSearch/" + value);
+      setMissions(response.data); 
+    } catch (err) {
+      console.error(err);
+    }
+  }
   };
 
   const handleEditMission = (mission) => {
@@ -182,7 +209,7 @@ const Missions = () => {
                   className="flex flex-col justify-center items-center"
                   icon={<MagnifyingGlassIcon className="h-5 w-5" />}
                   placeholder="search..."
-                  onChange={(e) => setValue(e.target.value)}
+                  onChange={(e) => setValue(e.target.value)}  
                 />
               </form>
             </div>
@@ -194,7 +221,13 @@ const Missions = () => {
           <p className="font-thin text-red-500 bg-red-100 rounded-md px-2">no missions</p>
         ) : (
           missions.map((mission, index) => (
-            <MissionCard mission={mission} onEdit={handleEditMission} onDelete={handleDeleteMission} key={index} />
+            <MissionCard
+              mission={mission}
+              onEdit={handleEditMission}
+              onDelete={handleDeleteMission}
+              keyword={value} // Pass the search keyword as a prop
+              key={index}
+            />
           ))
         )}
       </div>

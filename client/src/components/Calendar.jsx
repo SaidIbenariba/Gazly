@@ -11,75 +11,82 @@ import axios from "axios";
 import { useAuth } from "../hooks/useAuth";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Spinner } from "@material-tailwind/react";
+import { Spinner, select } from "@material-tailwind/react";
 
 export default function Calendar() {
-  const [responsables, setResponsables] = useState([{ id: 1, name: "said" }]);
+  const [responsables, setResponsables] = useState([]);
   const [allEvents, setAllEvents] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [newEvent, setNewEvent] = useState({
     title: "",
     start: "",
+    end: "",
     allDay: false,
     id: 0,
     description: "",
     id_resp: null,
   });
   const [selectedEvent, setSelectedEvent] = useState(null);
-  const [feedbackMessage, setFeedbackMessage] = useState(null);
   const { user } = useAuth();
-  useEffect(()=>{
-    console.log(allEvents); 
-  },[selectedEvent, newEvent]); 
-  useEffect(() => {
-    fetchMeetings(); 
-    // axios
-    //   .get("http://localhost:5000/api/users/responsables")
-    //   .then((res) => {
-    //     setResponsables(res.data);
-    //   })
-    //   .catch((err) => console.log(err));
-  }, [user]);
 
   useEffect(() => {
-    let draggableEl = document.getElementById("draggable-el");
+    fetchMeetings();
+    fetchResponsables();
+  }, [user]);
+  useEffect(()=>{
+    console.log(allEvents); 
+  },[allEvents]); 
+  useEffect(() => {
+    const draggableEl = document.getElementById("draggable-el");
     if (draggableEl) {
       new Draggable(draggableEl, {
         itemSelector: ".fc-event",
         eventData: function (eventEl) {
-          let title = eventEl.getAttribute("title");
-          let id = eventEl.getAttribute("data");
-          let start = eventEl.getAttribute("start");
+          const title = eventEl.getAttribute("title");
+          const id = eventEl.getAttribute("data");
+          const start = eventEl.getAttribute("start");
           return { title, id, start };
         },
       });
     }
   }, []);
-   function fetchMeetings() { 
-    axios
-    .get("http://localhost:5000/api/meetings/")
-    .then((res) => {
-      console.log(res.data); 
+
+  const fetchResponsables = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/api/users/search-role/responsable");
+      setResponsables(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const fetchMeetings = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/api/meetings/");
       setAllEvents(res.data);
       setLoading(false);
-    })
-    .catch((err) => console.log(err));
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
-   }
   const handleSelection = (arg) => {
+
+    const end = arg.allDay ? new Date(arg.end.setSeconds(arg.end.getSeconds() - 1)) : arg.end;
     setNewEvent({
       ...newEvent,
       start: arg.start,
-      end: arg.end,
+      end:arg.end,
       allDay: arg.allDay,
       id: new Date().getTime(),
     });
     setShowModal(true);
   };
 
-  function handleDateClick(arg) {
+  const handleDateClick = (arg) => {
+    console.log(arg); 
     setNewEvent({
       ...newEvent,
       start: arg.date,
@@ -87,9 +94,9 @@ export default function Calendar() {
       id: new Date().getTime(),
     });
     setShowModal(true);
-  }
+  };
 
-  function addEvent(data) {
+  const addEvent = (data) => {
     const event = {
       ...newEvent,
       start: data.date.toISOString(),
@@ -98,32 +105,37 @@ export default function Calendar() {
       id: new Date().getTime(),
     };
     setAllEvents([...allEvents, event]);
-  }
+  };
 
-  function handleEventClick(data) {
+  const handleEventClick = (data) => {
+    console.log("we click on event"); 
+    console.log(data.event); 
     setSelectedEvent(data.event);
     setShowViewModal(true);
-  }
+  };
 
-  function handleDelete() {
-    console.log(selectedEvent.id); 
-    // delete also from database 
+  const handleDelete = async () => {
+    const { id_resp, start, end } = selectedEvent.extendedProps;
+    console.log(end, start, id_resp); 
+    console.log(selectedEvent);  
     if (window.confirm("Are you sure you want to delete this event?")) {
-      setAllEvents(allEvents.filter((event) => event.id !== selectedEvent.id));
-      setShowViewModal(false);
-      setSelectedEvent(null);
-      setFeedbackMessage({
-        type: "success",
-        message: "Event deleted successfully",
-      });
-      toast.success("Event deleted successfully"); // Show success notification
+      try {
+        await axios.delete(`http://localhost:5000/api/meetings/delete/${start}/${end}/${id_resp}`);
+        setShowViewModal(false);
+        setSelectedEvent(null);
+        setAllEvents(allEvents.filter((event) => event.id !== selectedEvent.id));
+        toast.success("Event deleted successfully");
+      } catch (error) {
+        console.log(error);
+      }
     }
-  }
+  };
 
-  function handleEdit() {
+  const handleEdit = () => {
     setNewEvent({
       title: selectedEvent.title,
       start: selectedEvent.start,
+      end: selectedEvent.end,
       allDay: selectedEvent.allDay,
       id: selectedEvent.id,
       description: selectedEvent.extendedProps.description,
@@ -131,21 +143,22 @@ export default function Calendar() {
     });
     setShowModal(true);
     setShowViewModal(false);
-  }
+  };
 
-  function handleCloseModal() {
+  const handleCloseModal = () => {
     setShowModal(false);
     setShowViewModal(false);
     setSelectedEvent(null);
     setNewEvent({
       title: "",
       start: "",
+      end: "",
       allDay: false,
       id: 0,
       description: "",
       id_resp: null,
     });
-  }
+  };
 
   const handleChange = (e) => {
     setNewEvent({
@@ -154,38 +167,26 @@ export default function Calendar() {
     });
   };
 
-  function handleSubmit(e) {
-    // add it also in database                                                                                                                      
-    e.preventDefault();                                                                                                                                                                                                                                                                                                                                                                                                                         
-    const event = { ...newEvent };
-    axios
-      .post("http://localhost:5000/api/meetings/create", event)
-      .then((res) => {
-
-    setAllEvents([...allEvents, event]);
-    setShowModal(false);
-    setFeedbackMessage({
-      type: "success",
-      message: "Event created successfully",
-    });
-    setNewEvent({
-      title: "",
-      start: "",
-      allDay: false,
-      id: 0,
-      description: "",
-      id_resp: null,
-    });
-    console.log(newEvent); 
-    // })
-    // .catch((err) => {
-    //   setFeedbackMessage({ type: "error", message: "Error creating event" });
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+  
+    // Convert end and start fields to MySQL date format
+    const formattedEvent = {
+      ...newEvent,
+      start: newEvent.start.toISOString().slice(0, 19).replace('T', ' '), // YYYY-MM-DD HH:MM:SS
+      end: newEvent.end.toISOString().slice(0, 19).replace('T', ' '),     // YYYY-MM-DD HH:MM:SS
+    };
+   console.log(formattedEvent); 
+    // try {
+    //   await axios.post("http://localhost:5000/api/meetings/create", formattedEvent);
+    //   setAllEvents([...allEvents, formattedEvent]);
+    //   setShowModal(false);
+    //   toast.success("Event created successfully");
+    //   handleCloseModal();
+    // } catch (err) {
     //   console.log(err);
-    // });
-  }
-).catch((err)=>console.log(err)); 
-} 
-
+    // }
+  };
   return (
     <>
       <main className="flex min-h-screen flex-col items-center justify-between">
@@ -202,7 +203,7 @@ export default function Calendar() {
                 </div>
               </div>
             ) : (
-              <FullCalendar
+              <FullCalendar 
                 plugins={[dayGridPlugin, interactionPlugin, timeGridPlugin]}
                 headerToolbar={{
                   left: "prev,next today",
@@ -283,6 +284,7 @@ export default function Calendar() {
                           <p className="text-sm text-gray-500">
                             {selectedEvent && selectedEvent.start.toISOString()}
                           </p>
+
                           <p className="text-sm text-gray-500">
                             {selectedEvent &&
                               selectedEvent.extendedProps.description}
@@ -293,7 +295,7 @@ export default function Calendar() {
                                 responsables.find(
                                   (r) =>
                                     r.id === selectedEvent.extendedProps.id_resp
-                                )?.username
+                                )?.firstname 
                               }`}
                           </p>
                         </div>
@@ -432,7 +434,7 @@ export default function Calendar() {
                                   <option value="">Select a responsible</option>
                                   {responsables.map((resp) => (
                                     <option key={resp.id} value={resp.id}>
-                                      {resp.name}
+                                      {resp.firstname+ " " + resp.lastname}
                                     </option>
                                   ))}
                                 </select>

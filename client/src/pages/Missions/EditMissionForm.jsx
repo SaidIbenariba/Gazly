@@ -76,6 +76,9 @@ import { Spinner } from '@material-tailwind/react';
         })
         .catch((err) => console.log("Error creating mission:", err));
     };
+    const handleChange = (value, fieldName) =>{ 
+      setMission({ ...mission, [fieldName]: value });
+     }
     return (
       <>
       {loading ? <Spinner/>
@@ -86,13 +89,13 @@ import { Spinner } from '@material-tailwind/react';
 
         <nav className="flex justify-between">
           <h1 className=" text-3xl font-bold text-text dark:text-text">
-            Add Mission
+            Edit Mission
           </h1>
           <Link to="/private/missions " className="button">
             Home
           </Link>
         </nav>
-        <Form fields={missionFields} initialValues={mission} onSubmit={handleEditMission} isEditMode={true}/>
+        <Form fields={missionFields} initialValues={mission} onSubmit={handleEditMission} isEditMode={true} handleChange={handleChange}/>
       </div>
     </div>
       )

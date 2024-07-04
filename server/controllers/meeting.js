@@ -1,3 +1,4 @@
+import { format } from "mysql";
 import { db } from "../connect_db.js";
 export const respSearch = (req, res) => {
   // console.log(req.params);
@@ -7,23 +8,35 @@ export const respSearch = (req, res) => {
     return res.status(200).json(result);
   });
 };
-
 export const createMeeting = (req, res) => {
-  const sql =
-    "INSERT INTO meeting (`start`,`end`,`title`,`description`,`id_resp`,`id_Adir`,`allDay`) VALUE(?,?,?,?,?,?,?) ";
-  const newTache = {
-    startdate: req.body.startdate,
-    enddate: req.body.enddate,
-    Description: req.body.description,
-    id_resp: req.body.id_resp,
-    id_dir: req.body.id_dir,
-    allDay: req.body.allDay,
-  };
-  db.query(sql, [Object.values(newTache)], (err, res) => {
-    if (err) return res.status(500).json(err);
-    return res.status(200).json({ succes: `New Meeting created ` });
-  });
+  if (req.role === "admin") {
+    // Convert boolean allDay to integer 
+    const allDay = req.body.allDay ? '1' : '0';
+
+    const sql =
+      "INSERT INTO meeting (`start`, `end`, `title`, `description`, `id_resp`, `id_dir`, `allDay`) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    const newMeeting = [
+      req.body.start,
+      req.body.end,
+      req.body.title,
+      req.body.description,
+      req.body.id_resp,
+      req.id, // Assuming req.id (log user) is the id_dir value 
+      allDay,
+    ];
+    console.log(newMeeting); 
+    db.query(sql, newMeeting, (err, result) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json(err);
+      }
+      return res.status(200).json({ success: "New Meeting created" });
+    });
+  } else {
+    res.status(403).json({ error: "You are not authorized" });
+  }
 };
+
 export const editMeeting = (req, res) => {
   const q =
     "UPDATE meeting SET start=?,end=?,title=?, description=?,id_resp =?, id_dir=?  WHERE id_resp= ? ";
@@ -39,10 +52,35 @@ export const editMeeting = (req, res) => {
   });
 };
 export const deleteMeeting = (req, res) => {
-  const q = "DELETE FROM meeting WHERE id_resp= ? ";
-  db.query(q, req.params.id_resp, (err, result) => {
-    if (err) return res.sendStatus(500);
-    return res.status(200).json(result);
+  const { start, end, id_resp } = req.params;
+  console.log("no formated date"); 
+  console.log(start,end);  
+  function formatDateString(dateString) {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    console.log(date); 
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+  
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  }
+  const startFormat =  formatDateString(start);
+  const endFormat = formatDateString(end);
+  console.log(startFormat); 
+  console.log(endFormat); 
+  const q = "DELETE FROM meeting WHERE start = ? AND end = ? AND id_resp = ?";
+  db.query(q, [startFormat, endFormat, id_resp], (err, result) => {
+    if (err) {
+      console.error("Database query error: ", err);
+      return res.sendStatus(500);
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Meeting not found" });
+    }
+    return res.status(200).json({ success: "Meeting deleted successfully" });
   });
 };
 export const getMeetings = (req, res) => {
@@ -62,20 +100,20 @@ export const getMeetings = (req, res) => {
         console.error("Database query error: ", err);
         return res.status(500).json("Cannot connect to database");
       }
-
-
+  
       const formattedResults = results.map((row) => ({
         ...row,
-        user: `${row.firstname} ${row.lastname}`,
+  
+        // user: `${row.firstname || ''} ${row.lastname || ''}`.trim(),
       }));
       
-      return res.json(formattedResults);
+      console.log(results); 
+      return res.json(results);
     });
   } else {
     return res.status(400).json("Missing required parameter: id_dir or id_resp");
   }
 };
-
 export const Meetings = (req, res) => {
   const userId = req.id;
   const userRole = req.role;
