@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Form from "../../components/form";
 import Button from "../../components/Button";
+import Modal from 'react-modal';
+
 const Create = () => {
   const [user, setUser] = useState({
     firstname: "",
@@ -11,14 +13,26 @@ const Create = () => {
     role: "",
     password: "",
   });
-  const [affectation, setAffectation] = useState({ 
-    start: "", 
-    end:"", 
-    id_ws:"",
-    id_resp:"",
-  })
+
+  const [affectation, setAffectation] = useState({
+    start: "",
+    end: "",
+    id_ws: "",
+    id_resp: "",
+  });
+
+  const [workspaces, setWorkspaces] = useState([]);
   const [err, setErr] = useState({ exist: false, msg: "" });
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const nav = useNavigate();
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:5000/api/workspaces/noresponsable")
+      .then((response) => setWorkspaces(response.data))
+      .catch((error) => console.log(error));
+  }, []);
+
   const formFields = [
     {
       name: "firstname",
@@ -38,7 +52,6 @@ const Create = () => {
       label: "Password",
       type: "password",
     },
-
     {
       name: "role",
       label: "Role",
@@ -50,34 +63,130 @@ const Create = () => {
       ],
     },
   ];
-  function handleSubmit(user) {
+
+  const affectationFields = [
+    {
+      name: "start",
+      label: "Start Date",
+      type: "datetime-local",
+    },
+    {
+      name: "end",
+      label: "End Date",
+      type: "datetime-local",
+    },
+    {
+      name: "id_ws",
+      label: "Workspace",
+      inputType: "select",
+      options: workspaces.map((ws) => ({ label: ws.name, value: ws.id })),
+    },
+  ];
+
+  function handleSubmit(formData) {
+    // console.log(formData); 
     axios
-      .post("http://localhost:5000/api/users/create", user)
+      .post("http://localhost:5000/api/users/create", formData)
       .then((res) => {
-        console.log(res); 
-        // nav("/private/users");
+        // console.log(res.data.id);
+        if (user.role === "responsable") {
+          setUser({...user, id:res.data.id})
+          setIsModalOpen(true);
+        } else {
+          nav("/private/users");
+        }
       })
       .catch((error) => {
-        setErr({ exist: true, msg: error.response.data }), console.log(error);
+        // if(error.response) { 
+        // setErr({ exist: true, msg: error.response.data });
+        // } 
+        // setErr({exist:"true",msg:"error when creat user"}); 
+        console.log(error);
       });
   }
+
+  function handleAffectationSubmit() {
+    // e.preventDefault();
+    
+    const affectationData = { ...affectation, id_resp: user.id };
+    console.log(`affectationData : `);
+    console.log(affectationData) 
+    axios
+      .post("http://localhost:5000/api/affectations/create", affectationData)
+      .then((res) => {
+        console.log(res);
+        setIsModalOpen(false);
+        nav("/private/users");
+      })
+      .catch((error) => {
+        setErr({ exist: true, msg: error.response.data });
+        console.log(error);
+      });
+  }
+
+  const handleFormChange = (value, fieldName) => {
+    setUser({ ...user, [fieldName]: value });
+  };
+
+  const handleAffectationFormChange = (value, fieldName) => {
+    setAffectation({ ...affectation, [fieldName]: value });
+  };
+
   return (
     <>
-      <div className=" flex flex-col h-[100vh] p-2 items-center">
-        <div className="flex flex-col ">
+      <div className="flex flex-col h-[100vh] p-2 items-center">
+        <div className="flex flex-col">
           <span className="err">{err.exist && err.msg}</span>
 
           <nav className="flex justify-between">
-            <h1 className=" text-3xl font-bold text-text dark:text-text">
+            <h1 className="text-3xl font-bold text-text dark:text-text">
               Add User
             </h1>
             <Link to="/private/users" className="button">
               Home
             </Link>
           </nav>
-          <Form fields={formFields} onSubmit={handleSubmit} initialValues={user} />
+          <Form
+            fields={formFields}
+            onSubmit={handleSubmit}
+            initialValues={user}
+            isEditMode={false}
+            handleChange={handleFormChange}
+          />
         </div>
       </div>
+
+      <Modal
+        isOpen={isModalOpen}
+        onRequestClose={() => setIsModalOpen(false)}
+        style={{
+          overlay: {
+            backgroundColor: 'rgba(0, 0, 0, 0.75)',
+          },
+          content: {
+            top: '50%',
+            left: '50%',
+            right: 'auto',
+            bottom: 'auto',
+            marginRight: '-50%',
+            transform: 'translate(-50%, -50%)',
+            width: '80%',
+            maxWidth: '600px',
+          },
+        }}
+      >
+        <h2 className="text-2xl mb-4">Affect Responsable to Workspace</h2>
+        <Form
+          fields={affectationFields}
+          onSubmit={handleAffectationSubmit}
+          initialValues={affectation}
+          isEditMode={false}
+          handleChange={handleAffectationFormChange}
+        />
+        <Button onClick={() => setIsModalOpen(false)} className="button mt-4">
+          Close
+        </Button>
+      </Modal>
     </>
   );
 };

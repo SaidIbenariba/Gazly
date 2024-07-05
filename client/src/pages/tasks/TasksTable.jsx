@@ -108,6 +108,7 @@ const TasksTable = () => {
     setTasks(updatedTasks);
   };
   const handleMouseEnter = (task) => {
+    console.log("mouse live"); 
     setHoveredTask(task.id_ouv);
   };
 
@@ -191,7 +192,7 @@ const TasksTable = () => {
             No tasks found.
           </Typography>
         ) : (
-          <div className=" flex justify-center space-y-4">
+          <div className=" flex flex-col justify-center items-center space-y-4">
         {tasks.map((task) => (
         <div
           key={task.id_ouv}

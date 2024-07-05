@@ -12,7 +12,7 @@ import {
 
 const Edit = () => {
   const { id } = useParams();
-  const [values, setValues] = useState({
+  const [user, setUser] = useState({
     firstname: "",
     lastname: "",
     email: "",
@@ -27,7 +27,7 @@ const Edit = () => {
       .get("http://localhost:5000/api/users/read/" + id)
       .then((res) => {
         console.log(res.data); 
-        setValues({ ...values, 
+        setUser({ ...user, 
           firstname: res.data[0].firstname,
           lastname: res.data[0].lastname,
           email: res.data[0].email,
@@ -67,9 +67,9 @@ const Edit = () => {
 
   const nav = useNavigate();
 
-  function handleSubmit(values) {
+  function handleSubmit(user) {
     axios
-      .put("http://localhost:5000/api/users/edit/" + id, values)
+      .put("http://localhost:5000/api/users/edit/" + id, user)
       .then((res) => {
         nav("/private/users", {
           state: { message: "User updated successfully!", type: "success" },
@@ -81,6 +81,11 @@ const Edit = () => {
         });
       });
   }
+  
+  const handleFormChange = (value, fieldName) => {
+    setUser({ ...user, [fieldName]: value });
+  };
+
 
   return (
     <>
@@ -97,7 +102,7 @@ const Edit = () => {
               Home
             </Link>
           </nav>
-          <Form fields={formFields} onSubmit={handleSubmit} initialValues={values} isEditMode={true} />
+          <Form fields={formFields} onSubmit={handleSubmit} initialValues={user} isEditMode={true} handleChange={handleFormChange} />
         </div>
       </div>
      )

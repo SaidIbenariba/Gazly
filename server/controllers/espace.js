@@ -1,12 +1,33 @@
 import { db } from "../connect_db.js";
-export const constWorkSpacesWithoutRes = (req, res) => {
-   
+export const WorkSpacesWithoutRes = (req, res) => {
+  const q = `
+  SELECT w.*
+  FROM workspace w
+  LEFT JOIN affectation a ON w.id = a.id_ws AND a.start <= CURDATE() AND a.end >= CURDATE()
+  WHERE a.id_ws IS NULL
+`;
+
+db.query(q, (err, result) => {
+  if (err) {
+    console.log(err);
+    return res.status(500).json(err);
+  }
+  const Data = result.map((row) => ({
+    ...row,
+    position: [row.x, row.y]
+  }));
+  console.log(Data);
+  return res.status(200).json(Data);
+});
 }
 export const getWorkSpace = (req, res) => {
-  const q = `SELECT w.*, a.* FROM workSpace w LEFT JOIN affectation a ON w.id = a.id_ws AND a.end >= CURDATE()`;
+  const q = `SELECT w.*, a.* FROM workspace w LEFT JOIN affectation a ON w.id = a.id_ws AND a.end >= CURDATE()`;
 
   db.query(q, (err, result) => {
-    if (err) return res.status(500).json(err);
+    if (err) {
+      console.log(err);   
+       return res.status(500).json(err);
+    } 
     const Data = result.map((row) => ({
       ...row, 
       position: [row.x, row.y]

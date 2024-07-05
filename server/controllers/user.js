@@ -29,10 +29,12 @@ export const searchByRole = (req, res) => {
 export const createUser = (req, res) => {
   const sql = "SELECT * FROM users WHERE email = ?";
   db.query(sql, req.body.email, (err, data) => {
-    if (err)
+    if (err) { 
+      console.log(err);
       return res
         .status(500)
         .json({ messsage: "Error mysql when select from users" + err });
+    } 
     if (data.length > 0) {
       console.log("User already exits");
       return res.status(409).json("User already exists!");
@@ -81,7 +83,7 @@ export const createUser = (req, res) => {
                 });  
              
     
-    return res.status(200).json({ succes: `New User  created ` });
+    return res.status(200).json({ succes: `New User  created `,id:userId });
 
   });
   });

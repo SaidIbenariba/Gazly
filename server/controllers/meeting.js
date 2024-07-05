@@ -1,3 +1,4 @@
+import { format } from "mysql";
 import { db } from "../connect_db.js";
 export const respSearch = (req, res) => {
   // console.log(req.params);
@@ -7,23 +8,36 @@ export const respSearch = (req, res) => {
     return res.status(200).json(result);
   });
 };
-
 export const createMeeting = (req, res) => {
-  const sql =
-    "INSERT INTO meeting (`start`,`end`,`title`,`description`,`id_resp`,`id_Adir`,`allDay`) VALUE(?,?,?,?,?,?,?) ";
-  const newTache = {
-    startdate: req.body.startdate,
-    enddate: req.body.enddate,
-    Description: req.body.description,
-    id_resp: req.body.id_resp,
-    id_dir: req.body.id_dir,
-    allDay: req.body.allDay,
-  };
-  db.query(sql, [Object.values(newTache)], (err, res) => {
-    if (err) return res.status(500).json(err);
-    return res.status(200).json({ succes: `New Meeting created ` });
-  });
+  if (req.role === "admin") {
+    // Convert boolean allDay to integer 
+    const allDay = req.body.allDay ? '1' : '0';
+    const start = formatDateString(req.body.start); 
+    const end = formatDateString(req.body.end); 
+    const sql =
+      "INSERT INTO meeting (`start`, `end`, `title`, `description`, `id_resp`, `id_dir`, `allDay`) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    const newMeeting = [
+      start,
+      end,
+      req.body.title,
+      req.body.description,
+      req.body.id_resp,
+      req.id, // Assuming req.id (log user) is the id_dir value 
+      allDay,
+    ];
+    console.log(newMeeting); 
+    db.query(sql, newMeeting, (err, result) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json(err);
+      }
+      return res.status(200).json({ success: "New Meeting created" });
+    });
+  } else {
+    res.status(403).json({ error: "You are not authorized" });
+  }
 };
+
 export const editMeeting = (req, res) => {
   const q =
     "UPDATE meeting SET start=?,end=?,title=?, description=?,id_resp =?, id_dir=?  WHERE id_resp= ? ";
@@ -39,10 +53,24 @@ export const editMeeting = (req, res) => {
   });
 };
 export const deleteMeeting = (req, res) => {
-  const q = "DELETE FROM meeting WHERE id_resp= ? ";
-  db.query(q, req.params.id_resp, (err, result) => {
-    if (err) return res.sendStatus(500);
-    return res.status(200).json(result);
+  const { start, end, id_resp } = req.params;
+  console.log("no formated date"); 
+  console.log(start,end);  
+  
+  const startFormat =  formatDateString(start);
+  const endFormat = formatDateString(end);
+  console.log(startFormat); 
+  console.log(endFormat); 
+  const q = "DELETE FROM meeting WHERE start = ? AND end = ? AND id_resp = ?";
+  db.query(q, [startFormat, endFormat, id_resp], (err, result) => {
+    if (err) {
+      console.error("Database query error: ", err);
+      return res.sendStatus(500);
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Meeting not found" });
+    }
+    return res.status(200).json({ success: "Meeting deleted successfully" });
   });
 };
 export const getMeetings = (req, res) => {
@@ -62,20 +90,20 @@ export const getMeetings = (req, res) => {
         console.error("Database query error: ", err);
         return res.status(500).json("Cannot connect to database");
       }
-
-
+  
       const formattedResults = results.map((row) => ({
         ...row,
-        user: `${row.firstname} ${row.lastname}`,
+        start: formatDateString(row.start),
+        end:formatDateString(row.end),
+        // user: `${row.firstname || ''} ${row.lastname || ''}`.trim(),
       }));
-      
-      return res.json(formattedResults);
+      console.log(results); 
+      return res.json(results);
     });
   } else {
     return res.status(400).json("Missing required parameter: id_dir or id_resp");
   }
 };
-
 export const Meetings = (req, res) => {
   const userId = req.id;
   const userRole = req.role;
@@ -154,3 +182,21 @@ export const getAllMeetingsById = (req, res) => {
       .json("Missing required parameter: id_dir or id_resp");
   }
 };
+function formatDateString(dateString) {
+
+  const options = {
+    timeZone: 'Africa/Casablanca',
+    hour12: false,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  };
+  
+  const formatter = new Intl.DateTimeFormat('en-US', options);
+  
+  const convertedDate = formatter.format(dateString);
+  return convertedDate;
+}
