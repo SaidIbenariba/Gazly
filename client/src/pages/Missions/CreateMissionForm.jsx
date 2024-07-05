@@ -35,7 +35,7 @@ const CreateMissionForm = () => {
     { label: "Start Date", name: "start", type: "date", required:true },
     { label: "End Date", name: "end", type: "date",required:true },
     { label: "Title", name: "title" },
-    { label: "Description", name: "description" },
+    { label: "Description", name: "description", inputType: "area"},
     {
       label: "Status", name: "status", inputType: "select",
     options: [

@@ -53,7 +53,7 @@ const MissionCard = ({ mission, onEdit, onDelete, keyword }) => {
         </Typography>
         <Typography className="mb-2 text-sm">{mission.start}</Typography>
         <Typography className="mb-2">{highlightKeyword(mission.description)}</Typography>
-        <Typography className="mb-2">Responsible: {mission.responsible}</Typography>
+        <Typography className="mb-2">Responsible: {mission.responsible.firstname}</Typography>
         <span className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${getStatusStyles(mission.status)}`}>
           {mission.status}
         </span>
@@ -80,22 +80,41 @@ const Missions = () => {
   const filterMenuRef = useRef(null); 
   const filterButtonRef = useRef(null); 
   const [deletedMission, setDeletedMission] = useState(false);
-  const navigate = useNavigate(); 
-
+  const navigate = useNavigate();  
+  useEffect(()=>{console.log(missions)},[missions]);
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = stat !== 'all' 
           ? await axios.get(`http://localhost:5000/api/missions/${stat}`)
           : await axios.get('http://localhost:5000/api/missions/');
-        setMissions(response.data);
+          const values = response.data; 
+          console.log(values) ;
+          const Missions = Promise.all(
+            values.map(async (value) => {
+              try {
+                const res = await axios.get(`http://localhost:5000/api/users/read/${value.id_resp}`);
+                return { ...value, responsible: res.data[0] };
+              } catch (err) {
+                console.log(err);
+                return { ...value }; // Return the original value if there's an error
+              }
+            })
+          );
+        //  setMissions(Missions); 
+        Missions.then(results => {
+          setMissions(results);
+        }).catch(error => {
+          console.error(error);
+        });
+        
       } catch (err) {
         console.error(err);
       }
     };
     fetchData();
   }, [stat, deletedMission]);
-
+  
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (filterMenuRef.current && !filterMenuRef.current.contains(event.target) && !filterButtonRef.current.contains(event.target)) {

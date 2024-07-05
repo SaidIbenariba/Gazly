@@ -20,21 +20,21 @@
 ## build history graphe  
 ## add alert where exist a gaz danger 
 # users 
-## for responsable add workspace  (i catch id_resp in http request and add it to affecation api )  fix problem of insert in affectation with ilyass 
+## for responsable add workspace  (i catch id_resp in http request and add it to affecation api )  fix problem of insert in affectation with ilyass ) 
 ## fix unicity of firstname  done 
 ## fix token password  done 
 ## fix form edit and create  done 
-##  search input when submit and no input retunr all users same with all data tables done 
+##  search input when submit and no input retunr all users same with all data tables done  
 
-# planning  
-## fix datetime format between mysql and fullcalendar
-## fix add form when submit add data to database 
-## when deleting also delete from database and edit same 
+# planning   
+## fix datetime format between mysql and fullcalendar delegate to ilyass 
+## fix add form when submit add data to database done 
+## when deleting also delete from database and edit same done 
 
 # missions 
 ## fix seach input (handle all cases (without value...  ))  done
 ## handle title and interface  done
-## Responsible of mission don't appear in card 
+## Responsible of mission don't appear in card  
 # espaces 
 ## handle data flow between workspace and observation(of workspace); 
 ## seach box 

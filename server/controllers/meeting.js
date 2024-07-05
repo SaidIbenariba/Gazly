@@ -12,8 +12,8 @@ export const createMeeting = (req, res) => {
   if (req.role === "admin") {
     // Convert boolean allDay to integer 
     const allDay = req.body.allDay ? '1' : '0';
-    const start = formatDateString(req.body.start); 
-    const end = formatDateString(req.body.end); 
+    const start = req.body.start; 
+    const end = req.body.end; 
     const sql =
       "INSERT INTO meeting (`start`, `end`, `title`, `description`, `id_resp`, `id_dir`, `allDay`) VALUES (?, ?, ?, ?, ?, ?, ?)";
     const newMeeting = [
@@ -55,10 +55,9 @@ export const editMeeting = (req, res) => {
 export const deleteMeeting = (req, res) => {
   const { start, end, id_resp } = req.params;
   console.log("no formated date"); 
-  console.log(start,end);  
   
-  const startFormat =  formatDateString(start);
-  const endFormat = formatDateString(end);
+  const startFormat =  start;
+  const endFormat = end;
   console.log(startFormat); 
   console.log(endFormat); 
   const q = "DELETE FROM meeting WHERE start = ? AND end = ? AND id_resp = ?";
@@ -183,7 +182,6 @@ export const getAllMeetingsById = (req, res) => {
   }
 };
 function formatDateString(dateString) {
-
   const options = {
     timeZone: 'Africa/Casablanca',
     hour12: false,
@@ -198,5 +196,6 @@ function formatDateString(dateString) {
   const formatter = new Intl.DateTimeFormat('en-US', options);
   
   const convertedDate = formatter.format(dateString);
+ 
   return convertedDate;
 }

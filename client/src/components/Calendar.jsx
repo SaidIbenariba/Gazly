@@ -115,20 +115,19 @@ export default function Calendar() {
   };
 
   const handleDelete = async () => {
-    const { id_resp, start, end } = selectedEvent.extendedProps;
-    console.log(end, start, id_resp); 
+  
     console.log(selectedEvent);  
-    if (window.confirm("Are you sure you want to delete this event?")) {
-      try {
-        await axios.delete(`http://localhost:5000/api/meetings/delete/${start}/${end}/${id_resp}`);
-        setShowViewModal(false);
-        setSelectedEvent(null);
-        setAllEvents(allEvents.filter((event) => event.id !== selectedEvent.id));
-        toast.success("Event deleted successfully");
-      } catch (error) {
-        console.log(error);
-      }
-    }
+    // if (window.confirm("Are you sure you want to delete this event?")) {
+    //   try {
+    //     await axios.delete(`http://localhost:5000/api/meetings/delete/${start}/${end}/${id_resp}`);
+    //     setShowViewModal(false);
+    //     setSelectedEvent(null);
+    //     setAllEvents(allEvents.filter((event) => event.id !== selectedEvent.id));
+    //     toast.success("Event deleted successfully");
+    //   } catch (error) {
+    //     console.log(error);
+    //   }
+    // }
   };
 
   const handleEdit = () => {
@@ -174,8 +173,8 @@ export default function Calendar() {
     console.log(newEvent); 
   //   const formattedEvent = {
   //     ...newEvent,
-  //     start: newEvent.start.toISOString().slice(0, 19).replace('T', ' '), // YYYY-MM-DD HH:MM:SS
-  //     end: newEvent.end.toISOString().slice(0, 19).replace('T', ' '),     // YYYY-MM-DD HH:MM:SS
+  //     start: newEvent.start.toString().slice(0, 19).replace('T', ' '), // YYYY-MM-DD HH:MM:SS
+  //     end: newEvent.end.toString().slice(0, 19).replace('T', ' '),     // YYYY-MM-DD HH:MM:SS
   //   };
   //  console.log(formattedEvent); 
     try {
