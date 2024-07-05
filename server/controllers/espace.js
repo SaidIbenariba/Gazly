@@ -42,7 +42,7 @@ export const getWorkSpaceHistoric = (req, res) => {
   };
   export const WorkSpaceSearchByName = (req, res) => {
     // console.log(req.params);
-    const q = `SELECT * FROM WorkSpace WHERE name = ? `;
+    const q = `SELECT * FROM workspace WHERE name = ? `;
     db.query(q, [req.params.name], (err, result) => {
       if (err) return res.status(500).json(err);
       return res.status(200).json(result);
