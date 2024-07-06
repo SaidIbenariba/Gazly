@@ -44,7 +44,7 @@ const Sidebar = () => {
     { title: "Missions", path: "missions", src: <MdOutlineWork /> },
     // { title: "Observations", path: "observations", src: <HiMiniViewfinderCircle /> },
     { title: "Espaces", path: "espaces", src: <FaMap /> },
-    {title :"Tasks", path:"tasks", src:<FaTasks/>},
+    // {title :"Tasks", path:"tasks", src:<FaTasks/>},
     {title:"Measures", path:"measures", src:<FiWind/>},  
     {title:"Sensors", path:"sensors", src:<MdSensorDoor/>},  
     {
@@ -64,7 +64,7 @@ const Sidebar = () => {
     { title: "Dashboard", path: "dashboard", src: <AiFillPieChart /> },
     { title: "Planning", path: "planning", src: <FaCalendarAlt /> },
     { title: "Missions", path: "missions", src: <MdOutlineWork /> },
-    { title: "tasks", path: "tasks", src: <MdOutlineWork /> },
+    { title: "tasks", path: "tasks", src: <FaTasks /> },
     { title: "Espaces", path: "espaces", src: <FaMap /> },
     {
       title: "Profile",
@@ -195,7 +195,7 @@ const Sidebar = () => {
           {Menus.map((menu, index) => (
             <>
               {menu.title === "Logout" ? (
-                <li key={index}>
+                <li key={index} onClick={handleLogout}>
                   <span
                     className={` ${
                       isActive(menu.path) && "bg-gray-200 dark:bg-gray-700"

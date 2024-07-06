@@ -74,61 +74,61 @@ const Missions = () => {
   const { status } = useParams();
   const [stat, setStat] = useState(status || 'all');
   const [missions, setMissions] = useState([]);
-  const [openFilter, setOpenFilter] = useState(false);
-  const [searchBy, setSearchBy] = useState("");
+  // const [openFilter, setOpenFilter] = useState(false);
+  // const [searchBy, setSearchBy] = useState("");
   const [value, setValue] = useState("");
-  const filterMenuRef = useRef(null); 
-  const filterButtonRef = useRef(null); 
+  // const filterMenuRef = useRef(null); 
+  // const filterButtonRef = useRef(null); 
   const [deletedMission, setDeletedMission] = useState(false);
   const navigate = useNavigate();  
   useEffect(()=>{console.log(missions)},[missions]);
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = stat !== 'all' 
-          ? await axios.get(`http://localhost:5000/api/missions/${stat}`)
-          : await axios.get('http://localhost:5000/api/missions/');
-          const values = response.data; 
-          console.log(values) ;
-          const Missions = Promise.all(
-            values.map(async (value) => {
-              try {
-                const res = await axios.get(`http://localhost:5000/api/users/read/${value.id_resp}`);
-                return { ...value, responsible: res.data[0] };
-              } catch (err) {
-                console.log(err);
-                return { ...value }; // Return the original value if there's an error
-              }
-            })
-          );
-        //  setMissions(Missions); 
-        Missions.then(results => {
-          setMissions(results);
-        }).catch(error => {
-          console.error(error);
-        });
-        
-      } catch (err) {
-        console.error(err);
-      }
-    };
+   
     fetchData();
   }, [stat, deletedMission]);
   
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (filterMenuRef.current && !filterMenuRef.current.contains(event.target) && !filterButtonRef.current.contains(event.target)) {
-        setOpenFilter(false);
-      }
-    };
-    if (openFilter) {
-      window.addEventListener('click', handleClickOutside);
+  // useEffect(() => {
+  //   const handleClickOutside = (event) => {
+  //     if (filterMenuRef.current && !filterMenuRef.current.contains(event.target) && !filterButtonRef.current.contains(event.target)) {
+  //       setOpenFilter(false);
+  //     }
+  //   };
+  //   if (openFilter) {
+  //     window.addEventListener('click', handleClickOutside);
+  //   }
+  //   return () => {
+  //     window.removeEventListener('click', handleClickOutside);
+  //   };
+  // }, [openFilter]);
+  const fetchData = async () => {
+    try {
+      const response = stat !== 'all' 
+        ? await axios.get(`http://localhost:5000/api/missions/${stat}`)
+        : await axios.get('http://localhost:5000/api/missions/');
+        const values = response.data; 
+        console.log(values) ;
+        const Missions = Promise.all(
+          values.map(async (value) => {
+            try {
+              const res = await axios.get(`http://localhost:5000/api/users/read/${value.id_resp}`);
+              return { ...value, responsible: res.data[0] };
+            } catch (err) {
+              console.log(err);
+              return { ...value }; // Return the original value if there's an error
+            }
+          })
+        );
+      //  setMissions(Missions); 
+      Missions.then(results => {
+        setMissions(results);
+      }).catch(error => {
+        console.error(error);
+      });
+      
+    } catch (err) {
+      console.error(err);
     }
-    return () => {
-      window.removeEventListener('click', handleClickOutside);
-    };
-  }, [openFilter]);
-
+  };
   const handleDragEnd = (result) => {
     const { destination, source } = result;
     if (!destination) return;
@@ -142,19 +142,31 @@ const Missions = () => {
 
   const handleFilter = async (e) => {
     e.preventDefault();
-    console.log(value);
     if(value.length == 0) { 
-      try {
-      const response = await axios.get('http://localhost:5000/api/missions/');
-      setMissions(response.data);
-    } catch (err) {
-      console.error(err);
-    }
+   fetchData();
   
     }else { 
     try {
       const response = await axios.get("http://localhost:5000/api/missions/defaultSearch/" + value);
-      setMissions(response.data); 
+      const values = response.data; 
+          console.log(values) ;
+          const Missions = Promise.all(
+            values.map(async (value) => {
+              try {
+                const res = await axios.get(`http://localhost:5000/api/users/read/${value.id_resp}`);
+                return { ...value, responsible: res.data[0] };
+              } catch (err) {
+                console.log(err);
+                return { ...value }; // Return the original value if there's an error
+              }
+            })
+          );  
+        //  setMissions(Missions); 
+        Missions.then(results => {
+          setMissions(results);
+        }).catch(error => {
+          console.error(error);
+        });
     } catch (err) {
       console.error(err);
     }
@@ -191,10 +203,10 @@ const Missions = () => {
             </Typography>
           </div>
           <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
-            <Button size="sm" text="view all" className="button bg-background text-black border border-black hover:bg-gray-50">
+            {/* <Button size="sm" text="view all" className="button bg-background text-black border border-black hover:bg-gray-50">
               View All
-            </Button>
-            <Link to="create">
+            </Button> */}
+            <Link to="create">  
               <Button className="button " size="sm" onClick={handleCreateMission}>
                 <PlusIcon strokeWidth={6} className="h-4 w-4" />
                 Add mission
@@ -218,9 +230,9 @@ const Missions = () => {
             </TabsHeader>
           </Tabs>
           <div className="flex flex-row gap-5 items-center z-10">
-            <Button ref={filterButtonRef} onClick={() => setOpenFilter(!openFilter)}>
+            {/* <Button ref={filterButtonRef} onClick={() => setOpenFilter(!openFilter)}>
               <IoFilter />
-            </Button>
+            </Button> */}
             <div className="w-full md:w-72">
               <form onSubmit={handleFilter}>
                 <Input
@@ -250,7 +262,7 @@ const Missions = () => {
           ))
         )}
       </div>
-      {openFilter && (
+      {/* {openFilter && (
         <div ref={filterMenuRef} className="w-72 absolute z-50 bg-background top-24 right-4 shadow-lg p-4">
           <form onSubmit={handleFilter}>
             <Select
@@ -266,7 +278,7 @@ const Missions = () => {
             />
           </form>
         </div>
-      )} 
+      )}  */}
       <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4 mt-6">
         <Typography variant="small" color="blue-gray" className="font-normal">
           Page 1 of 10 

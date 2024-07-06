@@ -38,16 +38,14 @@ export const getWorkSpace = (req, res) => {
 };
 export const getWorkSpaceHistoric = (req, res) => {
   const q = `SELECT  a.*,u.* FROM affectation w INNER JOIN user u ON a.id_resp = u.id WHERE id_ws=?`;
-
+  // users 
+  // start 
+  // end 
   db.query(q,req.params.id_ws, (err, result) => {
     if (err) return res.status(500).json(err);
-
-    
-
-    /*const Data = result.map((row) => ({
+    const Data = result.map((row) => ({
       ...row, 
-    }));*/
-
+    }));
     return res.status(200).json(Data);
   });
 };

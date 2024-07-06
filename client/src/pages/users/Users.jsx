@@ -36,7 +36,7 @@ export default function Users() {
   const [deletedUser, setDeletedUser] = useState({ deleted: false, id: "" });
   const [search, setSearch] = useState("");
   const [err, setErr] = useState({ exist: false, msg: "" });
-
+  const [stat, setStat] = useState(""); 
   const location = useLocation();
 
   useEffect(() => {
@@ -98,7 +98,9 @@ export default function Users() {
   }
 
   function handleSearchByrole(e) {
+    
     const role = e.target.value;
+    setStat(role); 
     setLoading(true);
     switch (role) {
       case "all":
@@ -181,8 +183,8 @@ export default function Users() {
             <TabsHeader>
               {TABS.map(({ label, value }) => (
                 <button
-                  className="p-2 mx-2 bg-gray-100 rounded-md hover:bg-white"
-                  key={value}
+                className={`p-2 mx-2 bg-gray-100 rounded-md hover:bg-white ${ stat  === value ? 'bg-white' : ''}`}
+                key={value}
                   value={value}
                   onClick={handleSearchByrole}
                 >
@@ -201,14 +203,15 @@ export default function Users() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
-            <Button
+            {/* <Button
+            type="submit"
               size="sm"
               text="Search"
               variant="outline"
               className="button bg-background text-black border border-black hover:bg-gray-50"
             >
               <MagnifyingGlassIcon className="h-5 w-5" />
-            </Button>
+            </Button> */}
           </form>
         </div>
       </CardHeader>

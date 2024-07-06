@@ -12,12 +12,16 @@ export const createMeeting = (req, res) => {
   if (req.role === "admin") {
     // Convert boolean allDay to integer 
     const allDay = req.body.allDay ? '1' : '0';
+    let end = req.body.end ; 
+    if(end) { 
+      end = end.slice(0, 19).replace('T', ' ');
+    }
+    
     const start = req.body.start; 
-    const end = req.body.end; 
     const sql =
       "INSERT INTO meeting (`start`, `end`, `title`, `description`, `id_resp`, `id_dir`, `allDay`) VALUES (?, ?, ?, ?, ?, ?, ?)";
     const newMeeting = [
-      start,
+      start.slice(0, 19).replace('T', ' '),
       end,
       req.body.title,
       req.body.description,
@@ -39,8 +43,11 @@ export const createMeeting = (req, res) => {
 };
 
 export const editMeeting = (req, res) => {
+  const {start,end,id_resp} = req.params; 
+  const startFormat = start.slice(0, 19).replace('T', ' ');
+  const endFormat =       end.slice(0, 19).replace('T', ' '); 
   const q =
-    "UPDATE meeting SET start=?,end=?,title=?, description=?,id_resp =?, id_dir=?  WHERE id_resp= ? ";
+    "UPDATE meeting SET title=?, description=?,id_resp = ?, id_dir = ?  WHERE start = ? AND end = ? AND id_resp = ?  ";
   const values = {
     Duree: req.body.duree,
     Description: req.body.description,
@@ -53,15 +60,14 @@ export const editMeeting = (req, res) => {
   });
 };
 export const deleteMeeting = (req, res) => {
-  const { start, end, id_resp } = req.params;
+  const { start, id_resp } = req.params;
   console.log("no formated date"); 
   
-  const startFormat =  start;
-  const endFormat = end;
-  console.log(startFormat); 
-  console.log(endFormat); 
-  const q = "DELETE FROM meeting WHERE start = ? AND end = ? AND id_resp = ?";
-  db.query(q, [startFormat, endFormat, id_resp], (err, result) => {
+  const startFormat = start.slice(0, 19).replace('T', ' ');
+  console.log(startFormat);  
+  console.log(id_resp);
+  const q = "DELETE FROM meeting WHERE start = ? AND id_resp = ?";
+  db.query(q, [startFormat, id_resp], (err, result) => {
     if (err) {
       console.error("Database query error: ", err);
       return res.sendStatus(500);
@@ -92,12 +98,11 @@ export const getMeetings = (req, res) => {
   
       const formattedResults = results.map((row) => ({
         ...row,
-        start: formatDateString(row.start),
-        end:formatDateString(row.end),
+        allDay: row.allDay == "0"?false:true,
         // user: `${row.firstname || ''} ${row.lastname || ''}`.trim(),
       }));
       console.log(results); 
-      return res.json(results);
+      return res.json(formattedResults);
     });
   } else {
     return res.status(400).json("Missing required parameter: id_dir or id_resp");
@@ -183,7 +188,7 @@ export const getAllMeetingsById = (req, res) => {
 };
 function formatDateString(dateString) {
   const options = {
-    timeZone: 'Africa/Casablanca',
+    timeZone: 'UTC',
     hour12: false,
     year: 'numeric',
     month: '2-digit',

@@ -94,7 +94,7 @@ const SensorTable = () => {
             onClick={handleAddSensor}
             className="button bg-background text-black border border-black hover:bg-gray-50"
           >
-            Add Sensor
+            Add SensorPmea
           </Button>
         </div>
       </CardHeader>

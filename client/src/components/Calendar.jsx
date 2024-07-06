@@ -19,6 +19,7 @@ export default function Calendar() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
+  const [editMeeting,setEditMeeting] = useState(false); 
   const [newEvent, setNewEvent] = useState({
     title: "",
     start: "",
@@ -34,7 +35,7 @@ export default function Calendar() {
   useEffect(() => {
     fetchMeetings();
     fetchResponsables();
-  }, [user]);
+  }, [user, selectedEvent]);
   useEffect(()=>{
     console.log(allEvents); 
   },[allEvents]); 
@@ -90,6 +91,7 @@ export default function Calendar() {
     setNewEvent({
       ...newEvent,
       start: arg.date,
+      end:arg.date,
       allDay: arg.allDay,
       id: new Date().getTime(),
     });
@@ -115,22 +117,32 @@ export default function Calendar() {
   };
 
   const handleDelete = async () => {
-  
-    console.log(selectedEvent);  
-    // if (window.confirm("Are you sure you want to delete this event?")) {
-    //   try {
-    //     await axios.delete(`http://localhost:5000/api/meetings/delete/${start}/${end}/${id_resp}`);
-    //     setShowViewModal(false);
-    //     setSelectedEvent(null);
-    //     setAllEvents(allEvents.filter((event) => event.id !== selectedEvent.id));
-    //     toast.success("Event deleted successfully");
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
-    // }
+     
+    // const end = new Date(selectedEvent.end.toString().replace(/GMT.*$/,'GMT+0000')).toISOString(); 
+    //   const start = new Date(selectedEvent.start.toString().replace(/GMT.*$/,'GMT+0000')).toISOString(); 
+    // const id_resp = selectedEvent.extendedProps.id_resp;  
+    console.log(selectedEvent.start,selectedEvent.end);  
+    // console.log(start,end,id_resp); 
+    const end = new Date(selectedEvent.end).toISOString(); 
+    const start = new Date(selectedEvent.start).toISOString(); 
+    const id_resp = selectedEvent.extendedProps.id_resp; 
+    console.log(start); 
+    console.log(end); 
+    console.log(id_resp); 
+    if (window.confirm("Are you sure you want to delete this event?")) {
+      try {
+        await axios.delete(`http://localhost:5000/api/meetings/delete/${start}/${id_resp}`);
+        setShowViewModal(false);
+        setSelectedEvent(null);
+        setAllEvents(allEvents.filter((event) => event.id !== selectedEvent.id));
+        toast.success("Event deleted successfully");
+      } catch (error) {
+        console.log(error);
+      }
+    }
   };
 
-  const handleEdit = () => {
+  const handleEdit = async () => {
     setNewEvent({
       title: selectedEvent.title,
       start: selectedEvent.start,
@@ -140,8 +152,26 @@ export default function Calendar() {
       description: selectedEvent.extendedProps.description,
       id_resp: selectedEvent.extendedProps.id_resp,
     });
-    setShowModal(true);
-    setShowViewModal(false);
+    // delete the previous meeting 
+    let end = null; 
+    if(!selectedEvent.allDay) { 
+       end = new Date(selectedEvent.end).toISOString(); 
+    }
+   const start = new Date(selectedEvent.start).toISOString(); 
+   
+   console.log(start);  // YYYY-MM-DD HH:MM:SS
+      try {
+        await axios.delete(`http://localhost:5000/api/meetings/delete/${start}/${selectedEvent.extendedProps.id_resp}`);
+        // setSelectedEvent(null);
+        setShowModal(true);
+        setShowViewModal(false);
+        console.log("edited meeting was deleted"); 
+        setAllEvents(allEvents.filter((event) => event.id !== selectedEvent.id));
+        // toast.success("Event deleted successfully");
+      } catch (error) {
+        console.log(error);
+      }
+ 
   };
 
   const handleCloseModal = () => {
@@ -168,24 +198,25 @@ export default function Calendar() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+     // YYYY-MM-DD HH:MM:SS
   
-    // Convert end and start fields to MySQL date format
-    console.log(newEvent); 
-  //   const formattedEvent = {
-  //     ...newEvent,
-  //     start: newEvent.start.toString().slice(0, 19).replace('T', ' '), // YYYY-MM-DD HH:MM:SS
-  //     end: newEvent.end.toString().slice(0, 19).replace('T', ' '),     // YYYY-MM-DD HH:MM:SS
-  //   };
-  //  console.log(formattedEvent); 
+    const formattedEvent = {
+      ...newEvent,
+      end:!newEvent.allDay ? new Date(newEvent.end.toISOString() ) : null ,
+      start:new Date(newEvent.start.toISOString()),    // YYYY-MM-DD HH:MM:SS
+    };
+  console.log(formattedEvent); 
     try {
-      await axios.post("http://localhost:5000/api/meetings/create", newEvent);
+      await axios.post("http://localhost:5000/api/meetings/create", formattedEvent);
       setAllEvents([...allEvents, newEvent]);
       setShowModal(false);
+      setSelectedEvent(null); 
       toast.success("Event created successfully");
       handleCloseModal();
     } catch (err) {
       console.log(err);
     }
+  // } 
   };
   return (
     <>
@@ -204,6 +235,7 @@ export default function Calendar() {
               </div>
             ) : (
               <FullCalendar 
+                timeZone="UTC"
                 plugins={[dayGridPlugin, interactionPlugin, timeGridPlugin]}
                 headerToolbar={{
                   left: "prev,next today",

@@ -52,6 +52,7 @@ export const createUser = (req, res) => {
     // HASH PASSWORD
     const salt = bcrypt.genSaltSync(10);
     const hashedPassword = bcrypt.hashSync(req.body.password, salt);
+    const userRole= req.body.role
     const q =
       "INSERT INTO users (`firstname`,`lastname` ,`email`,`password`,`role`) VALUES(?) ";
 
@@ -68,8 +69,14 @@ export const createUser = (req, res) => {
       if (err) return res.status(500).json(err);
     
     const userId = result.insertId;
-
-                const insertDirecteurQuery = 'INSERT INTO director(id) VALUES (?)';
+    let insertDirecteurQuery='';
+      if(userRole == "admin"){
+        insertDirecteurQuery = 'INSERT INTO director(id) VALUES (?)';
+      }else if(userRole == "responsable"){
+         insertDirecteurQuery = 'INSERT INTO respensable(id) VALUES (?)';
+      }else{
+         insertDirecteurQuery = 'INSERT INTO ouvrier(id) VALUES (?)';
+      }
                 db.query(insertDirecteurQuery, [userId], (err, result) => {
                   if (err) return res.status(500).json(err);
                   console.log(result); 

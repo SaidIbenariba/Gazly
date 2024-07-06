@@ -9,21 +9,12 @@ const TaskEditModal = ({ task, isOpen, onClose, onSave }) => {
     const { name, value } = e.target;
     setEditedTask({ ...editedTask, [name]: value });
   };
-
+  
   return (
     <Dialog open={isOpen} onClose={onClose} size="lg">
       <div className="p-6">
         <h3 className="text-xl mb-4">Edit Task</h3>
-        <div className="mb-4">
-          <Input
-            type="datetime-local"
-            label="Date"
-            name="date"
-            value={editedTask.date}
-            onChange={handleChange}
-            className="mb-4"
-          />
-        </div>
+        
         <div className="mb-4">
           <Input
             type="text"
@@ -45,18 +36,7 @@ const TaskEditModal = ({ task, isOpen, onClose, onSave }) => {
           />
         </div>
         <div className="mb-4">
-          <Select
-            label="Status"
-            name="status"
-            value={editedTask.status}
-            onChange={(e) => handleChange({ target: { name: 'status', value: e } })}
-            className="mb-4"
-          >
-            <Option value="done">Done</Option>
-            <Option value="inprogress">In Progress</Option>
-            <Option value="expired">Expired</Option>
-          </Select>
-        </div>
+      
         <div className="flex justify-end mt-4">
           <Button className="mr-2" onClick={onClose}>
             Cancel
@@ -65,6 +45,7 @@ const TaskEditModal = ({ task, isOpen, onClose, onSave }) => {
             Save
           </Button>
         </div>
+      </div>
       </div>
     </Dialog>
   );

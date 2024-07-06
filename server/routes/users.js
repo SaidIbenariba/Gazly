@@ -12,7 +12,7 @@ import { verifyJWT } from "../middleware/verifyJWT.js";
 import { verifyRoles } from "../middleware/verifyRoles.js";
 import { ROLES_LIST } from "../config/roles_list.js";
 const router = express.Router();
-router.get("/", verifyRoles("admin"), users);
+router.get("/", users);
 router.get("/read/:userId", getUser);
 router.get("/search-role/:role", searchByRole);
 // router.get("/search", search)

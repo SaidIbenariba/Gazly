@@ -6,6 +6,8 @@ import {
 const router = express.Router();
 router.get("/getLastMeasure", getLastMeasure);
 router.get("/", getMeasures);
+router.get("/danger/:danger",getMeasures); 
 router.get("/sensor/:id_cap", getMeasures)
+router.get("/workspace/:id_ws",getMeasures)
 
 export default router;

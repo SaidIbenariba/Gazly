@@ -11,13 +11,10 @@ import EditMissionForm from "../Missions/EditMissionForm";
 import ObservationsTable from "../observations/ObservationsTable";
 // import EditObservationForm from "../observations/EditObservationForm";
 import CreateObservationForm from "../observations/CreateObservationForm";
-import TasksTable from "../tasks/TasksTable";
-// import EditTaskForm from "../tasks/EditTaskForm";
-import CreateTaskForm from "../tasks/CreateTaskForm";
 import MeasuresTable from "../measures/MeasuresTable";
 import SensorTable from "../Sensors/SensorsTable";
 import EditObservationModal from "../observations/EditObservationModal";
-
+import Notfound from "../../Notfound"; 
 export default function AdminRoutes() {
   return (
     <Routes>
@@ -36,15 +33,16 @@ export default function AdminRoutes() {
         <Route path="observations/edit/:date/:id_ws/:id_resp" element={<EditObservationModal/>} />
         <Route path="observations/*" element={<ObservationsTable />} />
         {/* measures routes */}
-        <Route path="measures" element={<MeasuresTable/>} />
+        <Route path="measures/*" element={<MeasuresTable/>} />
         {/* Sensors routes */}
-        <Route path="sensors" element={<SensorTable/>}/>
+        <Route path="sensors/*" element={<SensorTable/>}/>
         {/* tasks Routes */}
-        <Route path="tasks" element={<TasksTable/>}/>
+        {/* <Route path="tasks" element={<TasksTable/>}/>
         <Route path="tasks/create" element={<CreateTaskForm/>} />
-        {/* <Route path="tasks/edit/:date/:id_resp/:id_ouv" element={<EditTaskForm/>} /> */}
-        <Route path="tasks/*" element={<TasksTable />} />
+        <Route path="tasks/edit/:date/:id_resp/:id_ouv" element={<EditTaskForm/>} /> */}
+        {/* <Route path="tasks/*" element={<TasksTable />} /> */}
         <Route path="planning" element={<Planning />} />
+        <Route path="*" element={<Notfound/>}/>
       </Route>
     </Routes>
   );

@@ -14,6 +14,6 @@ router.get("/:date?/:id_resp?/:id_ouv?", getTasks);
 router.get("/respSearch/:id_ouv", respSearch);
 router.get("/ouvrSearch/:date", ouvSearch);
 router.post("/createTask", createTask);
-router.put("/edit/:date/:id_resp/:id_ouv", editTask);
-router.delete("/delete/:id_ouv", deleteTask);
+router.put("/edit/:date/:id_ouv/:id_resp", editTask);
+router.put("/edit/status/:date/:id_ouv/:id_resp", editTask);  
 export default router;

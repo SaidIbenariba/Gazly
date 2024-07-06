@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }) => {
     console.log("auth procees work");
     const storedToken =
       localStorage.getItem("accessToken") ||
-      sessionStorage.getItem("accessToken");
+      sessionStorage.getItem("accessToken"); 
     // console.log(user);
     if (storedToken) {
       try {
@@ -52,7 +52,7 @@ export const AuthProvider = ({ children }) => {
         // console.log(decodedUser.UserInfo);
         axios.defaults.headers.common[
           "Authorization"
-        ] = `Bearer ${storedToken}`;
+        ] = `Bearer ${storedToken}`; 
       } catch (error) {
         console.error("Token decoding failed:", error);
         localStorage.removeItem("accessToken");
@@ -66,7 +66,7 @@ export const AuthProvider = ({ children }) => {
     
     try {
       const response = await axios.post(
-        "http://localhost:5000/auth/login",
+        "http://localhost:5000/auth/login", 
         formData
       );
       // reponse data form { i send only accestoken { user.id, role} }

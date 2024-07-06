@@ -12,6 +12,6 @@ router.get("/", getMeetings);
 
 // router.get("/respSearch/:id_Admin", respSearch);
 router.post("/create", createMeeting);
-router.put("/edit/:id", editMeeting);
-router.delete("/delete/:start/:end/:id_resp", deleteMeeting);
+router.put("/edit/:start/:end/:id_resp", editMeeting);
+router.delete("/delete/:start/:id_resp", deleteMeeting);
 export default router;

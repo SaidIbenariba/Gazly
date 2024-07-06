@@ -62,21 +62,25 @@ const MeasuresTable = () => {
   const [editedMeasure, setEditedMeasure] = useState({});
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState({ exist: false, msg: "" });
-  const [search, setSearch] = useState("");
+  const [sensor, setSensor] = useState("");
   const [activeTab, setActiveTab] = useState("all");
-
+  const [stat, setStat] =useState();
   const tableHeads = ["Gas Level", "Date", "Sensor ID", "Gas Danger", "Actions"];
 
   useEffect(() => {
-    // fetchMeasures();
+    fetchMeasures();
   }, []);
 
   const fetchMeasures = (status = "all") => {
     setLoading(true);
     let url = "http://localhost:5000/api/measures";
     if (status !== "all") {
-      url = `${url}/${status}`;
+      url = `${url}/danger/${status}`;
     }
+  //   if(status == 1 || status == 0) {
+  //     console.log("search danger "); 
+  //     url = `$`
+  // } 
     axios
       .get(url)
       .then((res) => {
@@ -109,16 +113,29 @@ const MeasuresTable = () => {
     setEditMode(null);
   };
 
-  const handleSearchByRole = (status) => {
-    setActiveTab(status);
-    fetchMeasures(status);
+  const handleSearchByRole = (value) => {
+    // setActiveTab(status);
+    setLoading(true);
+    // axios
+    // .get(`http://localhost:5000/api/measures/danger/${value}`)
+    // .then((res) => {
+    //   setMeasures(res.data);
+    //   setLoading(false);
+    // })
+    // .catch((err) => {
+    //   setErr({ exist: true, msg: err.response.data.message });
+    //   setLoading(false);
+    //   setMeasures([]);
+    // });
+    setStat(value);
+    fetchMeasures(value);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setLoading(true);
     axios
-      .get(`http://localhost:5000/api/measures/search/${search}`)
+      .get(`http://localhost:5000/api/measures/sensor/${sensor}`)
       .then((res) => {
         setMeasures(res.data);
         setLoading(false);
@@ -147,13 +164,14 @@ const MeasuresTable = () => {
         <div className="flex flex-wrap items-center justify-between gap-1 gap-y-4">
           <Tabs value={activeTab} className="w-full md:w-max">
             <TabsHeader>
-              {TABS.map(({ label, value }) => (
+                {TABS.map(({ label, value }) => (
                 <button
+                  className={`p-2 mx-2 bg-gray-100 rounded-md hover:bg-white ${ stat  === value ? 'bg-white' : ''}`}
                   key={value}
-                  className={`p-2 mx-2 bg-gray-100 rounded-md hover:bg-white ${activeTab === value ? "bg-white" : ""}`}
+                  value={value}
                   onClick={() => handleSearchByRole(value)}
                 >
-                  {label}
+                  &nbsp;&nbsp;{label}&nbsp;&nbsp;
                 </button>
               ))}
             </TabsHeader>
@@ -163,19 +181,21 @@ const MeasuresTable = () => {
             onSubmit={handleSubmit}
           >
             <Input
-              label="Search"
+              label="Input sensor id"
               icon={<MagnifyingGlassIcon className="h-5 w-5" />}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              value={sensor}
+              onChange={(e) => setSensor(e.target.value)}
+              type="number"
             />
-            <Button
+            {/* <Button
               size="sm"
               text="Search"
               variant="outline"
               className="button bg-background text-black border border-black hover:bg-gray-50"
+              type="submit"
             >
               <MagnifyingGlassIcon className="h-5 w-5" />
-            </Button>
+            </Button> */}
           </form>
         </div>
       </CardHeader>
