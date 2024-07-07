@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'; 
 import Form from "../../components/form";
+import { Button } from '@material-tailwind/react';
 import axios from 'axios';
 const EditEspaceForm = () => {
     const { id_ws } = useParams();
@@ -90,7 +91,7 @@ setLoading(false);
       }
       async function fetchEspace(id) {
         const res = await axios
-        .get("http://localhost:5000/api/workspace/read/" + id); 
+        .get("http://localhost:5000/api/workspaces/" + id); 
         console.log("response from espaces api ", res);
         setEspace({
             ...espace,
@@ -112,11 +113,14 @@ setLoading(false);
               <h1 className="text-3xl font-bold text-text dark:text-text text-wrap mr-10">
                 {espace.id_resp ? "Edit workspace"  : "Add responsable for this workspace"} 
               </h1>
-              <Link to="/private/users" className="button">
+              <Link to="/private/espaces" className="button">
                 Home
               </Link>
             </nav>
             <Form fields={formFields} onSubmit={handleSubmit} initialValues={espace} isEditMode={true} handleChange={handleFormChange} />
+            <Button  className="button w-full mt-10" text={`save`}>
+            Stop Responsable
+          </Button>
           </div>
         </div>
        )

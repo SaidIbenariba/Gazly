@@ -26,7 +26,17 @@ const TABS = [];
 const Espaces = () => {
     const [espaces, setEspaces] = useState([]); 
     const [loading, setLoading] = useState(false); 
-    
+    const location = useLocation();
+
+    useEffect(() => {
+      if (location.state?.message) {
+        if (location.state.type === "success") {
+          toast.success(location.state.message);
+        } else if (location.state.type === "error") {
+          toast.error(location.state.message);
+        }
+      }
+    }, [location]);
     useEffect(()=>{
         console.log(espaces); 
     }, [espaces]); 
@@ -225,13 +235,13 @@ const Espaces = () => {
                   <td className="p-4 border-b border-blue-gray-50">
                     <div className="flex items-center gap-4">
                       <Link to={"edit/" + espace.id}>
-                        <Tooltip content="Edit User">
+                        <Tooltip content="Edit Workspace">
                           <IconButton variant="text" color="blue-gray">
                             <PencilIcon className="h-4 w-4" />
                           </IconButton>
                         </Tooltip>
                       </Link>
-                      <Tooltip content="Delete User">
+                      <Tooltip content="Delete Workspace">
                         <IconButton
                           variant="text"
                           color="blue-gray"

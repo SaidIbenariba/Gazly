@@ -12,9 +12,7 @@ export const verifyJWT = (req, res, next) => {
   const token = authHeader.split(" ")[1];
   console.log(token); 
   jwt.verify(token, process.env.ACCES_TOKEN_SECRET, (err, decoded) => {
-    if (err)  {
-      console.log(err);
-       return res.status(400).json(err);  }  
+    if (err) return res.status(400).json(err);
     req.id = decoded.UserInfo.id;
     req.role = Object.keys(ROLES_LIST).find(
       (key) => ROLES_LIST[key] === decoded.UserInfo.role

@@ -34,28 +34,22 @@ export const getTasksForResp = (req, res) => {
     });
   };
   export const createTask = (req, res) => {
-    // if(req.role == "responsable") { 
-
+    if(req.role == "responsable") { 
+  
     const sql ="INSERT INTO task (date,`duree`,`description`,`id_ouv`,`id_resp`) VALUE(?,?,?,?,?) ";
     const newTache = {
-      date:req.body.date, 
       Duree: req.body.duree,
       Description: req.body.description,
       id_ouv: req.body.id_ouv,
-      id_resp: req.id,
+      id_resp: req.body.id_resp,
     };
-    console.log(newTache); 
-    db.query(sql, [...Object.values(newTache)], (err, result) => {
-      if (err)  { 
-        console.log(err); 
-        return res.status(500).json(err);
-      } 
+    db.query(sql, [Object.values(newTache)], (err, result) => {
+      if (err) return res.status(500).json(err);
       return res
         .status(200)
         .json({ succes: `New tache created ` });
-    });
-  } 
-    // };
+    });}
+    };
     export const editTask = (req, res) => {
       const {id_ouv,id_resp,date} = req.params; 
       const userRole = req.role ; 
@@ -88,7 +82,7 @@ export const getTasksForResp = (req, res) => {
 ];  
   }
         db.query(q, values, (err, result) => {
-            if (err)  {console.log(err);return res.sendStatus(500); } 
+            if (err) return res.sendStatus(500);
             return res.status(200).json(result);
           });
     };
@@ -99,13 +93,14 @@ export const getTasksForResp = (req, res) => {
           return res.status(200).json(result);
         });
     };
-    export const getTasks = (req, res) => { 
-      const userId = req.id;//req.id;
+    export const getTasks = (req, res) => {
+      const userId = 5;//req.id;
   const userRole = req.role;
   let sql = "";
   let queryParams = [];
   const status = req.params.status;
   const { date, id_ouv, id_resp } = req.params;
+  console.log(userRole);
   if(date && id_ouv && id_resp) {
     console.log("search about one task");  
     sql =
@@ -113,18 +108,17 @@ export const getTasksForResp = (req, res) => {
         queryParams = [id_ouv,date,id_resp]; 
   }else if (status) {
     console.log("search with status");  
-    //  just for testing after delete userRole == "admin" 
-    if ( userRole == "responsable") { 
+    if (userRole == "admin") { 
       sql =
         "SELECT * FROM task WHERE id_resp = ? AND status = ?";
     } else if (userRole == "ouvrier") {
       sql =
         "SELECT * FROM task WHERE id_ouv = ? AND status = ?";
-    } 
-    queryParams=[userId, status]
+    }
+    queryParams = [userId, status];
   } else {
     console.log("get all tasks depend on user "); 
-    if (userRole == "responsable") {
+    if (userRole == "admin") {
       sql =
         "SELECT * FROM task WHERE id_resp = ? ";
     } else if (userRole == "ouvrier") {
@@ -135,17 +129,20 @@ export const getTasksForResp = (req, res) => {
   } 
   console.log(sql); 
   console.log(queryParams);     
-      db.query(sql,[...queryParams], (err, tasks) => {
+      db.query(sql,[queryParams], (err, tasks) => {
         if (err) {
-          console.error("Tasks database query error: ", err);
+          //console.error("Tasks database query error: ", err);
           return res.status(500).json({ error: "Cannot connect to database" });
         }
-         
+    
         const formatDate = (mysqlDate) => {
-          return mysqlDate.toISOString().slice(0, 19).replace('T', ' ') ; 
+          const jsDate = new Date(mysqlDate);
+          const year = jsDate.getFullYear();
+          const month = String(jsDate.getMonth() + 1).padStart(2, '0');
+          const day = String(jsDate.getDate()).padStart(2, '0');
+          return `${year}-${month}-${day}`;
         };
-        console.log("mysql tasks data without formating"); 
-        console.log(tasks); 
+    
         const formattedTasks = tasks.map((task) => ({
           ...task,
           date: task.date ? formatDate(task.date) : null,

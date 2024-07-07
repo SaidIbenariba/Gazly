@@ -6,16 +6,18 @@ import {
     createWorkSpace,
     editWorkSpace,
     deleteWorkSpace,
-    WorkSpacesWithoutRes
+    WorkSpacesWithoutRes,
+    getWorkSpaceHistoric
 } from "../controllers/espace.js";
 const router = express.Router();
-router.get("/", getWorkSpace);
-router.get("/noresponsable",WorkSpacesWithoutRes)
-router.get("/read/:id_ws", getWorkSpace);
-// router.get("/read/:id_resp", WorkSpaceSearchByResp);
+router.get("/", getWorkSpace); 
+router.get("/noresponsable",WorkSpacesWithoutRes);
+router.get("/:id_ws", getWorkSpace);
+router.get("/respID/:id_resp", getWorkSpace);
+router.get("/read/:WorkSpacenb", getWorkSpace);
 router.get("/respSearch/:name", WorkSpaceSearchByName);
 router.post("/create", createWorkSpace);
 router.put("/edit/:name", editWorkSpace);
 router.delete("/delete/:WorkSpacenb", deleteWorkSpace);
-// add historic if he work 
+router.get("/WorkSpaceHistoric/:id_ws",getWorkSpaceHistoric)
 export default router;

@@ -57,11 +57,16 @@ const CreateEspaceForm = () => {
     console.log(res.data);
   }
 
-  function handleSubmit(espace) {
+  function handleSubmit(data) {
+    console.log(data);
     axios
-      .post("http://localhost:5000/api/workspaces/create", { name: espace.name })
+      .post("http://localhost:5000/api/workspaces/create", { name: data.name })
       .then((res) => {
-        setEspace({ ...espace, id: res.data.id });
+        // setEspace({ ...espace, id: res.data.id });
+        const id_ws = res.data.id_ws; 
+        if(espace.id_resp) { 
+        handleAddResponsable(id_ws);
+        } 
         nav("/private/espaces", {
           state: { message: "Workspace Created successfully!", type: "success" },
         });
@@ -74,15 +79,17 @@ const CreateEspaceForm = () => {
       });
   }
 
-  function handleAddResponsable() {
+  function handleAddResponsable(id_ws) {
+    // console.log(space);
     axios
-      .put(`http://localhost:5000/api/affectations/create`, { start:espace.start, end:espace.end, id_ws:espace.id, id_resp:espace.id_resp})
+      .post(`http://localhost:5000/api/affectations/create`, { start:espace.start, end:espace.end, id_ws:id_ws, id_resp:espace.id_resp})
       .then((res) => {
         nav("/private/espaces", {
           state: { message: "Responsable added successfully!", type: "success" },
         });
       })
       .catch((err) => {
+        console.log(err);
         nav("/private/espaces", {
           state: { message: "Failed to add responsable.", type: "error" },
         });
@@ -101,13 +108,13 @@ const CreateEspaceForm = () => {
               <h1 className="text-3xl font-bold text-text dark:text-text text-wrap mr-10">
                 {espace.id_resp ? "Edit Workspace" : "Create Workspace"}
               </h1>
-              <Link to="/private/workspaces" className="button">
+              <Link to="/private/espaces" className="button">
                 Home
               </Link>
             </nav>
             <Form fields={formFields} onSubmit={handleSubmit} initialValues={espace} handleChange={handleFormChange} />
-            
               <div className="mt-4">
+
                 <button
                   onClick={() => setShowResponsableForm(!showResponsableForm)}
                   className="button"
@@ -138,7 +145,7 @@ const CreateEspaceForm = () => {
                         required: true,
                       },
                     ]}
-                    onSubmit={handleAddResponsable}
+                    onSubmit={handleSubmit}
                     initialValues={espace}
                     handleChange={handleFormChange}
                   />
