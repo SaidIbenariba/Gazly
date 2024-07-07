@@ -4,7 +4,7 @@ export const WorkSpacesWithoutRes = (req, res) => {
   SELECT w.*
   FROM workspace w
   LEFT JOIN affectation a ON w.id = a.id_ws AND a.start <= CURDATE() AND a.end >= CURDATE()
-  WHERE a.id_ws IS NULL
+  WHERE a.id_ws IS NULL 
 `;
 
 db.query(q, (err, result) => {
@@ -21,7 +21,21 @@ db.query(q, (err, result) => {
 });
 }
 export const getWorkSpace = (req, res) => {
+  const {id_ws} = req.params; 
+  let q = ""; 
+  let queryParams = []; 
+  /**
+   * {
+         id:"", 
+         id_resp:"",
+         name:"", 
+  
+   */
+  if(id_ws) { 
+
+  }else {
   const q = `SELECT w.*, a.* FROM workspace w LEFT JOIN affectation a ON w.id = a.id_ws AND a.end >= CURDATE()`;
+  }
   // return id_resp of  current responsable of this workspace
   db.query(q, (err, result) => {
     if (err) {
@@ -68,7 +82,7 @@ export const getWorkSpaceHistoric = (req, res) => {
     });
   };
   export const createWorkSpace = (req, res) => {
-    const sql ="INSERT INTO Meeting (name) VALUE(?) ";
+    const sql ="INSERT INTO meeting (name) VALUE(?) ";
     const newWorkSpace = {
         name: req.body.name,
     };
@@ -91,7 +105,7 @@ export const getWorkSpaceHistoric = (req, res) => {
           });
     };
     export const deleteWorkSpace = (req, res) => {
-        const q = "DELETE FROM WorkSpace WHERE WorkSpacenb= ? ";
+        const q = "DELETE FROM workspace WHERE id= ? ";
         db.query(q, req.params.WorkSpacenb, (err, result) => {
           if (err) return res.sendStatus(500);
           return res.status(200).json(result);

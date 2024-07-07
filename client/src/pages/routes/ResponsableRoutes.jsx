@@ -1,6 +1,8 @@
 import { Route, Routes } from "react-router-dom";
 import Dashboard from "../directeur/Dashboard";
-import Espaces from "../Espaces";
+import Espaces from "../espaces/Espaces";
+import EditEspaceForm from "../espaces/EditEspaceForm"; 
+import CreateEspaceForm from "../espaces/CreateEspaceForm"; 
 import Missions from "../Missions/Missions";
 import Planning from "../Planning";
 import Observations from "../observations/ObservationsTable";
@@ -16,7 +18,9 @@ export default function ResponsableRoutes() {
     <Route element={<DashboardLayout />}>
       <Route index element={<Dashboard />} />  
       <Route path="dashboard" element={<Dashboard />} />
-      <Route path="espaces" element={<Espaces />} />
+      <Route path="espaces/*" element={<Espaces />} />
+      <Route path="espace/edit/:id_ws" element={<EditEspaceForm/>}/>
+      <Route path="espaces/create" element={<CreateEspaceForm/>}/>
       <Route path="missions/*" element={<Missions />} />
       <Route path="missions/edit/:start/:id_dir/:id_resp" element={<EditMissionForm />} />
       <Route path="observations" element={<ObservationsTable/>} />

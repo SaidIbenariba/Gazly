@@ -28,7 +28,7 @@ const Create = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/workspaces/")
+      .get("http://localhost:5000/api/workspaces/noresponsable")
       .then((response) => setWorkspaces(response.data))
       .catch((error) => console.log(error));
   }, []);
