@@ -11,9 +11,11 @@ import {
 } from "../controllers/espace.js";
 const router = express.Router();
 router.get("/", getWorkSpace); 
-router.get("/noresponsable",WorkSpacesWithoutRes)
+router.get("/noresponsable",WorkSpacesWithoutRes);
+router.get("/workspaceID/:id_ws", getWorkSpace);
+router.get("/respID/:id_resp", getWorkSpace);
+
 router.get("/read/:WorkSpacenb", getWorkSpace);
-router.get("/read/:id_resp", WorkSpaceSearchByResp);
 router.get("/respSearch/:name", WorkSpaceSearchByName);
 router.post("/createWorkSpace", createWorkSpace);
 router.put("/edit/:name", editWorkSpace);

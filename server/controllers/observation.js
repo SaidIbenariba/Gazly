@@ -2,13 +2,12 @@ import { format } from "mysql";
 import { db } from "../connect_db.js";
 export const deleteObservation = (req, res) => { 
   const {date, id_ws, id_resp} = req.params; 
-  console.log(date);
-  const sql = "DELETE FROM observation WHERE date = ? AND id_ws = ?  AND id_resp = ?"
+  if (req.role === "repensable"||req.role === "admin") {
+    const sql = "DELETE FROM observation WHERE date = ? AND id_ws = ?  AND id_resp = ?"
   db.query(sql,[date,id_ws, id_resp],(err,result)=>{
     if(err) return res.sendStatus(400); 
     return res.json({succes:"observation was deleted"}) ;
-  })
-  console.log(req.params); 
+  })}
 }
 
 export const getObservations = (req, res) => {
@@ -183,7 +182,7 @@ export const getObservations = (req, res) => {
   } 
     };
     export const editObservation =(req,res) =>{
-      if (req.role === "admin") {
+      if (req.role === "repensable") {
         let date =req.params.date;
         const dateFormat = date.slice(0, 19).replace('T',' ');
       const q =

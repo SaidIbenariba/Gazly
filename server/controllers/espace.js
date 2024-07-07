@@ -15,20 +15,22 @@ db.query(q, (err, result) => {
 });
 }
 export const getWorkSpace = (req, res) => {
+  if (req.role === "admin") {
+
   const id_ws = req.params.id_ws; 
   const id_resp = req.params.id_resp; 
   let q = ""; 
   let queryParams = []; 
   
-  if(id_resp) { 
-    q = `SELECT w.*, a.* FROM workspace w LEFT JOIN affectation a ON w.id = a.id_ws AND a.end >= CURDATE() AND id_resp=?`;
-    let queryParams =[id_resp];
+  if(id_resp) {
+    q = `SELECT w.*, a.* FROM workspace w LEFT JOIN affectation a ON w.id = a.id_ws AND a.end >= CURDATE() WHERE id_resp=?`;
+     queryParams =[id_resp];
   }else if(id_ws) { 
-    q = `SELECT w.*, a.* FROM workspace w LEFT JOIN affectation a ON w.id = a.id_ws AND a.end >= CURDATE() AND id_ws=?`;
-    let queryParams =[id_ws];
+    q = `SELECT w.*, a.* FROM workspace w LEFT JOIN affectation a ON w.id = a.id_ws AND a.end >= CURDATE() WHERE a.id_ws=?`;
+     queryParams =[id_ws];
   }else {
-   q = `SELECT w.*, a.* FROM workspace w LEFT JOIN affectation a ON w.id = a.id_ws AND a.end >= CURDATE()`;
-  // return id_resp of  current responsable of this workspace
+   q = `SELECT w.*, a.* FROM workspace w LEFT JOIN affectation a ON w.id = a.id_ws AND a.end >= CURDATE() `;
+  }
   db.query(q,queryParams, (err, result) => {
     if (err) {
        return res.status(500).json(err);
@@ -37,8 +39,12 @@ export const getWorkSpace = (req, res) => {
       ...row, 
       position: [row.x, row.y]
     }));
+    console.log('query:',Data);
+
     return res.status(200).json(Data);
-  });}
+  });}else{
+    return res.status(555).json('you are not autorized!');
+  }
 };
 export const getWorkSpaceHistoric = (req, res) => {
   const q = `SELECT  a.*,u.* FROM affectation a INNER JOIN users u ON a.id_resp = u.id WHERE id_ws=?`;
