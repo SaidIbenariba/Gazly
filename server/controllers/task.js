@@ -34,7 +34,9 @@ export const getTasksForResp = (req, res) => {
     });
   };
   export const createTask = (req, res) => {
-    const sql ="INSERT INTO Task (date,`duree`,`description`,`id_ouv`,`id_resp`) VALUES(NOW(),?,?,?,?) ";
+    if(req.role == "responsable") { 
+  
+    const sql ="INSERT INTO task (date,`duree`,`description`,`id_ouv`,`id_resp`) VALUE(?,?,?,?,?) ";
     const newTache = {
       Duree: req.body.duree,
       Description: req.body.description,
@@ -46,7 +48,7 @@ export const getTasksForResp = (req, res) => {
       return res
         .status(200)
         .json({ succes: `New tache created ` });
-    });
+    });}
     };
     export const editTask = (req, res) => {
       if (req.role === "admin") {
