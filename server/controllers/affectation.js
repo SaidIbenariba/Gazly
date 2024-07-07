@@ -4,6 +4,7 @@ export const createAffectation = (req, res) =>{
     const { start, end, id_ws, id_resp } = req.body;
     // update 
     // end = currentDate(); 
+    // wheere 
    // currentDate() < end  
   const query = 'INSERT INTO affectation (start, end, id_ws, id_resp) VALUES (?, ?, ?, ?)';
   db.query(query, [start, end, id_ws, id_resp], (err, result) => {

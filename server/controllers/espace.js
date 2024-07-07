@@ -82,7 +82,7 @@ export const getWorkSpaceHistoric = (req, res) => {
     });
   };
   export const createWorkSpace = (req, res) => {
-    const sql ="INSERT INTO meeting (name) VALUE(?) ";
+    const sql ="INSERT INTO workspace (name) VALUE(?) ";
     const newWorkSpace = {
         name: req.body.name,
     };

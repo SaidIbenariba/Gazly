@@ -32,7 +32,7 @@ const CreateEspaceForm = () => {
 
   useEffect(() => {
     console.log(espace, responsables);
-  }, [espace, responsables]);
+  }, [espace, responsables, showResponsableForm]);
 
   useEffect(() => {
     setLoading(true);
@@ -67,9 +67,10 @@ const CreateEspaceForm = () => {
         });
       })
       .catch((err) => {
+        console.log(err);
         nav("/private/espaces", {
           state: { message: "Failed to create workspace.", type: "error" },
-        });
+        }); 
       });
   }
 
