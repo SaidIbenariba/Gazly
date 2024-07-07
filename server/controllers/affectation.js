@@ -16,5 +16,14 @@ export const createAffectation = (req, res) =>{
   });
 }
 export const getAffectations = (req, res) =>{
-  const query ='0';
+  let q ='';
+  if(req.role=='admin'){
+    q='SELECT a.*,u.firstname,u.lastname FROM affectation a LEFT JOIN users u on id_resp=id WHERE id_ws=?'
+  db.query(q,req.params.id_ws, (err, result) => {
+    if (err) {
+       return res.status(500).json(err);
+    } 
+    
+    return res.status(200).json(result);
+  });}
 } 

@@ -1,6 +1,7 @@
 import { db } from "../connect_db.js";
 export const WorkSpacesWithoutRes = (req, res) => {
-  const q = `SELECT distinct(w.name),w.*,distinct(a.id_ws) a.* FROM workspace w LEFT JOIN affectation a ON w.id = a.id_ws AND a.end < CURDATE()`;
+  const q = `SELECT distinct(a.id_ws),w.*, a.* FROM workspace w LEFT JOIN affectation a ON w.id = a.id_ws AND a.end < CURDATE() GROUP BY 
+      w.name`;
 
 db.query(q, (err, result) => {
   if (err) {
@@ -14,9 +15,21 @@ db.query(q, (err, result) => {
 });
 }
 export const getWorkSpace = (req, res) => {
-  const q = `SELECT w.*, a.* FROM workspace w LEFT JOIN affectation a ON w.id = a.id_ws AND a.end >= CURDATE()`;
+  const id_ws = req.params.id_ws; 
+  const id_resp = req.params.id_resp; 
+  let q = ""; 
+  let queryParams = []; 
+  
+  if(id_resp) { 
+    q = `SELECT w.*, a.* FROM workspace w LEFT JOIN affectation a ON w.id = a.id_ws AND a.end >= CURDATE() AND id_resp=?`;
+    let queryParams =[id_resp];
+  }else if(id_ws) { 
+    q = `SELECT w.*, a.* FROM workspace w LEFT JOIN affectation a ON w.id = a.id_ws AND a.end >= CURDATE() AND id_ws=?`;
+    let queryParams =[id_ws];
+  }else {
+   q = `SELECT w.*, a.* FROM workspace w LEFT JOIN affectation a ON w.id = a.id_ws AND a.end >= CURDATE()`;
   // return id_resp of  current responsable of this workspace
-  db.query(q, (err, result) => {
+  db.query(q,queryParams, (err, result) => {
     if (err) {
        return res.status(500).json(err);
     } 
@@ -25,7 +38,7 @@ export const getWorkSpace = (req, res) => {
       position: [row.x, row.y]
     }));
     return res.status(200).json(Data);
-  });
+  });}
 };
 export const getWorkSpaceHistoric = (req, res) => {
   const q = `SELECT  a.*,u.* FROM affectation a INNER JOIN users u ON a.id_resp = u.id WHERE id_ws=?`;
@@ -64,10 +77,10 @@ console.log('hi');
     });
     };
     export const editWorkSpace= (req, res) => {
-        const q =
-          "UPDATE WorkSpace SET name=?";
+        const q ="UPDATE WorkSpace SET name=? WHERE id=?";
         const values = {
             name: req.body.name,
+            id: req.params.id,
           };
         db.query(q, [Object.values(values)], (err, result) => {
             if (err) return res.sendStatus(500);

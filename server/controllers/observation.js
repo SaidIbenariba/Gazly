@@ -20,8 +20,6 @@ export const getObservations = (req, res) => {
   console.log(req.params); 
   let sql="";
   let queryParams = [];
-  console.log("search observaation when status = ");
-  console.log(status); 
   if(status && id_ws && id_resp){
      sql = "SELECT o.* FROM observation o  WHERE status = ? AND id_ws = ? AND id_resp = ?";
     queryParams = [status,id_ws,id_resp];
@@ -49,11 +47,12 @@ export const getObservations = (req, res) => {
         sql = "SELECT o.* FROM observation o ";
       } else if (userRole === 'responsable') {
         sql = "SELECT o.* FROM observation o WHERE id_resp=?";
+        queryParams = [userId];
       }
   }
     db.query(sql,queryParams, (err, results) => {
       if (err) {
-        // console.log(err) ;  
+         
         return res.status(400).json("error mysql");
       }
   
@@ -184,13 +183,15 @@ export const getObservations = (req, res) => {
   } 
     };
     export const editObservation =(req,res) =>{
-      console.log("edit Observation"); 
+      if (req.role === "admin") {
+        let date =req.params.date;
+        const dateFormat = date.slice(0, 19).replace('T',' ');
       const q =
           "UPDATE observation SET feedback = ?,status = ?  WHERE date = ? AND id_ws = ? AND id_resp = ?";
         const values = {
             feedback: req.body.feedback,
             status: req.body.status,
-            date: req.params.date, 
+            date: dateFormat, 
             id_ws: req.params.id_ws,
             id_resp: req.params.id_resp,
           };
@@ -202,6 +203,8 @@ export const getObservations = (req, res) => {
               return res.sendStatus(400); 
             }
             return res.status(200).json(result);
-          });
+          });}else{
+            return res.status(200).json('you are not autorized!');
+          }
     }
     
