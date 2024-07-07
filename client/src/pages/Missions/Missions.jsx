@@ -5,6 +5,8 @@ import { Select, Option, Button, Input, Typography, Card, CardHeader, CardBody, 
 import { MagnifyingGlassIcon, PlusIcon, TrashIcon, PencilIcon } from "@heroicons/react/24/solid";
 import { IoFilter } from "react-icons/io5";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import {useAuth} from "../../hooks/useAuth"
+import useVerifyRole from "../../hooks/useVerifyRoles"
 
 const TABS = [
   { label: "All", value: "all" },
@@ -15,6 +17,8 @@ const TABS = [
 ];
 
 const MissionCard = ({ mission, onEdit, onDelete, keyword }) => {
+  const {user} = useAuth();
+  const isAdmin = useVerifyRole("admin"); 
   const getStatusStyles = (status) => {
     switch (status) {
       case 'inProgress':
@@ -61,9 +65,12 @@ const MissionCard = ({ mission, onEdit, onDelete, keyword }) => {
           <Button className='text-black bg-transparent shadow-none' onClick={() => onEdit(mission)}>
             <PencilIcon stroke="1" className="h-5 w-5 mr-1"/> 
           </Button>
-          <Button className='text-black bg-transparent shadow-none' onClick={() => onDelete(mission)}>
-            <TrashIcon className="h-5 w-5 mr-1"/> 
-          </Button>
+          {isAdmin && 
+                <Button className='text-black bg-transparent shadow-none' onClick={() => onDelete(mission)}>
+                <TrashIcon className="h-5 w-5 mr-1"/> 
+              </Button>
+          }
+        
         </div>
       </CardBody>
     </Card>
@@ -74,16 +81,18 @@ const Missions = () => {
   const { status } = useParams();
   const [stat, setStat] = useState(status || 'all');
   const [missions, setMissions] = useState([]);
+  const {user} = useAuth(); 
   // const [openFilter, setOpenFilter] = useState(false);
   // const [searchBy, setSearchBy] = useState("");
   const [value, setValue] = useState("");
   // const filterMenuRef = useRef(null); 
   // const filterButtonRef = useRef(null); 
   const [deletedMission, setDeletedMission] = useState(false);
+  const isAdmin = useVerifyRole("admin"); 
   const navigate = useNavigate();  
   useEffect(()=>{console.log(missions)},[missions]);
   useEffect(() => {
-   
+     console.log(isAdmin);
     fetchData();
   }, [stat, deletedMission]);
   
@@ -206,12 +215,16 @@ const Missions = () => {
             {/* <Button size="sm" text="view all" className="button bg-background text-black border border-black hover:bg-gray-50">
               View All
             </Button> */}
-            <Link to="create">  
-              <Button className="button " size="sm" onClick={handleCreateMission}>
-                <PlusIcon strokeWidth={6} className="h-4 w-4" />
-                Add mission
-              </Button>
-            </Link>
+            {isAdmin && 
+            
+              <Link to="create">  
+                <Button className="button " size="sm" onClick={handleCreateMission}>
+                  <PlusIcon strokeWidth={6} className="h-4 w-4" />
+                  Add mission
+                </Button>
+              </Link>
+              } 
+          
           </div>
         </div>
         <div className="flex flex-wrap items-center justify-between gap-1 gap-y-4">

@@ -12,6 +12,7 @@ import { useAuth } from "../hooks/useAuth";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Spinner, select } from "@material-tailwind/react";
+import useVerifyRole from "../hooks/useVerifyRoles"
 
 export default function Calendar() {
   const [responsables, setResponsables] = useState([]);
@@ -31,7 +32,7 @@ export default function Calendar() {
   });
   const [selectedEvent, setSelectedEvent] = useState(null);
   const { user } = useAuth();
-
+  const isAdmin   = useVerifyRole("admin"); 
   useEffect(() => {
     fetchMeetings();
     fetchResponsables();
@@ -234,6 +235,7 @@ export default function Calendar() {
                 </div>
               </div>
             ) : (
+              isAdmin ? 
               <FullCalendar 
                 timeZone="UTC"
                 plugins={[dayGridPlugin, interactionPlugin, timeGridPlugin]}
@@ -252,7 +254,27 @@ export default function Calendar() {
                 select={handleSelection}
                 drop={(data) => addEvent(data)}
                 eventClick={(data) => handleEventClick(data)}
-              />
+              />    
+              : 
+              <FullCalendar 
+              timeZone="UTC"
+              plugins={[dayGridPlugin, interactionPlugin, timeGridPlugin]}
+              headerToolbar={{
+                left: "prev,next today",
+                center: "title",
+                right: "timeGridDay,timeGridWeek,dayGridMonth",
+              }}
+              events={allEvents}
+              nowIndicator={true}
+              editable={true}
+              droppable={true}
+              selectable={true}
+              selectMirror={true}
+              // dateClick={handleDateClick}
+              // select={handleSelection}
+              // drop={(data) => addEvent(data)}
+              eventClick={(data) => handleEventClick(data)}
+            />                 
             )}
           </div>   
         </div>
@@ -307,14 +329,14 @@ export default function Calendar() {
                           as="h3"
                           className="text-base font-semibold leading-6 text-gray-900"
                         >
-                          View Event
+                          View Meeting
                         </Dialog.Title>
                         <div className="mt-2">
                           <p className="text-sm text-gray-500">
                             {selectedEvent && selectedEvent.title}
                           </p>
-                          <p className="text-sm text-gray-500">
-                            {selectedEvent && selectedEvent.start.toISOString()}
+                          <p className="text-sm font-bold text-gray-700">
+                            {selectedEvent &&  selectedEvent.start.toISOString().slice(0, 19).replace('T', ' ')}
                           </p>
 
                           <p className="text-sm text-gray-500">
@@ -333,22 +355,25 @@ export default function Calendar() {
                         </div>
                       </div>
                     </div>
-                    <div className="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
-                      <button
-                        type="button"
-                        className="inline-flex w-full justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:col-start-2 sm:text-sm"
-                        onClick={handleDelete}
-                      >
-                        Delete
-                      </button>
-                      <button
-                        type="button"
-                        className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-1 sm:mt-0 sm:text-sm"
-                        onClick={handleEdit}
-                      >
-                        Edit
-                      </button>
-                    </div>
+                    {isAdmin && 
+                     <div className="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
+                     <button
+                       type="button"
+                       className="inline-flex w-full justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:col-start-2 sm:text-sm"
+                       onClick={handleDelete}
+                     >
+                       Delete
+                     </button>
+                     <button
+                       type="button"
+                       className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-1 sm:mt-0 sm:text-sm"
+                       onClick={handleEdit}
+                     >
+                       Edit
+                     </button>
+                   </div>
+                    }
+                   
                   </Dialog.Panel>
                 </Transition.Child>
               </div>
@@ -404,7 +429,7 @@ export default function Calendar() {
                           as="h3"
                           className="text-base font-semibold leading-6 text-gray-900"
                         >
-                          Create Event
+                          Create Meeting
                         </Dialog.Title>
                         <div className="mt-2">
                           <form onSubmit={handleSubmit}>

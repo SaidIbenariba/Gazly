@@ -66,6 +66,7 @@ const Sidebar = () => {
     { title: "Missions", path: "missions", src: <MdOutlineWork /> },
     { title: "tasks", path: "tasks", src: <FaTasks /> },
     { title: "Espaces", path: "espaces", src: <FaMap /> },
+    {title:"Observations", path:"observations", src: <FaMap/>}, 
     {
       title: "Profile",
       path: `/profile`,

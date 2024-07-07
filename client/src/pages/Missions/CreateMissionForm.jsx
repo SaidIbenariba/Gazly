@@ -41,8 +41,8 @@ const CreateMissionForm = () => {
     options: [
         { label: "InProgress", value: "inProgress" },
         { label: "InReview", value: "inReview" },
-        { label: "InHold", value: "inHold" },
-        { label: "Completed", value: "completed" },
+        { label: "OnHold", value: "onHold" },
+        { label: "Completed", value:"completed" },
       ],
     },
     {

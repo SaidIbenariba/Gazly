@@ -4,13 +4,18 @@
   import axios from 'axios';
   import Form from '../../components/form';
 import { Spinner } from '@material-tailwind/react';
+import { useAuth } from '../../hooks/useAuth';
+import useVerifyRole from '../../hooks/useVerifyRoles';
   const EditMissionForm = () => { 
     const {start, id_dir, id_resp} = useParams(); 
+    const {user} = useAuth(); 
     const [err,setErr] = useState({exist:false, msg:""}); 
     const [loading, setLoading] = useState(false); 
+    const isAdmin = useVerifyRole("admin"); 
       const [responsables, setResponsables] = useState([]); 
       // const [responsables, setResponsables] = useState([{ id: 1, name: "said" }]);
-      const [mission, setMission] = useState({
+      const [mission, setMission] = useState(
+        isAdmin ? {
           start: start,
           end: "",
           title: "",
@@ -18,8 +23,10 @@ import { Spinner } from '@material-tailwind/react';
           status: "",
           id_dir: id_dir,
           id_resp: id_resp
+        } : {
+          status:""
         });
-        const missionFields = [
+        const missionFields =  isAdmin ? [ 
           // { label: "Start Date", name: "start", type: "date" },
           { label: "End Date", name: "end", type: "date" },
           { label: "Title", name: "title" },
@@ -29,7 +36,7 @@ import { Spinner } from '@material-tailwind/react';
             options: [
               { label: "InProgress", value: "inProgress" },
               { label: "InReview", value: "inReview" },
-              { label: "InHold", value: "inHold" },
+              { label: "OnHold", value: "onHold" },
               { label: "Completed", value: "completed" },
             ],
           },
@@ -37,6 +44,16 @@ import { Spinner } from '@material-tailwind/react';
           //   label: "Responsable", name: "id_resp", inputType: "select",
           //   options: responsables.map(responsable => ({ label: responsable.name, value: responsable.id }))
           // }
+        ]:[
+          {
+            label: "Status", name: "status", inputType: "select",
+            options: [
+              { label: "InProgress", value: "inProgress" },
+              { label: "InReview", value: "inReview" },
+              { label: "OnHold", value: "onHold" },
+              { label: "Completed", value: "completed" },
+            ],
+          },
         ];
         const nav = useNavigate(); 
         
@@ -64,7 +81,8 @@ import { Spinner } from '@material-tailwind/react';
     },[start, id_resp,id_dir])
 
     const handleEditMission = (formData) => {
-      axios
+      if(isAdmin) { 
+        axios
         .put(`http://localhost:5000/api/missions/edit/${start}/${id_dir}/${id_resp}`, formData)
         .then((res) => {
           console.log("Mission updated successfully:", res);
@@ -75,6 +93,20 @@ import { Spinner } from '@material-tailwind/react';
           // setMission({});
         })
         .catch((err) => console.log("Error creating mission:", err));
+      }else { 
+        axios
+        .put(`http://localhost:5000/api/missions/edit/${start}/${id_dir}/${id_resp}`, formData)
+        .then((res) => {
+          console.log("Mission updated successfully:", res);
+          // Update missions state with the newly created mission
+          nav("/private/missions");  
+          // setMission([...missions, res.data]);  
+          // Reset form values.
+          // setMission({});
+        })
+        .catch((err) => console.log("Error creating mission:", err));
+      }
+    
     };
     const handleChange = (value, fieldName) =>{ 
       setMission({ ...mission, [fieldName]: value });
