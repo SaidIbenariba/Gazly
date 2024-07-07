@@ -1,13 +1,6 @@
 import { format } from "mysql";
 import { db } from "../connect_db.js";
-export const respSearch = (req, res) => {
-  // console.log(req.params);
-  const q = `SELECT * FROM meeting WHERE id_Admin = ? `;
-  db.query(q, [req.params.id_Admin], (err, result) => {
-    if (err) return res.status(500).json(err);
-    return res.status(200).json(result);
-  });
-};
+
 export const createMeeting = (req, res) => {
   if (req.role === "admin") {
     // Convert boolean allDay to integer 
@@ -16,8 +9,8 @@ export const createMeeting = (req, res) => {
     if(end) { 
       end = end.slice(0, 19).replace('T', ' ');
     }
-    
     const start = req.body.start; 
+
     const sql =
       "INSERT INTO meeting (`start`, `end`, `title`, `description`, `id_resp`, `id_dir`, `allDay`) VALUES (?, ?, ?, ?, ?, ?, ?)";
     const newMeeting = [
@@ -43,11 +36,10 @@ export const createMeeting = (req, res) => {
 };
 
 export const editMeeting = (req, res) => {
-  const {start,end,id_resp} = req.params; 
-  const startFormat = start.slice(0, 19).replace('T', ' ');
-  const endFormat =       end.slice(0, 19).replace('T', ' '); 
-  const q =
-    "UPDATE meeting SET title=?, description=?,id_resp = ?, id_dir = ?  WHERE start = ? AND end = ? AND id_resp = ?  ";
+  if (req.role === "admin") {
+    
+   q =
+    "UPDATE meeting SET start=?,end=?,title=?, description=?,id_resp =?, id_dir=?  WHERE id_resp= ? ";
   const values = {
     Duree: req.body.duree,
     Description: req.body.description,
@@ -57,17 +49,21 @@ export const editMeeting = (req, res) => {
   db.query(q, values, (err, result) => {
     if (err) return res.sendStatus(500);
     return res.status(200).json(result);
-  });
+  });} else {
+    res.status(555).json({ error: "You are not authorized" });
+  }
 };
 export const deleteMeeting = (req, res) => {
-  const { start, id_resp } = req.params;
-  console.log("no formated date"); 
+  if (req.role === "admin") {
+     
+      q='';
+      
+  const { start, end, id_resp } = req.params;
+  const startFormat =  formatDateString(start);
+  const endFormat = formatDateString(end);
   
-  const startFormat = start.slice(0, 19).replace('T', ' ');
-  console.log(startFormat);  
-  console.log(id_resp);
-  const q = "DELETE FROM meeting WHERE start = ? AND id_resp = ?";
-  db.query(q, [startFormat, id_resp], (err, result) => {
+   q = "DELETE FROM meeting WHERE start = ? AND end = ? AND id_resp = ?";
+  db.query(q, [startFormat, endFormat, id_resp], (err, result) => {
     if (err) {
       console.error("Database query error: ", err);
       return res.sendStatus(500);
@@ -76,7 +72,9 @@ export const deleteMeeting = (req, res) => {
       return res.status(404).json({ error: "Meeting not found" });
     }
     return res.status(200).json({ success: "Meeting deleted successfully" });
-  });
+  });} else {
+    res.status(555).json({ error: "You are not authorized" });
+  }
 };
 export const getMeetings = (req, res) => {
   const userId = req.id;
@@ -95,14 +93,9 @@ export const getMeetings = (req, res) => {
         console.error("Database query error: ", err);
         return res.status(500).json("Cannot connect to database");
       }
-  
-      const formattedResults = results.map((row) => ({
-        ...row,
-        allDay: row.allDay == "0"?false:true,
-        // user: `${row.firstname || ''} ${row.lastname || ''}`.trim(),
-      }));
+      
       console.log(results); 
-      return res.json(formattedResults);
+      return res.json(results);
     });
   } else {
     return res.status(400).json("Missing required parameter: id_dir or id_resp");
@@ -186,21 +179,5 @@ export const getAllMeetingsById = (req, res) => {
       .json("Missing required parameter: id_dir or id_resp");
   }
 };
-function formatDateString(dateString) {
-  const options = {
-    timeZone: 'UTC',
-    hour12: false,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit'
-  };
-  
-  const formatter = new Intl.DateTimeFormat('en-US', options);
-  
-  const convertedDate = formatter.format(dateString);
- 
-  return convertedDate;
-}
+
+

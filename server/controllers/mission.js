@@ -1,18 +1,19 @@
 import { db } from "../connect_db.js";
 
 export const deleteMission = (req, res) =>{
-  const {start, id_dir, id_resp} = req.params; 
-  const userRole = req.role; 
-  // only admin can delete
-  if(userRole == "admin") { 
+  if (req.role === "admin") {
 
-  const sql = "DELETE FROM mission WHERE start = ? AND id_dir = ?  AND id_resp = ?"
+      sql='';
+      
+  const {start, id_dir, id_resp} = req.params; 
+if(userRole=='admin'){
+   sql = "DELETE FROM mission WHERE start = ? AND id_dir = ?  AND id_resp = ?"}
   db.query(sql,[start,id_dir, id_resp],(err,result)=>{
     if(err) return res.sendStatus(400); 
     return res.json({succes:"missions was deleted"}) ;
-  })
-  console.log(req.params); 
-}
+  })} else {
+    res.status(403).json({ error: "You are not authorized" });
+  }
 }
 export const getMissionCounts = (req, res) => {
   const userId = req.id;
@@ -161,12 +162,11 @@ console.log(userId)
   });
 };*/
 export const createMission = (req, res) => {
-  const userId=req.id;
-  const userRole = req.role ; 
-  // console.log(userId); 
-  // can admin only create a new mission 
-  if( userRole == "admin") {  
-  const sql = `
+      const userId = req.id;
+      const userRole = req.role; 
+      sql='';
+      if(userRole=='admin'){
+   sql = `
   INSERT INTO mission (start, end, title, description, id_dir, id_resp)
   VALUES (?, ?, ?, ?, ?, ?)
 `;
@@ -177,7 +177,7 @@ const newMission = {
   description: req.body.description,
   id_dir: userId,
   id_resp: Number(req.body.id_resp),
-}; 
+};} 
    console.log('SQL Query:', newMission);
 
   db.query(sql, [...Object.values(newMission)], (err, result) => {
@@ -185,38 +185,33 @@ const newMission = {
     return res.status(200).json({ succes: `New Mission created ` });
     
   });
-}else { 
-  return res.json("Except director can create mission"); 
-}
 };
     export const editMission = (req, res) => {
-       // 
-       const userRole = req.role; 
-       // reponsable  
-       // body { status}
-       // params   id_dir: req.params.id_dir,
-           // start: req.params.start, 
-            // id_resp: req.params.id_resp,
-        if(userRole == "admin"){  
-
-        }else { 
-        const q =
-          "UPDATE mission SET end=?, description=?,title=?,status=?  WHERE id_dir = ? AND start = ? AND id_resp = ?";
-        const values = {
+      let q = "";
+      let values ={};
+      if (req.role === "admin") {
+         q ="UPDATE mission SET end=?, description=?,title=?,status=?  WHERE id_dir = ? AND start = ? AND id_resp = ?";
+           values = {
             end: req.body.end,
             description: req.body.description,
             title:req.body.title,
             status: req.body.status,
             id_dir: req.params.id_dir,
             start: req.params.start, 
+            id_resp: req.params.id_resp, 
+          };}else if(req.role=='responsable') {
+            q ="UPDATE mission SET status=?  WHERE id_dir = ? AND start = ? AND id_resp = ?";
+             values = {
+            status: req.body.status,
+            id_dir: req.params.id_dir,
+            start: req.params.start, 
             id_resp: req.params.id_resp,
           };
-          console.log([...Object.values(values)]); 
+          }
         db.query(q, [...Object.values(values)], (err, result) => {
             if (err) return res.status(400).json(err);  
             return res.status(200).json(result);
           });
-        }
     };
     export const missionSearch = (req, res) => {
       const userId = req.id;

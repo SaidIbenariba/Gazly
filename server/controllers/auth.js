@@ -139,8 +139,7 @@ export const login = async (req, res) => {
       },
       process.env.ACCES_TOKEN_SECRET,
       {
-        expiresIn: "12h", 
-        //// just for demo, in real app you need to increase it
+        expiresIn: "1h", //// just for demo, in real app you need to increase it
       }
     );
 

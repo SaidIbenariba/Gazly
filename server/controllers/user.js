@@ -70,9 +70,9 @@ export const createUser = (req, res) => {
     
     const userId = result.insertId;
     let insertDirecteurQuery='';
-      if(userRole == "admin"){
+      if(userRole==admin){
         insertDirecteurQuery = 'INSERT INTO director(id) VALUES (?)';
-      }else if(userRole == "responsable"){
+      }else if(userRole==respensable){
          insertDirecteurQuery = 'INSERT INTO respensable(id) VALUES (?)';
       }else{
          insertDirecteurQuery = 'INSERT INTO ouvrier(id) VALUES (?)';

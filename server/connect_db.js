@@ -5,11 +5,12 @@ export const db = mysql.createConnection({
   port: "3306", // change in your local code not here
   user: "root",
   password: "",
-  database: "pfe_project",
-  timezone: 'utc'
+  database: "pfe-project",
+  timezone: "UTC",
 });
 db.connect((err) => {    
   if (err) console.log(err);
   else 
   console.log("Connected to MySQL database");
 });
+  
