@@ -21,6 +21,8 @@ import "react-toastify/dist/ReactToastify.css";
 import TaskEditModal from "./TaskEditModal"; // Import the modal component
 import TaskAddModal from "./TaskAddModal";
 import { TrashIcon, PencilIcon } from "@heroicons/react/24/outline";
+import { useAuth } from "../../hooks/useAuth";
+import useVerifyRole from "../../hooks/useVerifyRoles";
 
 const TABS = [
   { label: "All", value: "all" },
@@ -30,6 +32,7 @@ const TABS = [
 ];
 
 const TasksTable = () => {
+  const {user} = useAuth(); 
   const [tasks, setTasks] = useState([]);
   const [selectedTask, setSelectedTask] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -39,7 +42,7 @@ const TasksTable = () => {
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState("all");
   const [hoveredTask, setHoveredTask] = useState(null);
-
+  const isResponsable = useVerifyRole("responsable"); 
   const tableHeads = ["Date", "Duree", "Description", "Status", "Actions"];
 
   useEffect(() => {
@@ -175,9 +178,12 @@ const TasksTable = () => {
               View All
             </Button>
             {/* <Link to="create"> */}
-            <Button className="button" size="sm" text="Add Task" onClick={() => setIsAddModalOpen(true)}>
-              Add Task
-            </Button>
+            {isResponsable && 
+             <Button className="button" size="sm" text="Add Task" onClick={() => setIsAddModalOpen(true)}>
+             Add Task
+           </Button>
+            }
+           
             {/* </Link> */}
           </div>
         </div>
@@ -247,26 +253,30 @@ const TasksTable = () => {
                         {task.description} 
                       </Typography>
                     </div>
-                    <div
-                      className={`flex space-x-2 transition-opacity duration-300 ${
-                        hoveredTask === task.id_ouv ? "opacity-100" : "opacity-0"
-                      }`}
-                    >
-                      <Button
-                        size="sm"
-                        onClick={() => handleEdit(task)}
-                        className="bg-blue-400 text-white hover:bg-blue-600"
-                      >
-                        <PencilIcon className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        onClick={() => handleDelete(task.id_ouv)}
-                        className="bg-red-400 text-white hover:bg-red-600"
-                      >
-                        <TrashIcon className="w-4 h-4" />
-                      </Button>
-                    </div>
+                    {isResponsable &&
+                     <div
+                     className={`flex space-x-2 transition-opacity duration-300 ${
+                       hoveredTask === task.id_ouv ? "opacity-100" : "opacity-0"
+                     }`}
+                   >
+                      
+                     <Button
+                       size="sm"
+                       onClick={() => handleEdit(task)}
+                       className="bg-blue-400 text-white hover:bg-blue-600"
+                     >
+                       <PencilIcon className="w-4 h-4" />
+                     </Button>
+                     <Button
+                       size="sm"
+                       onClick={() => handleDelete(task.id_ouv)}
+                       className="bg-red-400 text-white hover:bg-red-600"
+                     >
+                       <TrashIcon className="w-4 h-4" />
+                     </Button>
+                   </div>
+                    }
+                   
                   </div>
                   <Typography
                     variant="caption"

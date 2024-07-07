@@ -35,6 +35,8 @@ export const getTasksForResp = (req, res) => {
   };
   export const createTask = (req, res) => {
     // if(req.role == "responsable") { 
+    
+    if()
     const sql ="INSERT INTO task (date,`duree`,`description`,`id_ouv`,`id_resp`) VALUE(?,?,?,?,?) ";
     const newTache = {
       date:req.body.date, 

@@ -54,6 +54,7 @@ export const editMeeting = (req, res) => {
     id_Admin: req.body.id_Admin,
     id_resp: req.body.id_resp,
   };
+  console.log(values); 
   db.query(q, values, (err, result) => {
     if (err) return res.sendStatus(500);
     return res.status(200).json(result);
