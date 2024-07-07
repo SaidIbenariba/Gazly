@@ -10,7 +10,11 @@ export const createAffectation = (req, res) =>{
       return res.status(500).json({ error: err.message });
  
     }
+
     
     return res.json({ message: 'Affectation created successfully', result });
   });
 }
+export const getAffectations = (req, res) =>{
+  const query ='0';
+} 

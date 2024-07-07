@@ -1,17 +1,15 @@
 import { db } from "../connect_db.js";
 export const WorkSpacesWithoutRes = (req, res) => {
-  const q = `SELECT w.*, a.* FROM workspace w LEFT JOIN affectation a ON w.id = a.id_ws AND a.end < CURDATE()`;
+  const q = `SELECT distinct(w.name),w.*,distinct(a.id_ws) a.* FROM workspace w LEFT JOIN affectation a ON w.id = a.id_ws AND a.end < CURDATE()`;
 
 db.query(q, (err, result) => {
   if (err) {
-    console.log(err);
     return res.status(500).json(err);
   }
   const Data = result.map((row) => ({
     ...row,
     position: [row.x, row.y]
   }));
-  console.log(Data);
   return res.status(200).json(Data);
 });
 }
@@ -20,36 +18,26 @@ export const getWorkSpace = (req, res) => {
 
   db.query(q, (err, result) => {
     if (err) {
-      console.log(err);   
        return res.status(500).json(err);
     } 
     const Data = result.map((row) => ({
       ...row, 
       position: [row.x, row.y]
     }));
-    console.log(Data);
     return res.status(200).json(Data);
   });
 };
 export const getWorkSpaceHistoric = (req, res) => {
-  const q = `SELECT  a.*,u.* FROM affectation w INNER JOIN user u ON a.id_resp = u.id WHERE id_ws=?`;
-
+  const q = `SELECT  a.*,u.* FROM affectation a INNER JOIN users u ON a.id_resp = u.id WHERE id_ws=?`;
+console.log('hi');    
   db.query(q,req.params.id_ws, (err, result) => {
     if (err) return res.status(500).json(err);
-
-    
-
-    /*const Data = result.map((row) => ({
-      ...row, 
-    }));*/
-
-    return res.status(200).json(Data);
+    return res.status(200).json(result);
   });
 };
 
   
   export const WorkSpaceSearchByResp = (req, res) => {
-    // console.log(req.params);
     const q = `SELECT * FROM Meeting WHERE id_resp = ? `;
     db.query(q, [req.params.id_resp], (err, result) => {
       if (err) return res.status(500).json(err);
@@ -57,7 +45,6 @@ export const getWorkSpaceHistoric = (req, res) => {
     });
   };
   export const WorkSpaceSearchByName = (req, res) => {
-    // console.log(req.params);
     const q = `SELECT * FROM workspace WHERE name = ? `;
     db.query(q, [req.params.name], (err, result) => {
       if (err) return res.status(500).json(err);
@@ -88,7 +75,7 @@ export const getWorkSpaceHistoric = (req, res) => {
           });
     };
     export const deleteWorkSpace = (req, res) => {
-        const q = "DELETE FROM WorkSpace WHERE WorkSpacenb= ? ";
+        const q = "DELETE FROM WorkSpace WHERE id= ? ";
         db.query(q, req.params.WorkSpacenb, (err, result) => {
           if (err) return res.sendStatus(500);
           return res.status(200).json(result);
@@ -97,7 +84,7 @@ export const getWorkSpaceHistoric = (req, res) => {
     /*export const WorkSpaces = (req, res) => {
         const sql = "SELECT ws.*,r.firstname,r.lastname FROM workspace ws INNER JOIN users r ON  ws.id_resp= r.id";
         db.query(sql,(err, workSpaces) => {
-          if (err) console.log(err); 
+          if (err) 
           const formattedResults = workSpaces.map(row => ({
             ...row,
             position:[

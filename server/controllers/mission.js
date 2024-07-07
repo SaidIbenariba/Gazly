@@ -177,14 +177,16 @@ const newMission = {
   description: req.body.description,
   id_dir: userId,
   id_resp: Number(req.body.id_resp),
-};} 
+}; 
    console.log('SQL Query:', newMission);
 
   db.query(sql, [...Object.values(newMission)], (err, result) => {
     if (err) {console.log(err);  return res.status(500).json(err); } 
     return res.status(200).json({ succes: `New Mission created ` });
     
-  });
+  });}else{
+    
+  }
 };
     export const editMission = (req, res) => {
       let q = "";
