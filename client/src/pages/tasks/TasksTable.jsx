@@ -134,8 +134,8 @@ const TasksTable = () => {
       return t;
     });
     setTasks(updatedTasks);
-
-    axios
+    if(isResponsable) { 
+      axios
       .put(`http://localhost:5000/api/tasks/edit/${task.date}/${task.id_ouv}/${task.id_resp}`, {
         status: task.status === "completed" ? "inProgress" : "completed",
         description: task.description,
@@ -145,6 +145,17 @@ const TasksTable = () => {
       .catch((err) => {
         console.error("Failed to update task status", err);
       });
+    }else { 
+      axios
+      .put(`http://localhost:5000/api/tasks/edit/${task.date}/${task.id_ouv}/${task.id_resp}`, {
+        status: task.status === "completed" ? "inProgress" : "completed",
+      })
+      .then((res) => console.log("Task updated successfully", res))
+      .catch((err) => {
+        console.error("Failed to update task status", err);
+      });
+    }
+ 
   };
 
   const handleMouseEnter = (task) => {

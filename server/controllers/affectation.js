@@ -14,3 +14,6 @@ export const createAffectation = (req, res) =>{
     return res.json({ message: 'Affectation created successfully', result });
   });
 }
+export const getAffectations = (req, res) =>{
+  
+}

@@ -35,8 +35,7 @@ export const getTasksForResp = (req, res) => {
   };
   export const createTask = (req, res) => {
     // if(req.role == "responsable") { 
-    
-    if()
+
     const sql ="INSERT INTO task (date,`duree`,`description`,`id_ouv`,`id_resp`) VALUE(?,?,?,?,?) ";
     const newTache = {
       date:req.body.date, 
@@ -77,7 +76,17 @@ export const getTasksForResp = (req, res) => {
             id_resp,
             date,
     ];  
-  } 
+  } else { 
+    q =
+    "UPDATE task SET status = ? WHERE id_ouv= ? AND id_resp= ? AND date = ? ";
+    console.log("update task with this values");
+     values = [
+      req.body.status,
+      id_ouv,
+      id_resp,
+      date,
+];  
+  }
         db.query(q, values, (err, result) => {
             if (err)  {console.log(err);return res.sendStatus(500); } 
             return res.status(200).json(result);
