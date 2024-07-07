@@ -51,22 +51,40 @@ export const getTasksForResp = (req, res) => {
     });}
     };
     export const editTask = (req, res) => {
-      if (req.role === "admin") {
-
-        const q =
-          "UPDATE Task SET duree=?, description=?, WHERE id_ouv= ? A  ND id_resp= ?";
-        const values = {
-            Duree: req.body.duree,
-            Description: req.body.description,
-            id_ouv: req.params.id_ouv,
-            id_resp: req.params.id_resp,
-          };  
+      const {id_ouv,id_resp,date} = req.params; 
+      const userRole = req.role ; 
+      const userId = req.id; 
+      // responsable can crud task
+      // but ouvrier can only check task (status);
+      let q =""; 
+      let values=[];
+      if(userRole === "responsable" || userRole == "admin") {
+        q =
+          "UPDATE task SET duree=?,status = ?, description=? WHERE id_ouv= ? AND id_resp= ? AND date = ? ";
+          console.log("update task with this values");
+           values = [
+            req.body.duree,
+            req.body.status,
+            req.body.description,
+            id_ouv,
+            id_resp,
+            date,
+    ];  
+  } else { 
+    q =
+    "UPDATE task SET status = ? WHERE id_ouv= ? AND id_resp= ? AND date = ? ";
+    console.log("update task with this values");
+     values = [
+      req.body.status,
+      id_ouv,
+      id_resp,
+      date,
+];  
+  }
         db.query(q, values, (err, result) => {
             if (err) return res.sendStatus(500);
             return res.status(200).json(result);
-          });} else {
-    res.status(403).json({ error: "You are not authorized" });
-  }
+          });
     };
     export const deleteTask = (req, res) => {
         const q = "DELETE FROM Task WHERE id_ouv= ? ";

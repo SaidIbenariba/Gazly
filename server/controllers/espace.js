@@ -15,7 +15,7 @@ db.query(q, (err, result) => {
 }
 export const getWorkSpace = (req, res) => {
   const q = `SELECT w.*, a.* FROM workspace w LEFT JOIN affectation a ON w.id = a.id_ws AND a.end >= CURDATE()`;
-
+  // return id_resp of  current responsable of this workspace
   db.query(q, (err, result) => {
     if (err) {
        return res.status(500).json(err);
