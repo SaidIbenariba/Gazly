@@ -75,31 +75,38 @@ export const getObservations = (req, res) => {
     });
   };
   export const getObservationsDash = (req, res) => {
-    const sql = "SELECT o.* FROM observation o ORDER BY date ASC";
-    db.query(sql, (err, results) => {
-      if (err) {
-        return res.status(500).json("Cannot connect to database:getObservationsDash");
-      }
-  
+    const sql = `
+        SELECT o.*, u.firstname, u.lastname, w.name AS workspace_name, w.id AS id_ws
+        FROM observation o 
+        JOIN users u ON o.id_resp = u.id 
+        LEFT JOIN workspace w ON o.id_WS = w.id
+        ORDER BY o.date ASC
+    `;
     
-      function formatDate(dateStr) {
-        const date = new Date(dateStr);
-        const year = date.getFullYear();
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-      }
-  
-      const formattedResults = results.map(row => ({
-        ...row,
-        date: formatDate(row.date),
+    db.query(sql, (err, results) => {
+        if (err) {
+            return res.status(500).json("Cannot connect to database: getObservationsDash");
+        }
+
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            const year = date.getFullYear();
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        const formattedResults = results.map(row => ({
+            ...row,
+            date: formatDate(row.date),
+        }));
         
-      })); 
-      console.log("observations:"+formattedResults)
-  
-      return res.json(formattedResults);
+        console.log("observations:", formattedResults);
+
+        return res.json(formattedResults);
     });
-  };
+};
+
   // export const getObservationsOfWorkSpace = (req, res) => {
   //   const sql = `SELECT o.*, ws.name AS workspace_name, ws.x, ws.y, u.firstname, u.lastname 
   //                FROM observation o 

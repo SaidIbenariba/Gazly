@@ -2,13 +2,13 @@ import { db } from "../connect_db.js";
 import bcrypt from "bcryptjs";
 
 export const getUser = (req, res) => {
-  // console.log(req.params);
-  const q = `SELECT * FROM users WHERE id = ?`;
-  db.query(q, req.params.userId, (err, result) => {
+  const q = `SELECT firstname, lastname, email, role, refreshToken FROM users WHERE id = ?`;
+  db.query(q, [req.params.userId], (err, result) => {
     if (err) return res.status(500).json(err);
     return res.status(200).json(result);
   });
 };
+
 export const search = (req, res) => {
   // console.log(req.params);
   console.log("search box"); 

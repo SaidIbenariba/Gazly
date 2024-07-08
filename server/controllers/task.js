@@ -35,16 +35,20 @@ export const getTasksForResp = (req, res) => {
   };
   export const createTask = (req, res) => {
     if(req.role == "responsable") { 
-  
+    console.log(req.body);
     const sql ="INSERT INTO task (date,`duree`,`description`,`id_ouv`,`id_resp`) VALUE(?,?,?,?,?) ";
     const newTache = {
+      date:req.body.date,
       Duree: req.body.duree,
       Description: req.body.description,
       id_ouv: req.body.id_ouv,
-      id_resp: req.body.id_resp,
+      id_resp: req.id,
     };
-    db.query(sql, [Object.values(newTache)], (err, result) => {
-      if (err) return res.status(500).json(err);
+    console.log(newTache);
+    db.query(sql, [...Object.values(newTache)], (err, result) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json(err); }
       return res
         .status(200)
         .json({ succes: `New tache created ` });
@@ -108,7 +112,7 @@ export const getTasksForResp = (req, res) => {
         queryParams = [id_ouv,date,id_resp]; 
   }else if (status) {
     console.log("search with status");  
-    if (userRole == "admin") { 
+    if (userRole == "responsable") { 
       sql =
         "SELECT * FROM task WHERE id_resp = ? AND status = ?";
     } else if (userRole == "ouvrier") {
@@ -118,7 +122,7 @@ export const getTasksForResp = (req, res) => {
     queryParams = [userId, status];
   } else {
     console.log("get all tasks depend on user "); 
-    if (userRole == "admin") {
+    if (userRole == "responsable") {
       sql =
         "SELECT * FROM task WHERE id_resp = ? ";
     } else if (userRole == "ouvrier") {
@@ -129,12 +133,11 @@ export const getTasksForResp = (req, res) => {
   } 
   console.log(sql); 
   console.log(queryParams);     
-      db.query(sql,[queryParams], (err, tasks) => {
+      db.query(sql,[...queryParams], (err, tasks) => {
         if (err) {
-          //console.error("Tasks database query error: ", err);
+          console.error("Tasks database query error: ", err);
           return res.status(500).json({ error: "Cannot connect to database" });
         }
-    
         const formatDate = (mysqlDate) => {
           const jsDate = new Date(mysqlDate);
           const year = jsDate.getFullYear();

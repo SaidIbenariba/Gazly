@@ -36,32 +36,50 @@ const MissionCard = ({ status, number }) => {
     </div>
   );
 };
-const ObservationCard = ({observation} ) => {
-  console.log(observation);
+const formateDate = (datetimeString) => { 
+  const timeOnly = String(datetimeString).substring(11, 16);
+  return timeOnly;
+}
+const ObservationCard = ({ observation }) => {
+//   const [loading, setLoading] = useState(false);
+//   const [responsable, setResponsable] = useState("")
+//   console.log(observation);
+//   useEffect(()=>{
+//     setLoading(true);
+//  axios.get(`http://localhost:5000/api/users/read/${observation.id_resp}`)
+//  .then((res)=>{
+//   console.log(res);
+//   setResponsable(res.date[0].firstname + " " +res.date[0].lastname);
+//  }).catch((err)=>console.log(err))
+//  .finally(()=>setLoading(false));
+//   })
+//   useEffect(()=>{
+//     console.log(responsable);
+//   },[responsable]); 
+// const nav = useNavigate();
+// // const handleOnClick = ()=>{
+// //   nav("/private/missions/"+ observation.id)
+// // }
   return (
-    <div className="max-w-md mx-auto h-[50px] bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl">
-      <div className="md:flex">
-        <div className="md:flex-shrink-0">
-          <img
-            className="h-48 w-full object-cover md:h-full md:w-48"
-            src="https://plus.unsplash.com/premium_photo-1661962751752-cbf6a170c837?w=1000&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8b2JzZXJ2YXRpb24lMjBmYWN0b3J5fGVufDB8fDB8fHww"
-            alt="Observation"
-          />
-        </div>
-        <div className="p-8">
-          <div className="uppercase tracking-wide text-sm text-indigo-500 font-semibold">
-            Observation
+      <div className="bg-white rounded-xl shadow-md mb-2 ">
+      <div className="md:flex-shrink-0">
+        <div className="p-4 flex flex-row gap-2 justify-between items-center">
+          <div className="flex flex-col">
+          <p className="mt-2 text-gray-700"> {observation.firstname} : </p>
+          <p className="mt-2 text-gray-700"> {observation.
+workspace_name} : </p>
           </div>
-          <p className="mt-2 text-gray-500">{observation.id_resp}</p>
-          <p className="mt-2 text-gray-500">{observation.feedback}</p>
-          <div className="mt-4">
-            <a href="#" className="text-indigo-600 hover:text-indigo-500">
-              View more
-            </a>
-          </div>
+          <p className="mt-2 text-gray-700"> {observation.feedback}</p> 
+          <span
+        className="flex text-white justify-center items-center bg-black h-5 w-5 rounded-full cursor-pointer"
+        // onClick={handleOnClick}
+      >
+        <BsThreeDots />
+      </span>
         </div>
-      </div>
     </div>
+  </div>
+
   );
 };
 
@@ -206,9 +224,11 @@ const Dashboard = () => {
             
             {/* </div> */}
             
-            <Card className="flex flex-col p-2 gap-1 w-fit overflow-scroll-y h-[500px]">
-              <h2 className="text-md font-semibold mb-2">Observation List</h2>
+            <Card className="flex flex-col p-2 gap-1 w-full max-h-80 overflow-y-auto">
+             
+            <h2 className="text-md font-semibold mb-2">Observation List</h2>
               {/* Observations and Feedback: Include a section for observations and feedback collected from different sources, such as workers `responsable when done a observation can make feedback */}
+              <div className="flex flex-col p-2 gap-1 w-full max-h-80 overflow-y-auto">
               {observations.length == 0 ? 
               (
                 <p className="font-thin text-red-500 bg-red-100 rounded-md">There are no Observations</p>
@@ -224,6 +244,7 @@ const Dashboard = () => {
 })
               )
             }
+            </div>
             </Card>
             <Card className="flex flex-col p-2 gap-1 w-fit h-fit">
               <div className="text-xs font-semi-bold text-yellow-400">
@@ -241,7 +262,7 @@ const Dashboard = () => {
                     >
                       <PiLineVertical size className="h-10  text-blue-400" />
                       <div
-                        className="flex flex-row gap-10 items-center "
+                        className="flex flex-row gap-10 items-center"
                         id="event-description"
                       >
                         <span className=" text-sm font-bold" id="title">
@@ -251,8 +272,9 @@ const Dashboard = () => {
                           className=" text-[10px] font-extralight flex flex-col"
                           id="duration"
                         >
-                          <span>{meet.start}</span> {/* Start  date  */}
-                          <span>{meet.end}</span> {/**13:45 */}
+                          
+                          <span>{formateDate(meet.start)}</span> {/* Start  date  */}
+                          <span>{formateDate(meet.end)}</span> {/**13:45 */}
                           {/* End  date  */}
                         </div>
                       </div>

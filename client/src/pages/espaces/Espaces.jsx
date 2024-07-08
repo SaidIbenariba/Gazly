@@ -50,11 +50,12 @@ const Espaces = () => {
             const Espaces = Promise.all(
                 res.data.map(async (espace) => {
                   try {
-                    const res = await axios.get(`http://localhost:5000/api/users/read/${espace.id_resp}`);
-                    return { ...espace, ...res.data[0] };
+                    console.log(espace);
+                    const response = await axios.get(`http://localhost:5000/api/users/read/${espace.id_resp}`);
+                    return { ...espace, ...response.data[0]};
                   } catch (err) {
                     console.log(err);
-                    return { ...value }; // Return the original value if there's an error
+                    return { ...espace }; // Return the original value if there's an error
                   }
                 })
               );
@@ -76,11 +77,14 @@ const Espaces = () => {
     function handleDelete(id) {
         axios.delete("http://localhost:5000/api/workspaces/delete/  "+id)
         .then((res)=>{
-            toast.success("User deleted successfully!");
+            toast.success("workspace deleted successfully!");
         }).catch((err)=>{
-            toast.error("Failed to delete user.");
+            toast.error("Failed to delete workspace.");
         }); 
         fetchEspaces();
+    }
+    function handleHistory() {
+      
     }
   return ( 
     <Card className="h-full w-full" shadow={false}>
@@ -189,7 +193,7 @@ const Espaces = () => {
               </tr>
             ) : (
               espaces.map((espace, index) => (
-                <tr key={index}>
+                <tr key={index} onClick={handleHistory} className='cursor-pointer'>
                   <td className="p-4 border-b border-blue-gray-50">
                     <div className="flex items-center gap-3">
                       <Typography

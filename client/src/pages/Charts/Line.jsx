@@ -3,58 +3,56 @@ import axios from "axios";
 import {
   Card,
   CardBody,
-  CardHeader,
   Typography,
   Select,
   Option,
 } from "@material-tailwind/react";
 import Chart from "react-apexcharts";
 
-// If you're using Next.js, use the dynamic import for react-apexcharts and remove the import from the top for react-apexcharts
-// import dynamic from "next/dynamic";
-// const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
-
 const getRandomElement = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
 const Line = () => {
-  const [chartData, setChartData] = useState([
-    50, 40, 300, 320, 500, 350, 200, 230, 500,
-  ]); // Default data
-  const [espaces, setEspaces] = useState([]);
-  const [sensors, setSensors] = useState([]);
-  const [selectedEspace, setSelectedEspace] = useState("");
-  const [selectedSensor, setSelectedSensor] = useState("");
+  const [chartData, setChartData] = useState([]); // State to hold chart data
+  const [espaces, setEspaces] = useState([]); // State for workspaces
+  const [sensors, setSensors] = useState([]); // State for sensors
+  const [selectedEspace, setSelectedEspace] = useState(""); // Selected workspace
+  const [selectedSensor, setSelectedSensor] = useState(""); // Selected sensor
+  const [selectedEspaceName, setSelectedEspaceName] = useState(""); // Name of selected workspace
+  const [selectedSensorName, setSelectedSensorName] = useState(""); // Name of selected sensor
 
+  // Fetch all workspaces on component mount
   useEffect(() => {
     const fetchEspaces = async () => {
       try {
-        const response = await axios.get(`http://localhost/api/espaces`);
-        const espacesData = response.data;
-        setEspaces(espacesData);
-        if (espacesData.length > 0) {
-          const randomEspace = getRandomElement(espacesData);
-          setSelectedEspace(randomEspace.id);
+        const response = await axios.get("http://localhost:5000/api/workspaces");
+        setEspaces(response.data);
+        if (response.data.length > 0) {
+          const randomEspace = getRandomElement(response.data);
+          // console.log(randomEspace);
+          setSelectedEspace(randomEspace.id.toString());
+          setSelectedEspaceName(randomEspace.name);
         }
       } catch (error) {
-        console.error("Error fetching espaces: ", error);
+        console.error("Error fetching workspaces: ", error);
       }
     };
 
     fetchEspaces();
   }, []);
 
+  // Fetch sensors when selectedEspace changes
   useEffect(() => {
     if (selectedEspace) {
       const fetchSensors = async () => {
         try {
           const response = await axios.get(
-            `http://localhost/api/espaces/${selectedEspace}/sensors`
+            `http://localhost:5000/api/sensors/workspace/${selectedEspace}`
           );
-          const sensorsData = response.data;
-          setSensors(sensorsData);
-          if (sensorsData.length > 0) {
-            const randomSensor = getRandomElement(sensorsData);
-            setSelectedSensor(randomSensor.id);
+          setSensors(response.data);
+          if (response.data.length > 0) {
+            const randomSensor = getRandomElement(response.data);
+            setSelectedSensor(randomSensor.id.toString());
+            setSelectedSensorName(randomSensor.type);
           }
         } catch (error) {
           console.error("Error fetching sensors: ", error);
@@ -65,14 +63,16 @@ const Line = () => {
     }
   }, [selectedEspace]);
 
+  // Fetch data when selectedSensor changes
   useEffect(() => {
     if (selectedSensor) {
       const fetchData = async () => {
         try {
           const response = await axios.get(
-            `http://localhost/api/sensor/${selectedSensor}`
+            `http://localhost:5000/api/measures/sensor/${selectedSensor}`
           );
-          setChartData(response.data.gazlevel); // Assuming the API returns an object with a gazlevel array
+          const data = response.data.map((measure) => measure.gazlvl);
+          setChartData(data);
         } catch (error) {
           console.error("Error fetching data: ", error);
         }
@@ -82,13 +82,19 @@ const Line = () => {
     }
   }, [selectedSensor]);
 
-  const handleEspaceChange = (event) => {
-    setSelectedEspace(event.target.value);
-    setSelectedSensor("");
+  // Handle change in selected workspace
+  const handleEspaceChange = (value) => {
+    setSelectedEspace(value);
+    setSelectedSensor(""); // Clear selected sensor when workspace changes
+    const selectedEspaceObj = espaces.find((espace) => espace.id === value);
+    setSelectedEspaceName(selectedEspaceObj ? selectedEspaceObj.name : "");
   };
 
-  const handleSensorChange = (event) => {
-    setSelectedSensor(event.target.value);
+  // Handle change in selected sensor
+  const handleSensorChange = (value) => {
+    setSelectedSensor(value);
+    const selectedSensorObj = sensors.find((sensor) => sensor.id === value);
+    setSelectedSensorName(selectedSensorObj ? selectedSensorObj.type : "");
   };
 
   const chartConfig = {
@@ -96,7 +102,7 @@ const Line = () => {
     height: 240,
     series: [
       {
-        name: "Level",
+        name: "Gaz Level",
         data: chartData,
       },
     ],
@@ -107,148 +113,92 @@ const Line = () => {
         },
       },
       title: {
-        text: "Gaz history",
+        text: "Gaz History",
+        align: "left",
       },
       dataLabels: {
         enabled: false,
       },
-      colors: ["#020617"],
       stroke: {
-        lineCap: "round",
         curve: "smooth",
       },
-      markers: {
-        size: 0,
-      },
       xaxis: {
-        axisTicks: {
-          show: false,
-        },
-        axisBorder: {
-          show: false,
-        },
-        labels: {
-          style: {
-            colors: "#616161",
-            fontSize: "12px",
-            fontFamily: "inherit",
-            fontWeight: 400,
-          },
-        },
-        categories: [
-          "12 AM",
-          "1 AM",
-          "2 AM",
-          "3 AM",
-          "4 AM",
-          "5 AM",
-          "6 AM",
-          "7 AM",
-          "8 AM",
-          "9 AM",
-          "10 AM",
-          "11 AM",
-          "12 PM",
-          "1 PM",
-          "2 PM",
-          "3 PM",
-          "4 PM",
-          "5 PM",
-          "6 PM",
-          "7 PM",
-          "8 PM",
-          "9 PM",
-          "10 PM",
-          "11 PM",
-        ],
+        categories: Array.from({ length: 24 }, (_, i) => {
+          const hour = i % 12 === 0 ? 12 : i % 12;
+          const period = i < 12 ? "AM" : "PM";
+          return `${hour} ${period}`;
+        }),
       },
       yaxis: {
-        labels: {
-          style: {
-            colors: "#616161",
-            fontSize: "12px",
-            fontFamily: "inherit",
-            fontWeight: 400,
-          },
+        title: {
+          text: "Gaz Level",
         },
-      },
-      grid: {
-        show: true,
-        borderColor: "#dddddd",
-        strokeDashArray: 5,
-        xaxis: {
-          lines: {
-            show: true,
-          },
-        },
-        padding: {
-          top: 5,
-          right: 20,
-        },
-      },
-      fill: {
-        opacity: 0.8,
-      },
-      tooltip: {
-        theme: "dark",
       },
     },
   };
 
   return (
-    <Card className="w-full md:w-auto">
-      <CardHeader
-        floated={false}
-        shadow={false}
-        color="transparent"
-        className="flex flex-col gap-4 rounded-none md:flex-row md:items-center"
-      >
-        <div>
-          <Typography variant="h6" color="blue-gray">
-            Gaz Historique
-          </Typography>
-          <Typography
-            variant="small"
-            color="gray"
-            className="max-w-sm font-normal"
-          >
-            Evolution of gaz
-          </Typography>
+    <Card>
+      <CardBody>
+        <div className="flex flex-col gap-4 md:flex-row md:items-center">
+          <div>
+            <Typography variant="h6" color="blue-gray">
+              Gaz History
+            </Typography>
+            <Typography variant="small" color="gray">
+              Evolution of Gaz Levels
+            </Typography>
+          </div>
+          <div className="flex gap-4">
+            <Select
+              value={selectedEspaceName}
+              onChange={handleEspaceChange}
+              label="Select Workspace"
+              title="said"
+            >
+              <Option value="">Select a Workspace</Option>
+              {espaces.map((espace) => (
+                <Option key={espace.id} value={espace.id}>
+                  {espace.name}
+                </Option>
+              ))}
+            </Select>
+            <Select
+              value={selectedSensorName}
+              onChange={handleSensorChange}
+              label="Select Sensor"
+              disabled={!selectedEspace}
+            >
+              <Option value="">Select a Sensor</Option>
+              {sensors.map((sensor) => (
+                <Option key={sensor.id} value={sensor.id}>
+                  {sensor.type}
+                </Option>
+              ))}
+            </Select>
+          </div>
         </div>
-        <div className="flex gap-4">
-          <Select
-            value={selectedEspace}
-            onChange={handleEspaceChange}
-            label="Select Espace"
-          >
-            <Option value="" disabled>
-              Select an espace
-            </Option>
-            {espaces.map((espace) => (
-              <Option key={espace.id} value={espace.id}>
-                {espace.name}
-              </Option>
-            ))}
-          </Select>
-          <Select
-            value={selectedSensor}
-            onChange={handleSensorChange}
-            label="Select Sensor"
-            disabled={!selectedEspace}
-          >
-            <Option value="" disabled>
-              Select a sensor
-            </Option>
-            {sensors.map((sensor) => (
-              <Option key={sensor.id} value={sensor.id}>
-                {sensor.name}
-              </Option>
-            ))}
-          </Select>
+        {/* Show selected workspace and sensor names */}
+        {selectedEspaceName && selectedSensorName && (
+          <div className="mt-4">
+            <Typography variant="body1" color="blue-gray">
+              Selected Workspace: {selectedEspaceName}
+            </Typography>
+            <Typography variant="body1" color="blue-gray">
+              Selected Sensor: {selectedSensorName}
+            </Typography>
+          </div>
+        )}
+        <div className="mt-4">
+          {/* Conditionally render the chart based on chartData */}
+          {chartData.length > 0 ? (
+            <Chart {...chartConfig} />
+          ) : (
+            <Typography variant="body2" color="gray">
+              No data available for selected sensor.
+            </Typography>
+          )}
         </div>
-      </CardHeader>
-      <CardBody className="px-2 pb-0">
-        <Chart {...chartConfig} />
       </CardBody>
     </Card>
   );

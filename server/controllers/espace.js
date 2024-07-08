@@ -15,37 +15,52 @@ db.query(q, (err, result) => {
 });
 }
 export const getWorkSpace = (req, res) => {
-  if (req.role === "admin") {
+  if (req.role == "admin" || req.role == "responsable") {
+    const id_ws = req.params.id_ws;
+    const id_resp = req.params.id_resp;
+    let q = "";
+    let queryParams = [];
 
-  const id_ws = req.params.id_ws; 
-  const id_resp = req.params.id_resp; 
-  let q = ""; 
-  let queryParams = [];  
-  
-  if(id_resp) {
-    q = `SELECT w.*, a.* FROM workspace w LEFT JOIN affectation a ON w.id = a.id_ws AND a.end >= CURDATE() WHERE id_resp=?`;
-     queryParams =[id_resp];
-  }else if(id_ws) { 
-    q = `SELECT w.*, a.* FROM workspace w LEFT JOIN affectation a ON w.id = a.id_ws AND a.end >= CURDATE() WHERE a.id_ws=?`;
-     queryParams =[id_ws];
-  }else {
-   q = `SELECT w.*, a.* FROM workspace w LEFT JOIN affectation a ON w.id = a.id_ws AND a.end >= CURDATE() `;
-  }
-  db.query(q,queryParams, (err, result) => {
-    if (err) {
-       return res.status(500).json(err);
-    } 
-    const Data = result.map((row) => ({
-      ...row, 
-      position: [row.x, row.y]
-    }));
-    console.log('query:',Data);
+    if (id_resp) {
+      q = `SELECT w.id, w.name, a.start, a.end, a.id_resp 
+           FROM workspace w 
+           LEFT JOIN affectation a ON w.id = a.id_ws AND a.end >= CURDATE() 
+           WHERE a.id_resp = ?`;
+      queryParams = [id_resp];
+    } else if (id_ws) {
+      q = `SELECT w.id, w.name, a.start, a.end, a.id_resp 
+           FROM workspace w 
+           LEFT JOIN affectation a ON w.id = a.id_ws AND a.end >= CURDATE() 
+           WHERE w.id = ?`;
+      queryParams = [id_ws];
+    } else {
+      q = `SELECT w.id, w.name, a.start, a.end, a.id_resp 
+           FROM workspace w 
+           LEFT JOIN affectation a ON w.id = a.id_ws AND a.end >= CURDATE()`;
+    }
 
-    return res.status(200).json(Data);
-  });}else{
-    return res.status(555).json('you are not autorized!');
+    db.query(q, queryParams, (err, result) => {
+      if (err) {
+        return res.status(500).json(err);
+      }
+
+      const Data = result.map((row) => ({
+        id: row.id,
+        name: row.name,
+        start: row.start,
+        end: row.end,
+        id_resp: row.id_resp
+      }));
+      console.log('query:', Data);
+
+      return res.status(200).json(Data);
+    });
+  } else {
+    console.log("you are not authorized!");
+    return res.status(555).json('you are not authorized!');
   }
 };
+
 export const getWorkSpaceHistoric = (req, res) => {
   const q = `SELECT  a.*,u.* FROM affectation a INNER JOIN users u ON a.id_resp = u.id WHERE id_ws=?`;
 console.log('hi');    
