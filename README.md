@@ -43,13 +43,20 @@ This project involves the development of a web application for managing operatio
 
 ## System Modeling
 ### Sketches
-### Diagrams 
+![Sketches](/client/public/sketch2.jpeg)
+![Sketches](/client/public/sketch1.jpeg)
+
+### Diagrams
+
 #### Use Case Diagram 
 ![Diagrams](/client/public/usecase.jpg) 
+
 #### Class Diagram 
 ![Diagrams](/client/public/class.jpg) 
+
 #### Sequence Diagram 
 ![Diagrams](/client/public/sequence.jpg) 
+
 ### Technologies Used
 - **Frontend:** React
 - **Backend:** Node.js
