@@ -42,7 +42,14 @@ This project involves the development of a web application for managing operatio
 3. **Implementation:** Developing the web application with a focus on usability and security.
 
 ## System Modeling
-
+### Sketches
+### Diagrams 
+#### Use Case Diagram 
+![Diagrams](/client/public/usecase.jpg) 
+#### Class Diagram 
+![Diagrams](/client/public/class.jpg) 
+#### Sequence Diagram 
+![Diagrams](/client/public/sequence.jpg) 
 ### Technologies Used
 - **Frontend:** React
 - **Backend:** Node.js
@@ -82,10 +89,16 @@ Here are some screenshots of the application:
 ![Dashboard](/client/public/dashboard.png)
 
 ### Task Management
-![Task Management](images/task_management.png)
+![Task](/client/public/tasks.png)
 
-### Sensor Monitoring
-![Sensor Monitoring](images/sensor_monitoring.png)
+### Sensors 
+![Sensor Monitoring](/client/public/MQ2.jpg)
+#### MQ2 
+![Sensors](/client/public/MQ2.jpg) 
+#### MQ9 
+![Sensors](/client/public/MQ9.jpg) 
+#### ESP32 Montage
+![Montage](/client/public/montage.jpg) 
 
 ## Conclusion
 The web application developed in this project provides a robust solution for managing a gas plant, ensuring efficiency, safety, and effective communication among different user roles. Future improvements could include additional features and further optimization of the system.
