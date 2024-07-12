@@ -1,46 +1,97 @@
+# Gas Plant Management Web Application
 
-# Laboratory Gas Monitoring Website Project
+## Overview
+This project is part of the final year studies for the Bachelor’s degree in Computer Science at the Faculty of Sciences in Rabat. The aim of this project is to design and develop a modern web application for managing a gas plant, optimizing plant operations, and integrating various user roles.
+
+## Project Title
+**Conception et Réalisation d’une Application Web pour une Usine de Gaz**
+
+## Authors
+- **Wakkar Iliass**
+- **Ibenariba Said**
+
+## Supervisors
+- **Mme. Ikram Belhajem**, Professor at the Faculty of Sciences - Rabat
+- **Mme. Hdioud Ferdaous**, Professor at the Faculty of Sciences - Rabat
+
+## Table of Contents
+1. [Introduction](#introduction)
+2. [Project Context](#project-context)
+3. [System Modeling](#system-modeling)
+4. [Project Implementation](#project-implementation)
+5. [Screenshots](#screenshots)
+6. [Conclusion](#conclusion)
+7. [Keywords](#keywords)
+8. [Acknowledgements](#acknowledgements)
+
 ## Introduction
-Welcome to the showcase of our latest project aimed at building a comprehensive website for laboratories to organize their information and monitor for toxic gas leaks. This README provides an overview of the project's objectives, features, and technologies utilized.
+This project involves the development of a web application for managing operations in a gas plant. The application is designed to provide different functionalities based on user roles, including director, manager, and worker.
 
-## Project Overview
-Our goal with this project was to develop a user-friendly platform where laboratories can efficiently organize their data and stay informed about potential toxic gas leaks. The website offers features for data management, monitoring, and collaboration, ensuring laboratory safety and compliance with regulations.
+## Project Context
 
-## Objectives
-Create a centralized platform for laboratories to manage their information effectively.
-Implement a monitoring system to detect and alert users about toxic gas leaks.
-Provide intuitive data visualization tools for easy analysis.
-Facilitate collaboration among laboratory staff for better communication and response to safety incidents.
-Ensure compliance with safety regulations and standards.
-## Features
-### Dashboard:
-Overview of recent activities, alerts, and important notifications.
-Quick access to key functionalities and data summaries.
-### Data Management:
-Tools for organizing laboratory information, including equipment inventory, experiment logs, and safety protocols.
-Customizable forms for inputting and updating data.
-### Toxic Gas Monitoring:
-Integration with gas sensors and detectors to monitor for toxic gas leaks in real-time.
-Automated alerts via email or SMS in case of detected leaks.
-Historical data tracking and analysis to identify trends and patterns.
-### Data Visualization:
-Interactive charts and graphs to visualize gas concentration levels over time.
-Heatmaps to identify areas with high gas concentration or frequent leaks.
-### Collaboration Tools:
-Discussion forums and messaging features for laboratory staff to communicate and share information.
-Task management and assignment tools for coordinating safety protocols and response plans.
-### Compliance Tracking:
-Tools to track regulatory compliance requirements and deadlines.
-Reminders and notifications for upcoming inspections or safety audits.
-User Authentication and Access Control:
-Secure login system with role-based access control to ensure data privacy and confidentiality.
-Different levels of access permissions for administrators, researchers, and technicians.
-## Technologies Used
-Frontend: HTML5, CSS3, Tailwind, JavaScript (React.js)
-Backend: Node.js, Express.js, 
-Database: Mysql
-Real-time Monitoring: ?
-Authentication: JSON Web Tokens (JWT)
-Data Visualization: D3.js, Chart.js
-Collaboration Tools: Git
-Deployment: Vite , (for scalability)
+### Objectives
+- **Optimize Management:** The main goal is to streamline the management of the gas plant operations.
+- **User Role Integration:** Different user roles have access to different functionalities:
+  - **Director:** Overview of all plant activities.
+  - **Manager:** Daily operations management.
+  - **Worker:** Access to assigned tasks and safety instructions.
+
+### Project Phases
+1. **Requirement Extraction:** Analyzing specific needs from the initial specifications.
+2. **Modeling:** Defining technical specifications and user interfaces using appropriate modeling tools.
+3. **Implementation:** Developing the web application with a focus on usability and security.
+
+## System Modeling
+
+### Technologies Used
+- **Frontend:** React
+- **Backend:** Node.js
+- **Database:** MySQL
+- **Real-Time Monitoring:** ESP32 board, MQ-2, and MQ-9 gas sensors
+- **Communication:** HTTP.POST for data transmission
+
+### Key Features
+- **Assignment Management**
+- **Observations and Mission Tracking**
+- **Meeting Scheduling**
+- **Sensor Data Monitoring**
+- **Task Management**
+
+## Project Implementation
+
+### Development Environment
+- **Hardware:** ESP32, MQ-2, MQ-9 sensors
+- **Software:** Arduino, WampServer
+- **Programming Languages:** C++, JavaScript (Node.js, React.js)
+- **Styling:** Tailwind CSS
+
+### Application Overview
+- **Authentication:** Secure login for different user roles.
+- **User Management:** Add, edit, and delete users.
+- **Task and Mission Management:** Create, assign, and track tasks and missions.
+- **Sensor Monitoring:** Real-time data collection and monitoring of gas levels.
+- **History Tracking:** Access historical data for analysis.
+
+## Screenshots
+Here are some screenshots of the application:
+
+### Login Page
+![Login Page](/client/public/login.png)
+
+### Dashboard
+![Dashboard](/client/public/dashboard.png)
+
+### Task Management
+![Task Management](images/task_management.png)
+
+### Sensor Monitoring
+![Sensor Monitoring](images/sensor_monitoring.png)
+
+## Conclusion
+The web application developed in this project provides a robust solution for managing a gas plant, ensuring efficiency, safety, and effective communication among different user roles. Future improvements could include additional features and further optimization of the system.
+
+## Keywords
+gas, React, Node.js, MySQL, ESP32, MQ-2, MQ-9, UML
+
+## Acknowledgements
+We would like to thank our supervisor Mme. Ikram Belhajem for her guidance and support, as well as all the professors at the Faculty of Sciences, Rabat, and our families and friends for their invaluable support.
