@@ -25,35 +25,24 @@ export const stopAffectation = (req, res) => {
       });
   });
 };
-export const createAffectation = (req, res) => {
+export const createAffectation = (req, res) =>{ 
   const { start, end, id_ws, id_resp } = req.body;
+const query = 'INSERT INTO affectation (start, end, id_ws, id_resp) VALUES (?, ?, ?, ?)';
+db.query(query, [start, end, id_ws, id_resp], (err, result) => {
+  if (err) {
+    console.log("error occur in affectation"); 
+    console.log(err); 
+  return res.status(500).json({ error: err.message });
 
-  const query2 = `SELECT * FROM affectation WHERE id_resp = ? AND end > CURDATE()`;
-  db.query(query2, [id_resp], (err, result) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
+}
+// check if this work space have already a responsable 
+// if already have send res.status(400).json({message:"workspace already have a reponsable "})
+// same with responsable can affected to a workspace, if he was already responsable  
 
-    if (result.length > 0) {
-      const Data = result[0];
-      const query1 = 'UPDATE affectation SET end = CURDATE() WHERE start = ? AND end = ? AND id_resp = ?';
-      db.query(query1, [Data.start, Data.end, id_resp], (err, result) => {
-        if (err) {
-          return res.status(400).json({ message: "Workspace already has a responsible person" });
-        }
-      });
-      
-    }
-console.log(start, end, id_ws, id_resp) 
-    const query = 'INSERT INTO affectation (start, end, id_ws, id_resp) VALUES (?, ?, ?, ?)';
-    db.query(query, [start, end, id_ws, id_resp], (err, result) => {
-      if (err) {
-        return res.status(500).json({ error: err.message });
-      }
-      return res.status(200).json({ message: "Affectation created successfully" });
-    });
-  });
-};
+
+return res.json({ message: 'Affectation created successfully', result });
+})}; 
+
 export const getAffectations = (req, res) =>{
   let q ='';
   if(req.role=='admin'){

@@ -421,7 +421,7 @@ CREATE TABLE IF NOT EXISTS `workspace` (
 --
 
 INSERT INTO `workspace` (`id`, `name`, `x`, `y`) VALUES
-(1, 'Workspace 1', 34.0229, -6.84165),
+(1, 'Workspace 1', 34.0229, -6.
 (2, 'Workspace 2', 34.0208, -6.84288),
 (3, 'Workspace 3', 34.0234, -6.8551),
 (4, 'Workspace 4', 34.024, -6.842),

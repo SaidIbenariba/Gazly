@@ -1,7 +1,9 @@
 import { format } from "mysql";
 import { db } from "../connect_db.js";
+import { query } from "express";
 
 export const createMeeting = (req, res) => {
+  
   if (req.role === "admin") {
     // Convert boolean allDay to integer 
     const allDay = req.body.allDay ? '1' : '0';
@@ -25,7 +27,10 @@ export const createMeeting = (req, res) => {
     console.log(newMeeting); 
     db.query(sql, newMeeting, (err, result) => {
       if (err) {
-        console.log(err);
+        console.log(err); 
+        if(err.errno == 1062){
+          return res.status(500).json({error:"you can't add meet for same responsable"}); 
+        }
         return res.status(500).json(err);
       }
       return res.status(200).json({ success: "New Meeting created" });
@@ -48,7 +53,10 @@ export const editMeeting = (req, res) => {
   };
   console.log(values); 
   db.query(q, values, (err, result) => {
-    if (err) return res.sendStatus(500);
+    if (err) {
+    
+       return res.sendStatus(500)
+    }
     return res.status(200).json(result);
   });} else {
     res.status(555).json({ error: "You are not authorized" });
@@ -56,15 +64,23 @@ export const editMeeting = (req, res) => {
 };
 export const deleteMeeting = (req, res) => {
   if (req.role === "admin") {
-     
-      q='';
-      
   const { start, end, id_resp } = req.params;
-  const startFormat =  formatDateString(start);
-  const endFormat = formatDateString(end);
-  
-   q = "DELETE FROM meeting WHERE start = ? AND end = ? AND id_resp = ?";
-  db.query(q, [startFormat, endFormat, id_resp], (err, result) => {
+  const startFormat = start.slice(0, 19).replace('T', ' ');
+  const endFormat = end ? end.slice(0, 19).replace('T', ' ') : null;
+  console.log(startFormat,end,id_resp,req.id);
+
+   let  q = ""; 
+   let queryParams = []; 
+if(end) {
+  q = "DELETE FROM meeting WHERE start = ? AND id_resp = ? AND id_dir = ?";
+  queryParams = [startFormat, id_resp, req.id]; 
+}else {
+  q = "DELETE FROM meeting WHERE start = ? AND end = ? AND id_resp = ? AND id_dir = ?";
+  queryParams = [startFormat,endFormat,id_resp, req.id];
+} 
+console.log(queryParams);
+console.log(q);
+  db.query(q, queryParams, (err, result) => {
     if (err) {
       console.error("Database query error: ", err);
       return res.sendStatus(500);
@@ -80,28 +96,64 @@ export const deleteMeeting = (req, res) => {
 export const getMeetings = (req, res) => {
   const userId = req.id;
   const userRole = req.role;
-  let sql = `SELECT * FROM meeting WHERE`;
-  
-  if (userRole == "admin") {
-    sql += " id_dir = ?";
-  } else if (userRole == "responsable") {
-    sql += " id_resp = ?";
-  }
+  const { start, end, id_resp } = req.params;
 
-  if (userId) {
-    db.query(sql, [userId], (err, results) => {  // Passed userId as an array
-      if (err) {
-        console.error("Database query error: ", err);
-        return res.status(500).json("Cannot connect to database");
-      }
-      
-      console.log(results); 
-      return res.json(results);
-    });
+  // Format start and end dates
+  const startFormat = start ? start.slice(0, 19).replace('T', ' ') : null;
+  const endFormat = end ? end.slice(0, 19).replace('T', ' ') : null;
+
+  let q = "";
+  let queryParams = [];
+
+  if (userRole === "admin") {
+    if (start && !end && id_resp) {
+      q = "SELECT * FROM meeting WHERE start = ? AND end = ? AND id_resp = ? AND id_dir = ?";
+      queryParams = [startFormat, endFormat, id_resp, userId];
+    } else if (start && id_resp) {
+      q = "SELECT * FROM meeting WHERE start = ? AND id_resp = ? AND id_dir = ?";
+      queryParams = [startFormat, id_resp, userId];
+    } else {
+      q = "SELECT * FROM meeting WHERE id_dir = ?"; 
+      queryParams = [userId]; 
+    }
+  } else if (userRole === "responsable") {
+    if (start && !end && id_resp) {
+      q = "SELECT * FROM meeting WHERE start = ? AND end = ? AND id_resp = ?";
+      queryParams = [startFormat, endFormat, id_resp];
+    } else if (start && id_resp) {
+      q = "SELECT * FROM meeting WHERE start = ? AND id_resp = ?";
+      queryParams = [startFormat, id_resp];
+    } else {
+      q = "SELECT * FROM meeting WHERE id_resp = ?"; 
+      queryParams = [userId]; 
+    }
   } else {
-    return res.status(400).json("Missing required parameter: id_dir or id_resp");
+    return res.status(403).json("You are not authorized!");
   }
+  console.log(q); 
+  console.log(queryParams);
+  db.query(q, queryParams, (err, results) => {
+    if (err) {
+      console.error("Database query error: ", err);
+      return res.status(500).json("Cannot connect to database");
+    }
+    console.log(results);
+    // Format the results
+    const formattedResults = results.map((row) => ({
+      ...row,
+      start: row.start,
+      end: row.end,
+      user: {
+        firstname: row.firstname,
+        lastname: row.lastname
+      },
+      allDay: row.allDay === "0" ? false : true
+    }));
+    // console.log(formattedResults);
+    return res.json(formattedResults);
+  });
 };
+
 export const Meetings = (req, res) => {
   const userId = req.id;
   const userRole = req.role;
@@ -117,7 +169,7 @@ export const Meetings = (req, res) => {
     ON 
       m.id_resp = r.id 
     WHERE 
-      DATE(m.start) = CURDATE()
+      DATE(m.start) = CURRENT_DATE()
   `;
   
   if (userRole === "admin") {
@@ -125,7 +177,7 @@ export const Meetings = (req, res) => {
   } else if (userRole === "responsable") {
     sql += " AND id_resp = ?";
   }
-
+  
   if (userId) {
     db.query(sql, [userId], (err, results) => { // Pass userId as an array for query parameters
       if (err) {
@@ -134,8 +186,7 @@ export const Meetings = (req, res) => {
       }
 
       const formatDate = (mysqlDate) => {
-        const jsDate = new Date(mysqlDate);
-        return jsDate.toString(); // Format the date to the desired string representation
+        return mysqlDate;
       };
 
       const formattedResults = results.map((row) => ({
@@ -145,7 +196,8 @@ export const Meetings = (req, res) => {
         user: {
           firstname:row.firstname,
           lastname:row.lastname
-        }
+        },
+        allDay:row.allDay === "0"?false: true, 
       }));
 
       console.log(formattedResults);

@@ -80,6 +80,7 @@ const FormField = ({
           }}
           onChange={(e) => handleChange(e.target.value, name)}
           required
+          maxLength={20}
         />
       ) : (
         <Input

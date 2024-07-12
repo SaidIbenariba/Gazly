@@ -1,20 +1,20 @@
 import { db } from "../connect_db.js";
 
 export const deleteMission = (req, res) =>{
-  if (req.role === "admin") {
-
-      sql='';
-      
+  const userRole = req.role;
+  let   sql='';
   const {start, id_dir, id_resp} = req.params; 
 if(userRole=='admin'){
-   sql = "DELETE FROM mission WHERE start = ? AND id_dir = ?  AND id_resp = ?"}
+   sql = "DELETE FROM mission WHERE start = ? AND id_dir = ?  AND id_resp = ?";
+  
   db.query(sql,[start,id_dir, id_resp],(err,result)=>{
     if(err) return res.sendStatus(400); 
     return res.json({succes:"missions was deleted"}) ;
-  })} else {
+  })
+} else {
     res.status(403).json({ error: "You are not authorized" });
   }
-}
+}; 
 export const getMissionCounts = (req, res) => {
   const userId = req.id;
   const userRole = req.role;
@@ -164,11 +164,12 @@ console.log(userId)
 export const createMission = (req, res) => {
       const userId = req.id;
       const userRole = req.role; 
-      sql='';
+      console.log(req.body);
+      let sql='';
       if(userRole=='admin'){
    sql = `
-  INSERT INTO mission (start, end, title, description, id_dir, id_resp)
-  VALUES (?, ?, ?, ?, ?, ?)
+  INSERT INTO mission (start, end, title, description, id_dir, id_resp,status)
+  VALUES (?, ?, ?, ?, ?, ?,?)
 `;
 const newMission = {
   start: req.body.start,
@@ -177,6 +178,7 @@ const newMission = {
   description: req.body.description,
   id_dir: userId,
   id_resp: Number(req.body.id_resp),
+  status:req.body.status,
 }; 
    console.log('SQL Query:', newMission);
 

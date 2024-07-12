@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { XMarkIcon } from '@heroicons/react/24/solid';
 
 const EditObservationModal = ({ observation, onClose, onSave }) => {
   const [feedback, setFeedback] = useState(observation.feedback);
@@ -51,10 +52,10 @@ const EditObservationModal = ({ observation, onClose, onSave }) => {
             className="px-4 py-2 bg-red-500 text-white rounded-lg mr-2"
             onClick={onClose}
           >
-            Cancel
+            <XMarkIcon className='w-4'/>
           </button>
           <button
-            className={`px-4 py-2 bg-green-500 text-white rounded-lg ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={`px-4 py-2 bg-gray-500 text-white rounded-lg ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             onClick={handleSave}
             disabled={loading}
           >

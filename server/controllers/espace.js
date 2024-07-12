@@ -1,15 +1,21 @@
 import { db } from "../connect_db.js";
 export const WorkSpacesWithoutRes = (req, res) => {
-  const q = `SELECT distinct(a.id_ws),w.*, a.* FROM workspace w LEFT JOIN affectation a ON w.id = a.id_ws AND a.end < CURDATE() GROUP BY 
-      w.name`;
-
+  const q = `
+    SELECT w.id, w.name, a.start, a.end, a.id_resp 
+    FROM workspace w
+    LEFT JOIN affectation a 
+    ON w.id = a.id_ws 
+    AND a.start <= CURRENT_TIMESTAMP()
+    AND a.end >= CURRENT_TIMESTAMP()
+    WHERE a.id_ws IS NULL 
+    OR (a.start > CURRENT_TIMESTAMP() OR a.end < CURRENT_TIMESTAMP())
+  `;
 db.query(q, (err, result) => {
   if (err) {
     return res.status(500).json(err);
   }
   const Data = result.map((row) => ({
     ...row,
-    position: [row.x, row.y]
   }));
   return res.status(200).json(Data);
 });
@@ -20,25 +26,41 @@ export const getWorkSpace = (req, res) => {
     const id_resp = req.params.id_resp;
     let q = "";
     let queryParams = [];
-
+    
     if (id_resp) {
       q = `SELECT w.id, w.name, a.start, a.end, a.id_resp 
            FROM workspace w 
-           LEFT JOIN affectation a ON w.id = a.id_ws AND a.end >= CURDATE() 
+           LEFT JOIN affectation a ON w.id = a.id_ws 
            WHERE a.id_resp = ?`;
       queryParams = [id_resp];
     } else if (id_ws) {
       q = `SELECT w.id, w.name, a.start, a.end, a.id_resp 
            FROM workspace w 
-           LEFT JOIN affectation a ON w.id = a.id_ws AND a.end >= CURDATE() 
+           LEFT JOIN affectation a ON w.id = a.id_ws 
            WHERE w.id = ?`;
       queryParams = [id_ws];
     } else {
-      q = `SELECT w.id, w.name, a.start, a.end, a.id_resp 
-           FROM workspace w 
-           LEFT JOIN affectation a ON w.id = a.id_ws AND a.end >= CURDATE()`;
+    
+    q = `SELECT w.id, w.name, a.start, a.end, 
+           CASE 
+             WHEN a.id_resp IS NOT NULL AND a.start <= CURRENT_TIMESTAMP() AND a.end >= CURRENT_TIMESTAMP() THEN a.id_resp
+             ELSE NULL
+           END AS id_resp
+    FROM workspace w
+    LEFT JOIN affectation a 
+    ON w.id = a.id_ws 
+    AND a.start <= CURRENT_TIMESTAMP()
+    AND a.end >= CURRENT_TIMESTAMP()
+    UNION
+    SELECT w.id, w.name, NULL AS start, NULL AS end, NULL AS id_resp
+    FROM workspace w
+    WHERE NOT EXISTS (
+      SELECT 1
+      FROM affectation a
+      WHERE w.id = a.id_ws
+    )`;
     }
-
+    console.log(q);
     db.query(q, queryParams, (err, result) => {
       if (err) {
         return res.status(500).json(err);
@@ -57,9 +79,10 @@ export const getWorkSpace = (req, res) => {
     });
   } else {
     console.log("you are not authorized!");
-    return res.status(555).json('you are not authorized!');
+    return res.status(403).json('you are not authorized!');
   }
 };
+
 
 export const getWorkSpaceHistoric = (req, res) => {
   const q = `SELECT  a.*,u.* FROM affectation a INNER JOIN users u ON a.id_resp = u.id WHERE id_ws=?`;

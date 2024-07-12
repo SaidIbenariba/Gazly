@@ -9,7 +9,7 @@ import { useAuth } from "../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 // import { PiLineVerticalBold } from "react-icons/pi";
 // const formtedDate() { 
-  
+  import {toast, ToastContainer} from "react-toastify"; 
 // }
 const MissionCard = ({ status, number }) => {
   const navigate = useNavigate();
@@ -98,9 +98,9 @@ const Dashboard = () => {
   const { user } = useAuth();
 
   useEffect(() => {
-    console.log(user);
-  }, [user]);
-
+    console.log(meetings);
+  }, [meetings]);
+  const nav = useNavigate();
   useEffect(() => {
     setLoading(true);
     const fetchData = async () => {
@@ -111,7 +111,7 @@ const Dashboard = () => {
         setMissionCounts(missionCountsRes.data);
 
         const meetingsRes = await axios.get(
-          "http://localhost:5000/api/meetings/"
+          "http://localhost:5000/api/meetings/read"
         );
         console.log(meetingsRes.data);
         setMeetings(meetingsRes.data);
@@ -121,24 +121,41 @@ const Dashboard = () => {
         );
         console.log("observaations")
         console.log(observationsRes.data);
-        setObservations(observationsRes.data);
-
+        setObservations(observationsRes.data); 
         const gazLevelRes = await axios.get(
           "http://localhost:5000/api/measures/getLastMeasure"
         );
-        setGazLevel(gazLevelRes.data[0].gazlvl); // Assuming response format
+        console.log(gazLevelRes); 
+        if(gazLevelRes.data[0].gaz_danger == 1) {
+            toast.warning(`gaz_danger in capteur ${gazLevelRes.data[0].id_cap}`); 
+        }
+        setGazLevel(gazLevelRes.data[0].gazlvl); 
+      
       } catch (err) {
         console.error(err);
       } finally {
         setLoading(false);
       }
     };
+    const fetchMeasure = async () =>{
+      try {
+         
+        const gazLevelRes = await axios.get(
+          "http://localhost:5000/api/measures/getLastMeasure"
+        );
+        setGazLevel(gazLevelRes.data[0].gazlvl); 
+      }catch(err) {
+        console.log(err); 
+      }
+    }
     fetchData();
-
-    const interval = setInterval(fetchData, 30000); // Fetch data every 30 seconds
+    
+    const interval = setInterval(fetchData, 1000); // Fetch data every 30 seconds
     return () => clearInterval(interval);
   }, []);
-
+   useEffect(()=>{
+    console.log(gazLevel); 
+   }, [gazLevel]); 
   const date = new Date();
   const days = [
     "SUNDAY",
@@ -167,8 +184,13 @@ const Dashboard = () => {
   const monthName = months[date.getMonth()];
   const dayOfMonth = date.getDate();
   const formattedDate = `${dayName},${dayOfMonth} ${monthName}`;
+  const handleMeetClick = (meet)=>{
+    console.log(meet);
+   nav(`/private/planning/${meet.start}/${meet.id_ws}/${meet.id_resp}`)
+  }
   return (
-    <>
+    <> 
+      <ToastContainer/>
       {console.log("Dashboard conpo nent")}
       <div className="flex flex-col gap-10 justify-center items-center lg:items-start">
         <div className="flex flex-col justify-start items-center md:items-start gap-4">
@@ -257,25 +279,30 @@ const Dashboard = () => {
                 meetings.map((meet) => {
                   return (
                     <Card
-                      className="flex flex-row items-center rounded-none pr-1 justify-start bg-blue-100 shadow-none w-fit"
+                      className="flex flex-row items-center rounded-none pr-1 justify-start bg-blue-100 shadow-none w-full"
                       key={meet.id}
+                      onClick={()=>handleMeetClick(meet)}
                     >
                       <PiLineVertical size className="h-10  text-blue-400" />
                       <div
-                        className="flex flex-row gap-10 items-center"
+                        className="flex flex-row justify-between w-full items-center"
                         id="event-description"
                       >
-                        <span className=" text-sm font-bold" id="title">
+                        <span className=" text-sm font-bold w-2/3 overflow-hidden text-ellipsis" id="title">
                           {meet.title}
                         </span>
                         <div
                           className=" text-[10px] font-extralight flex flex-col"
                           id="duration"
                         >
+                           { meet.end ?
+                           <>
+                          <span className="font-bold">{formateDate(meet.start)}</span> 
+                          <span className="font-bold ">{formateDate(meet.end)}</span> 
+                          </> : 
+                           <span className="font-bold">All Day</span> 
+                           }
                           
-                          <span>{formateDate(meet.start)}</span> {/* Start  date  */}
-                          <span>{formateDate(meet.end)}</span> {/**13:45 */}
-                          {/* End  date  */}
                         </div>
                       </div>
                     </Card>

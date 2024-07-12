@@ -201,7 +201,7 @@ const Missions = () => {
 
   return (
     <Card className="flex flex-col gap-4 h-full w-full relative" shadow={false}>
-      <CardHeader floated={false} shadow={false} className="rounded-none z-50">
+      <CardHeader floated={false} shadow={false} className="rounded-none">
         <div className="mb-8 flex items-center justify-between gap-8">
           <div>
             <Typography variant="h5" color="blue-gray">
@@ -260,7 +260,7 @@ const Missions = () => {
           </div>
         </div>
       </CardHeader>
-      <div className="w-full flex flex-wrap gap-4 relative z-0 mx-5 justify-center lg:justify-start">
+      <div className="w-full flex flex-wrap gap-4 relative mx-5 justify-center lg:justify-start">
         {missions.length === 0 ? (
           <p className="font-thin text-red-500 bg-red-100 rounded-md px-2">no missions</p>
         ) : (

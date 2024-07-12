@@ -15,6 +15,7 @@ import { IoIosRefresh } from "react-icons/io";
 import { FaEdit, FaSave, FaTrash } from "react-icons/fa";
 import axios from "axios"; 
 import { TrashIcon,PencilIcon } from "@heroicons/react/24/outline";
+import { useFetcher } from "react-router-dom";
 // Dummy data for initial display
 const demoSensors = [
   { id: 1, type: "Temperature", id_WS: 101 },
@@ -73,7 +74,9 @@ const SensorTable = () => {
     setEditMode(newSensor.id); // Automatically enter edit mode for the new sensor
     setEditedSensor(newSensor);
   };
-
+  useEffect(()=>{
+    console.log(sensors);
+  },[sensors]);
   return (
     <> 
     { loading ? (<Spinner/>) : ( 
@@ -162,7 +165,7 @@ const SensorTable = () => {
                       onChange={handleChange}
                       className="border p-1"
                       style={{
-                        width: `${String(editedSensor.id_WS).length + 1}ch`,
+                        width: `${String(editedSensor.workspace_name).length + 1}ch`,
                         minWidth: "50px",
                       }}
                     />
@@ -172,7 +175,7 @@ const SensorTable = () => {
                       color="blue-gray"
                       className="font-semibold"
                     >
-                      {sensor.id_WS}
+                      {sensor.workspace_name}
                     </Typography>
                   )}
                 </td>

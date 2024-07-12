@@ -70,20 +70,20 @@ export const createUser = (req, res) => {
     
     const userId = result.insertId;
     let insertDirecteurQuery='';
-      if(userRole==admin){
+      if(userRole=="admin"){
         insertDirecteurQuery = 'INSERT INTO director(id) VALUES (?)';
-      }else if(userRole==respensable){
+      }else if(userRole=="responsable"){
          insertDirecteurQuery = 'INSERT INTO respensable(id) VALUES (?)';
       }else{
          insertDirecteurQuery = 'INSERT INTO ouvrier(id) VALUES (?)';
       }
                 db.query(insertDirecteurQuery, [userId], (err, result) => {
                   if (err) return res.status(500).json(err);
-                  console.log(result); 
+                  
                 });  
-             
-    
-    return res.status(200).json({ succes: `New User  created `,id:userId });
+          return res.status(200).json({ succes: `New User  created `,id:userId });
+      
+  
 
   });
   });

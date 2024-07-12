@@ -33,14 +33,14 @@ const CreateObservationForm = () =>
   // }, []);
     useEffect(()=>{
       axios.get(
-        "http://localhost:5000/api/WorkSpaces"
-      ).then((res) => setEspaces(res.data))
+        "http://localhost:5000/api/workspaces"
+      ).then((res) => {console.log(res.data) ;setEspaces(res.data)})
       .catch((err)=>console.log(err)); 
     },[])
   
   const observationFields = [
-    { label: "Date", name: "date", type: "datetime-local" },   
-    { label: "Feedback", name: "feedback", inputType: "area" },  
+    { label: "Date", name: "date", type: "date" },   
+    { label: "Feedback", name: "feedback",  },  
     // { label: "Status", name: "status", inputType: "select", options: [ { label: "Pending", value: "pending" },{label:"Completed", value:"completed"},{label:"Archive", value:"archive"}] },
     {label: "WorkSpaces", name:"id_ws", inputType:"select" , 
       options: espaces.map(
@@ -63,7 +63,9 @@ const CreateObservationForm = () =>
         setError({ exist: true, msg: err.message });
       });
   };
-
+  const handleChange = (value, fieldName) =>{ 
+    setObservation({ ...observation, [fieldName]: value });
+   }
   return (
     <>
     <div className=" flex flex-col h-[100vh] p-2 items-center">
@@ -82,6 +84,7 @@ const CreateObservationForm = () =>
      fields={observationFields}
      onSubmit={handleCreateObservation}
      initialValues={observation}
+      handleChange={handleChange}
     />
     </div>
     </div>

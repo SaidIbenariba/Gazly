@@ -1,10 +1,11 @@
 import { format } from "mysql";
 import { db } from "../connect_db.js";
+import { query } from "express";
 export const deleteObservation = (req, res) => { 
   const {date, id_ws, id_resp} = req.params; 
-  if (req.role === "repensable"||req.role === "admin") {
+  if (req.role === "responsable"||req.role === "admin") {
     const sql = "DELETE FROM observation WHERE date = ? AND id_ws = ?  AND id_resp = ?"
-  db.query(sql,[date,id_ws, id_resp],(err,result)=>{
+  db.query(sql,[date,id_ws, id_resp],(err,result)=>{  
     if(err) return res.sendStatus(400); 
     return res.json({succes:"observation was deleted"}) ;
   })}
@@ -49,6 +50,8 @@ export const getObservations = (req, res) => {
         queryParams = [userId];
       }
   }
+  console.log(sql);
+  console.log(queryParams);
     db.query(sql,queryParams, (err, results) => {
       if (err) {
          
@@ -173,7 +176,7 @@ export const getObservations = (req, res) => {
     const sql ="INSERT INTO observation (date,`feedback`,`id_ws`,`id_resp`,`status`) VALUE(?,?,?,?,?) ";
     if(userRole == "responsable") { 
     const newObservation = {  
-      date: req.body.date,
+      date: new Date(req.body.date),
       feedback: req.body.feedback,
       id_ws: req.body.id_ws,
       id_resp: userId,
@@ -189,7 +192,7 @@ export const getObservations = (req, res) => {
   } 
     };
     export const editObservation =(req,res) =>{
-      if (req.role === "repensable") {
+      if (req.role === "responsable") {
         let date =req.params.date;
         const dateFormat = date.slice(0, 19).replace('T',' ');
       const q =
@@ -201,12 +204,14 @@ export const getObservations = (req, res) => {
             id_ws: req.params.id_ws,
             id_resp: req.params.id_resp,
           };
-
-          console.log(values); 
+          console.log(values);
         db.query(q, [...Object.values(values)], (err, result) => {
             if (err) {
               console.log(err) ;  
               return res.sendStatus(400); 
+            }
+            if(result.affectedRows == 0){
+              return res.status(400).json('observation not found'); 
             }
             return res.status(200).json(result);
           });}else{

@@ -16,7 +16,7 @@ import {
   Checkbox,
   select,
 } from "@material-tailwind/react";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import TaskEditModal from "./TaskEditModal"; // Import the modal component
 import TaskAddModal from "./TaskAddModal";
@@ -53,16 +53,25 @@ const TasksTable = () => {
     setSelectedTask(task);
     setIsEditModalOpen(true);
   };
-
-  const handleDelete = (id_ouv) => {
-    setTasks(tasks.filter((task) => task.id_ouv !== id_ouv));
+  
+  const handleDelete = (task) => {
+    // setTasks(tasks.filter((t) => t.id_ouv !== task.id_ouv && t.id_resp !== task.id_resp && t.date !== task.date ));
+    axios.delete(`http://localhost:5000/api/tasks/delete/${task.date}/${task.id_resp}/${task.id_ouv}`)
+    .then(res =>{
+      toast.success("task deleted succesfully");  
+      fetchTasks();
+    })
+    .catch(err =>{
+      console.log(err);
+      toast.error("error when delete task");
+    })
   };
 
   const handleSave = (editedTask) => {
     setTasks(tasks.map((task) => (task.date === editedTask.date ? editedTask : task)));
 
     axios
-      .put(`http://localhost:5000/api/tasks/edit/${editedTask.date}/${editedTask.id_ouv}/${editedTask.id_resp}`, {
+      .put(`http://localhost:5000/api/tasks/edit/${editedTask.date}/${editedTask.id_resp}/${editedTask.id_ouv}`, {
         status: editedTask.status,
         description: editedTask.description,
         duree: editedTask.duree,
@@ -78,10 +87,12 @@ const TasksTable = () => {
     axios
       .post("http://localhost:5000/api/tasks/createTask", newTask)
       .then((res) => {
+        toast.success("Task created succesfully"); 
         setIsAddModalOpen(false);
         fetchTasks(); 
       })
       .catch((err) => {
+        toast.error("Task not created succesfully"); 
         console.error('Failed to add new task', err);
       });
       
@@ -124,6 +135,7 @@ const TasksTable = () => {
   };
 
   const handleCheckboxChange = (task) => {
+    console.log(tasks);
     const updatedTasks = tasks.map((t) => {
       if (t.id_ouv === task.id_ouv && t.date === task.date && t.id_resp === task.id_resp) {
         return {
@@ -134,9 +146,10 @@ const TasksTable = () => {
       return t;
     });
     setTasks(updatedTasks);
+    console.log(task);
     if(isResponsable) { 
       axios
-      .put(`http://localhost:5000/api/tasks/edit/${task.date}/${task.id_ouv}/${task.id_resp}`, {
+      .put(`http://localhost:5000/api/tasks/edit/${task.date}/${task.id_resp}/${task.id_ouv}`, {
         status: task.status === "completed" ? "inProgress" : "completed",
         description: task.description,
         duree: task.duree,
@@ -147,7 +160,7 @@ const TasksTable = () => {
       });
     }else { 
       axios
-      .put(`http://localhost:5000/api/tasks/edit/${task.date}/${task.id_ouv}/${task.id_resp}`, {
+      .put(`http://localhost:5000/api/tasks/edit/${task.date}/${task.id_resp}/${task.id_ouv}`, {
         status: task.status === "completed" ? "inProgress" : "completed",
       })
       .then((res) => console.log("Task updated successfully", res))
@@ -159,7 +172,7 @@ const TasksTable = () => {
   };
 
   const handleMouseEnter = (task) => {
-    setHoveredTask(task.id_ouv);
+    setHoveredTask(task);
   };
 
   const handleMouseLeave = () => {
@@ -214,7 +227,7 @@ const TasksTable = () => {
               ))}
             </TabsHeader>
           </Tabs>
-          <form
+          {/* <form
             className="flex w-full shrink-0 gap-2 md:w-max"
             onSubmit={handleSubmit}
           >
@@ -232,7 +245,7 @@ const TasksTable = () => {
             >
               <IoIosRefresh className="h-5 w-5" />
             </Button>
-          </form>
+          </form> */}
         </div>
       </CardHeader>
       <CardBody className="overflow-scroll px-0">
@@ -267,7 +280,7 @@ const TasksTable = () => {
                     {isResponsable &&
                      <div
                      className={`flex space-x-2 transition-opacity duration-300 ${
-                       hoveredTask === task.id_ouv ? "opacity-100" : "opacity-0"
+                       hoveredTask === task ? "opacity-100" : "opacity-0"
                      }`}
                    >
                       
@@ -280,7 +293,7 @@ const TasksTable = () => {
                      </Button>
                      <Button
                        size="sm"
-                       onClick={() => handleDelete(task.id_ouv)}
+                       onClick={() => handleDelete(task)}
                        className="bg-red-400 text-white hover:bg-red-600"
                      >
                        <TrashIcon className="w-4 h-4" />
@@ -294,7 +307,7 @@ const TasksTable = () => {
                     color="gray"
                     className="mt-2 block text-sm"
                   >
-                    Due: {new Date(task.date).toLocaleDateString()}
+                    Due: {task.date}
                   </Typography>
                 </div>
               </div>

@@ -13,8 +13,9 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Spinner, select } from "@material-tailwind/react";
 import useVerifyRole from "../hooks/useVerifyRoles"
+import { useNavigate } from "react-router-dom";
 
-export default function Calendar() {
+export default function Calendar({start, end, id_resp}) {
   const [responsables, setResponsables] = useState([]);
   const [allEvents, setAllEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -33,6 +34,28 @@ export default function Calendar() {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const { user } = useAuth();
   const isAdmin   = useVerifyRole("admin"); 
+  const nav = useNavigate();
+  useEffect(()=>{
+     if(start && id_resp){ 
+       // fetch data and inseri into selectEvent 
+       axios.get(`http://localhost:5000/api/meetings/${start}/${end}/${id_resp}`)
+       .then((res)=>{
+          console.log(res);
+          setSelectedEvent(res.data[0]); 
+          setShowViewModal(true); 
+       }) 
+       .catch((err)=>{
+        toast.success("we don't find this meeting");
+        console.log(err);
+       }) 
+      // console.log("we click on event"); 
+      // console.log(data.event); 
+      // setSelectedEvent(data.event);
+      // setShowViewModal(true);
+     }else {
+      nav("/private/planning");
+     }
+  },[start,end,id_resp]);
   useEffect(() => {
     fetchMeetings();
     fetchResponsables();
@@ -122,17 +145,19 @@ export default function Calendar() {
     // const end = new Date(selectedEvent.end.toString().replace(/GMT.*$/,'GMT+0000')).toISOString(); 
     //   const start = new Date(selectedEvent.start.toString().replace(/GMT.*$/,'GMT+0000')).toISOString(); 
     // const id_resp = selectedEvent.extendedProps.id_resp;  
-    console.log(selectedEvent.start,selectedEvent.end);  
     // console.log(start,end,id_resp); 
-    const end = new Date(selectedEvent.end).toISOString(); 
+    let end = null; 
     const start = new Date(selectedEvent.start).toISOString(); 
-    const id_resp = selectedEvent.extendedProps.id_resp; 
+    const id_resp = selectedEvent.extendedProps ? selectedEvent.extendedProps.id_resp :selectedEvent.id_resp; 
     console.log(start); 
     console.log(end); 
     console.log(id_resp); 
+    if(!selectedEvent.allDay){
+      end = new Date(selectedEvent.end).toISOString(); 
+    }
     if (window.confirm("Are you sure you want to delete this event?")) {
       try {
-        await axios.delete(`http://localhost:5000/api/meetings/delete/${start}/${id_resp}`);
+        await axios.delete(`http://localhost:5000/api/meetings/delete/${start}/${end}/${id_resp}`);
         setShowViewModal(false);
         setSelectedEvent(null);
         setAllEvents(allEvents.filter((event) => event.id !== selectedEvent.id));
@@ -141,6 +166,7 @@ export default function Calendar() {
         console.log(error);
       }
     }
+    nav("/private/planning");
   };
 
   const handleEdit = async () => {
@@ -150,28 +176,28 @@ export default function Calendar() {
       end: selectedEvent.end,
       allDay: selectedEvent.allDay,
       id: selectedEvent.id,
-      description: selectedEvent.extendedProps.description,
-      id_resp: selectedEvent.extendedProps.id_resp,
+      description: (selectedEvent.extendedProps ? selectedEvent.extendedProps.description : selectedEvent.description),
+      id_resp: (selectedEvent.extendedProps ? selectedEvent.extendedProps.id_resp : selectedEvent.id_resp),
     });
-    // delete the previous meeting 
     let end = null; 
-    if(!selectedEvent.allDay) { 
-       end = new Date(selectedEvent.end).toISOString(); 
+    const start = new Date(selectedEvent.start).toISOString(); 
+    const id_resp = selectedEvent.extendedProps ? selectedEvent.extendedProps.id_resp :selectedEvent.id_resp; 
+    console.log(start); 
+    console.log(end); 
+    console.log(id_resp); 
+    if(!selectedEvent.allDay){
+      end = new Date(selectedEvent.end).toISOString(); 
     }
-   const start = new Date(selectedEvent.start).toISOString(); 
-   
-   console.log(start);  // YYYY-MM-DD HH:MM:SS
       try {
-        await axios.delete(`http://localhost:5000/api/meetings/delete/${start}/${selectedEvent.extendedProps.id_resp}`);
-        // setSelectedEvent(null);
+        await axios.delete(`http://localhost:5000/api/meetings/delete/${start}/${end}/${id_resp}`);
         setShowModal(true);
         setShowViewModal(false);
         console.log("edited meeting was deleted"); 
         setAllEvents(allEvents.filter((event) => event.id !== selectedEvent.id));
-        // toast.success("Event deleted successfully");
       } catch (error) {
         console.log(error);
       }
+    
  
   };
 
@@ -188,6 +214,7 @@ export default function Calendar() {
       description: "",
       id_resp: null,
     });
+    nav("/private/planning"); 
   };
 
   const handleChange = (e) => {
@@ -204,7 +231,7 @@ export default function Calendar() {
     const formattedEvent = {
       ...newEvent,
       end:!newEvent.allDay ? new Date(newEvent.end.toISOString() ) : null ,
-      start:new Date(newEvent.start.toISOString()),    // YYYY-MM-DD HH:MM:SS
+      start:new Date(newEvent.start).toISOString(),    // YYYY-MM-DD HH:MM:SS
     };
   console.log(formattedEvent); 
     try {
@@ -215,8 +242,10 @@ export default function Calendar() {
       toast.success("Event created successfully");
       handleCloseModal();
     } catch (err) {
+      toast.error(err.response.data.error); 
       console.log(err);
     }
+    nav("/private/planning"); 
   // } 
   };
   return (
@@ -332,23 +361,25 @@ export default function Calendar() {
                           View Meeting
                         </Dialog.Title>
                         <div className="mt-2">
-                          <p className="text-sm text-gray-500">
+                          <p className="text-sm text-gray-500"> 
+                            {console.log("selected one",selectedEvent)}
                             {selectedEvent && selectedEvent.title}
                           </p>
                           <p className="text-sm font-bold text-gray-700">
-                            {selectedEvent &&  selectedEvent.start.toISOString().slice(0, 19).replace('T', ' ')}
+                            {selectedEvent &&  new Date(selectedEvent.start).toISOString().slice(0, 19).replace('T', ' ')}
                           </p>
 
                           <p className="text-sm text-gray-500">
                             {selectedEvent &&
-                              selectedEvent.extendedProps.description}
+                             (selectedEvent.extendedProps ?
+                              selectedEvent.extendedProps.description : selectedEvent.description)}
                           </p>
                           <p className="text-sm text-gray-500">
                             {selectedEvent &&
                               `Responsible: ${
                                 responsables.find(
-                                  (r) =>
-                                    r.id === selectedEvent.extendedProps.id_resp
+                                  (r) => 
+                                    r.id === (selectedEvent.extendedProps ? selectedEvent.extendedProps.id_resp :  selectedEvent.id_resp)
                                 )?.firstname 
                               }`}
                           </p>

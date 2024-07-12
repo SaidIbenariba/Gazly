@@ -1,18 +1,24 @@
 import { db } from "../connect_db.js";
 export const getSensor = (req, res) => {
-    const workspace= req.params.id_ws;
-    let query=[];
-    let sql = "SELECT * FROM sensor ";
-    if(workspace){
-        sql = "SELECT * FROM sensor WHERE id_ws = ?";
-        query=[req.params.id_ws];
+  const workspace = req.params.id_ws;
+  let query = [];
+  let sql = "SELECT sensor.*, workspace.name AS workspace_name FROM sensor JOIN workspace ON sensor.id_ws = workspace.id";
+  
+  if (workspace) {
+    sql += " WHERE sensor.id_ws = ?";
+    query = [workspace];
+  }
+
+  db.query(sql, query, (err, sensors) => {
+    if (err) {
+      res.status(500).json("Cannot connect to the database");
+      return;
     }
-    db.query(sql,query, (err, sensors) => {
-      if (err) res.status(500).json("Can not connect to database"); 
-      console.log(sensors);
-      return res.json(sensors);
-    });
-  };
+    console.log(sensors);
+    return res.json(sensors);
+  });
+};
+
   export const creatMeasures = (req, res) => {
     const sql ="INSERT INTO sensor (type,id_ws) VALUES(?,?) ";
     const newsensors = {

@@ -9,14 +9,14 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-sidebar border-border mx-2 px-4 py-3 rounded-lg shadow-md dark:bg-background ">
+    <nav className="bg-sidebar border-border mx-2 px-4 py-3 rounded-lg shadow-none dark:bg-background ">
       <div className="flex justify-between items-center mx-auto">
         <div className="flex items-center">
           <span className="text-2xl font-semibold text-gray-800 dark:text-white"></span>
         </div>
 
         <div className="flex items-center space-x-4">
-          <div className="relative">
+          {/* <div className="relative">
             <button
               className="text-gray-700 dark:text-white hover:text-gray-900 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600"
               onClick={handleDropdownToggle}
@@ -38,8 +38,8 @@ const Navbar = () => {
                   d="M19 9l-7 7-7-7"
                 ></path>
               </svg>
-            </button>
-            {isDropdownOpen && (
+            </button> */}
+            {/* {isDropdownOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-20">
                 <a
                   href="#"
@@ -61,8 +61,8 @@ const Navbar = () => {
                 </a>
               </div>
             )}
-          </div>
-
+       </div>*/}  
+{/* 
           <div className="relative">
             <input
               type="text"
@@ -85,7 +85,7 @@ const Navbar = () => {
                 ></path>
               </svg>
             </button>
-          </div>
+          </div> */}
 
           <div className="flex justify-end">
             <Toggle />

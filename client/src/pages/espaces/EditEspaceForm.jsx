@@ -139,7 +139,7 @@ const EditEspaceForm = () => {
 
     const fetchEspace = async (id) => {
         const res = await axios.get(`http://localhost:5000/api/workspaces/${id}`);
-        console.log("response from espaces api ", res.data[0]);
+        console.log("response from espaces api ", res);
         setEspace({
             id: res.data[0].id,
             start: res.data[0].start ? new Date(res.data[0].start).toISOString().slice(0, 19).replace('T', ' ') : "",

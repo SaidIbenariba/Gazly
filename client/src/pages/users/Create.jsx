@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Form from "../../components/form";
 import Button from "../../components/Button";
 import Modal from 'react-modal';
-
+import { toast, ToastContainer } from "react-toastify";
 const Create = () => {
   const [user, setUser] = useState({
     firstname: "",
@@ -89,18 +89,17 @@ const Create = () => {
       .post("http://localhost:5000/api/users/create", formData)
       .then((res) => {
         // console.log(res.data.id);
-        if (user.role === "responsable") {
-          setUser({...user, id:res.data.id})
+        // check if userCreate is reponsable for demand a affectation to a mission
+        console.log(res);
+        if (formData.role === "responsable") {
+          setUser({...user, id:res.data.id}) 
           setIsModalOpen(true);
         } else {
           nav("/private/users");
         }
       })
       .catch((error) => {
-        // if(error.response) { 
-        // setErr({ exist: true, msg: error.response.data });
-        // } 
-        // setErr({exist:"true",msg:"error when creat user"}); 
+        toast.error(error.response.data)
         console.log(error);
       });
   }
@@ -115,10 +114,11 @@ const Create = () => {
       .post("http://localhost:5000/api/affectations/create", affectationData)
       .then((res) => {
         console.log(res);
+        toast.success("Responsable was affected to a workspace"); 
         setIsModalOpen(false);
         nav("/private/users");
       })
-      .catch((error) => {
+      .catch((error) => { 
         setErr({ exist: true, msg: error.response.data });
         console.log(error);
       });
@@ -137,7 +137,7 @@ const Create = () => {
       <div className="flex flex-col h-[100vh] p-2 items-center">
         <div className="flex flex-col">
           <span className="err">{err.exist && err.msg}</span>
-
+          <ToastContainer/>
           <nav className="flex justify-between">
             <h1 className="text-3xl font-bold text-text dark:text-text">
               Add User
@@ -180,7 +180,6 @@ const Create = () => {
           fields={affectationFields}
           onSubmit={handleAffectationSubmit}
           initialValues={affectation}
-          isEditMode={false}
           handleChange={handleAffectationFormChange}
         />
         <Button onClick={() => setIsModalOpen(false)} className="button mt-4">

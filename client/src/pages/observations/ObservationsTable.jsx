@@ -9,6 +9,8 @@ import {
 import { PlusIcon, MagnifyingGlassIcon, TrashIcon, PencilIcon } from "@heroicons/react/24/solid";
 import { IoFilter } from "react-icons/io5";
 import EditObservationModal from './EditObservationModal'; // Import the modal component
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const TABS = [
   { label: "All", value: "all" },
@@ -74,13 +76,25 @@ const ObservationsTable = () => {
     if (status && status !== "all") {
       axios
         .get("http://localhost:5000/api/observations/status/" + status)
-        .then((res) => setObservations(res.data))
-        .catch((err) => console.log(err));
+        .then((res) => {
+          setObservations(res.data);
+          toast.success("Observations fetched successfully!");
+        })
+        .catch((err) => {
+          console.log(err);
+          toast.error("Error fetching observations.");
+        });
     } else {
       axios
         .get("http://localhost:5000/api/observations/")
-        .then((res) => setObservations(res.data))
-        .catch((err) => console.log(err));
+        .then((res) => {
+          setObservations(res.data);
+          toast.success("All observations fetched successfully!");
+        })
+        .catch((err) => {
+          console.log(err);
+          toast.error("Error fetching all observations.");
+        });
     }
     setOpenFilter(false);
   };
@@ -112,8 +126,14 @@ const ObservationsTable = () => {
   const handleDeleteObservation = (observation) => {
     axios
       .delete(`http://localhost:5000/api/observations/delete/${observation.date}/${observation.id_ws}/${observation.id_resp}`)
-      .then((res) => fetchObservations(status))
-      .catch((err) => console.log(err));
+      .then((res) => {
+        fetchObservations(status);
+        toast.success("Observation deleted successfully!");
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error("Error deleting observation.");
+      });
   };
 
   const handleCreateObservation = () => {
@@ -124,13 +144,20 @@ const ObservationsTable = () => {
     e.preventDefault();
     axios
       .get(`http://localhost:5000/api/observations/search?filter=${searchBy}&value=${values.value}`)
-      .then((res) => setObservations(res.data))
-      .catch((err) => console.log(err));
+      .then((res) => {
+        setObservations(res.data);
+        toast.success("Filter applied successfully!");
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error("Error applying filter.");
+      });
     setOpenFilter(false);
   };
 
   return (
     <Card className="flex flex-col gap-4 h-full w-full relative" shadow={false}>
+      <ToastContainer />
       <CardHeader floated={false} shadow={false} className="rounded-none z-10">
         <div className="mb-8 flex items-center justify-between gap-8">
           <div>

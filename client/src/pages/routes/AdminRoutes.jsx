@@ -46,6 +46,7 @@ export default function AdminRoutes() {
         <Route path="tasks/edit/:date/:id_resp/:id_ouv" element={<EditTaskForm/>} /> */}
         {/* <Route path="tasks/*" element={<TasksTable />} /> */}
         <Route path="planning" element={<Planning />} />
+        < Route path="planning/:start/:end/:id_resp" element={<Planning/>}/>
         <Route path="*" element={<Notfound/>}/>
       </Route>
     </Routes>
