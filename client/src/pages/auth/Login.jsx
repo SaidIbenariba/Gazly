@@ -1,9 +1,17 @@
-import { Button, Checkbox, Label, TextInput } from "flowbite-react";
-// import login from "../../assets/login.jpg";
-import { Spinner } from "@material-tailwind/react";
+import {
+  Input,
+  Typography,
+  Card,
+  Button,
+  Checkbox,
+  Spinner,
+  // Label,
+} from "@material-tailwind/react";
+import {Label} from "flowbite-react"
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { useEffect, useState } from "react";
+
 const Login = () => {
   const [error, setError] = useState(null);
   const { login, loading } = useAuth();
@@ -27,63 +35,59 @@ const Login = () => {
   return (
     <>
       {loading ? (
-        <Spinner /> // Show spinner while loading
+        <div className="flex items-center justify-center min-h-screen">
+          <Spinner />
+        </div>
       ) : (
         <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
-          <div className="flex flex-col bg-white shadow-md px-4 sm:px-6 md:px-8 lg:px-10 py-8 rounded-md w-full max-w-md">
-            <div className="font-medium self-center text-xl sm:text-2xl uppercase text-gray-800 mb-5">
+          <Card className="flex flex-col bg-white shadow-md px-4 sm:px-6 md:px-8 lg:px-10 py-8 rounded-md w-full max-w-md">
+            <Typography variant="h5" className="font-medium self-center text-xl sm:text-2xl uppercase text-gray-800 mb-5">
               Login To Your Account
-            </div>
-            <form
-              className="flex max-w-md flex-col gap-4"
-              onSubmit={handleSubmit}
-            >
+            </Typography>
+            <form className="flex max-w-md flex-col gap-4" onSubmit={handleSubmit}>
               <div>
-                <div className="mb-2 block">
-                  <Label htmlFor="email1" value="Your email" />
-                </div>
-                <TextInput
+                <Label htmlFor="email1" value="Your email" />
+                <Input
                   id="email1"
                   type="email"
+                  labelProps={{
+                    className: "before:content-none after:content-none",
+                  }}
+                  className="input"
                   placeholder="name@mail.com"
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
-                  required
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  // required
                 />
               </div>
               <div>
-                <div className="mb-2 block">
-                  <Label htmlFor="password1" value="Your password" />
-                </div>
-                <TextInput
+                <Label htmlFor="password1" value="Your password" />
+                <Input
                   id="password1"
                   type="password"
-                  onChange={(e) =>
-                    setFormData({ ...formData, password: e.target.value })
-                  }
-                  required
+                  className="input"
+                  labelProps={{
+                    className: "before:content-none after:content-none",
+                  }}
+                  placeholder="*******"
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  // required
                 />
               </div>
               <div className="flex items-center gap-2">
                 <Checkbox
                   id="remember"
+                  // className="input"
                   checked={formData.rememberMe}
-                  onChange={() => {
-                    setFormData({
-                      ...formData,
-                      rememberMe: !formData.rememberMe,
-                    });
-                  }}
+                  onChange={() => setFormData({ ...formData, rememberMe: !formData.rememberMe })}
                 />
                 <Label htmlFor="remember">Remember me</Label>
               </div>
-              <Button className="button" type="submit">
+              <Button type="submit" size="sm" className="w-full mt-4">
                 Log in
               </Button>
-              <span className="text-red-400">{error && error}</span>
+              {error && <Typography variant="small" className="text-red-400 mt-2">{error}</Typography>}
             </form>
-          </div>
+          </Card>
         </div>
       )}
     </>
