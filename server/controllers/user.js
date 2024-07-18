@@ -184,6 +184,6 @@ export const users = (req, res) => {
   const sql = "SELECT * FROM users";
   db.query(sql, (err, users) => {
     if (err) res.status(500).json("Can not connect to database");
-    return res.json(users);
+    return res.status(200).json(users);
   });
 };

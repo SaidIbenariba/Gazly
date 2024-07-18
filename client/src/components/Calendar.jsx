@@ -21,7 +21,6 @@ export default function Calendar({start, end, id_resp}) {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
-  const [editMeeting,setEditMeeting] = useState(false); 
   const [newEvent, setNewEvent] = useState({
     title: "",
     start: "",

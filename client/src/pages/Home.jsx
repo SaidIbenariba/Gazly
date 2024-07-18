@@ -32,7 +32,7 @@ export default function Home() {
             Each of ATi’s smart sensor modules is a sensor, amplifier and memory module in one compact package. Sensor modules can be calibrated independently and simply plugged into any of our smart detectors for immediate use. When installed in a gas detector, calibration data is loaded into the microprocessor so that no adjustments are needed. The result is a gas detector that can go from measuring anything from phosgene to ammonia in less than one minute.
             </Typography>
            </div>
-           <img src="../../public/MQ2.jpg" alt="capteur MQ2"   className="h-[20rem] w-full object-cover object-center"
+           <img src="/client/public/MQ2.jpg" alt="capteur MQ2"   className="h-[20rem] w-full object-cover object-center"
            />
         </Card>
         <Card className="flex flex-row items-start" shadow={false}>
@@ -48,7 +48,7 @@ En résumé, les capteurs MQ-2 et MQ-9 sont des composants essentiels dans la
 détection et la surveillance des gaz, offrant une solution fiable pour la sécurité et la
 qualité de l’air dans divers environnements domestiques, industriels et automobiles            </Typography>
            </div>
-           <img src="../../public/montage.jpg" alt="montage des capteurs"   className="h-[20rem] w-full object-cover object-center"
+           <img src="/client/public/montage.jpg" alt="montage des capteurs"   className="h-[20rem] w-full object-cover object-center"
            />
         </Card>
         </div>
