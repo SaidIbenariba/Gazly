@@ -36,7 +36,7 @@ const SensorTable = () => {
   },[]); 
   const fetchSensors = () => {
     setLoading(true); 
-    axios.get("http://localhost:5000/api/sensors")
+    axios.get("/api/sensors")
     .then((res)=>setSensors(res.data))
     .catch((err)=>console.log(err))
     .finally(setLoading(false)); 

@@ -34,7 +34,7 @@ const EditEspaceForm = () => {
 
     useEffect(() => {
         if (espace.id_resp) {
-            axios.get(`http://localhost:5000/api/users/read/${espace.id_resp}`)
+            axios.get(`/api/users/read/${espace.id_resp}`)
                 .then((res) => {
                     const responsable = res.data[0];
                     setResponsableName(`${responsable.firstname} ${responsable.lastname}`);
@@ -84,7 +84,7 @@ const EditEspaceForm = () => {
 
     const handleSubmit = (data) => {
         console.log(data);
-        axios.post("http://localhost:5000/api/workspaces/create", { name: data.name })
+        axios.post("/api/workspaces/create", { name: data.name })
             .then((res) => {
                 const id_ws = res.data.id_ws;
                 if (espace.id_resp) {
@@ -107,7 +107,7 @@ const EditEspaceForm = () => {
 
     const handleAddResponsable = async (id_ws) => {
         try {
-            await axios.post(`http://localhost:5000/api/affectations/create`, {
+            await axios.post(`/api/affectations/create`, {
                 start: espace.start,
                 end:espace.end,
                 id_ws: id_ws,
@@ -132,13 +132,13 @@ const EditEspaceForm = () => {
     };
 
     const fetchResponsables = async () => {
-        const res = await axios.get("http://localhost:5000/api/users/search-role/responsable");
+        const res = await axios.get("/api/users/search-role/responsable");
         setResponsables(res.data);
         console.log(res.data);
     }
 
     const fetchEspace = async (id) => {
-        const res = await axios.get(`http://localhost:5000/api/workspaces/${id}`);
+        const res = await axios.get(`/api/workspaces/${id}`);
         console.log("response from espaces api ", res);
         setEspace({
             id: res.data[0].id,
@@ -152,7 +152,7 @@ const EditEspaceForm = () => {
     const handleStopRes = async () => {
         console.log(espace);
         try {
-            const response = await axios.delete(`http://localhost:5000/api/affectations/delete/${espace.start}/${espace.id}/${espace.id_resp}`);
+            const response = await axios.delete(`/api/affectations/delete/${espace.start}/${espace.id}/${espace.id_resp}`);
             console.log(response);
             setEspace({ ...espace, id_resp: "" });
             setIsChangingResp(false);

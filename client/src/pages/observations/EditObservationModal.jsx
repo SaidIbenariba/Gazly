@@ -10,7 +10,7 @@ const EditObservationModal = ({ observation, onClose, onSave }) => {
   const handleSave = () => {
     setLoading(true);
     axios
-      .put(`http://localhost:5000/api/observations/edit/${observation.date}/${observation.id_ws}/${observation.id_resp}`, { feedback, status })
+      .put(`/api/observations/edit/${observation.date}/${observation.id_ws}/${observation.id_resp}`, { feedback, status })
       .then((res) => {
         console.log(res); 
         onSave();

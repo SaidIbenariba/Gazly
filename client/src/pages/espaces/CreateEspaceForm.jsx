@@ -52,7 +52,7 @@ const CreateEspaceForm = () => {
   };
 
   async function fetchResponsable() {
-    const res = await axios.get("http://localhost:5000/api/users/search-role/responsable");
+    const res = await axios.get("/api/users/search-role/responsable");
     setResponsables(res.data);
     console.log(res.data);
   }
@@ -60,7 +60,7 @@ const CreateEspaceForm = () => {
   function handleSubmit(data) {
     console.log(data);
     axios
-      .post("http://localhost:5000/api/workspaces/create", { name: data.name })
+      .post("/api/workspaces/create", { name: data.name })
       .then((res) => {
         // setEspace({ ...espace, id: res.data.id });
         const id_ws = res.data.id_ws; 
@@ -82,7 +82,7 @@ const CreateEspaceForm = () => {
   function handleAddResponsable(id_ws) {
     // console.log(space);
     axios
-      .post(`http://localhost:5000/api/affectations/create`, { start:espace.start, end:espace.end, id_ws:id_ws, id_resp:espace.id_resp})
+      .post(`/api/affectations/create`, { start:espace.start, end:espace.end, id_ws:id_ws, id_resp:espace.id_resp})
       .then((res) => {
         nav("/private/espaces", {
           state: { message: "Responsable added successfully!", type: "success" },

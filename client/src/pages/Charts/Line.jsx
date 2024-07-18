@@ -24,7 +24,7 @@ const Line = () => {
   useEffect(() => {
     const fetchEspaces = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/workspaces");
+        const response = await axios.get("/api/workspaces");
         setEspaces(response.data);
         if (response.data.length > 0) {
           const randomEspace = getRandomElement(response.data);
@@ -46,7 +46,7 @@ const Line = () => {
       const fetchSensors = async () => {
         try {
           const response = await axios.get(
-            `http://localhost:5000/api/sensors/workspace/${selectedEspace}`
+            `/api/sensors/workspace/${selectedEspace}`
           );
           setSensors(response.data);
           if (response.data.length > 0) {
@@ -69,7 +69,7 @@ const Line = () => {
       const fetchData = async () => {
         try {
           const response = await axios.get(
-            `http://localhost:5000/api/measures/sensor/${selectedSensor}`
+            `/api/measures/sensor/${selectedSensor}`
           );
           const data = response.data.map((measure) => measure.gazlvl);
           setChartData(data);

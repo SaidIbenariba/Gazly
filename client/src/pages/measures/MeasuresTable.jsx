@@ -73,7 +73,7 @@ const MeasuresTable = () => {
 
   const fetchMeasures = (status = "all") => {
     setLoading(true);
-    let url = "http://localhost:5000/api/measures";
+    let url = "/api/measures";
     if (status !== "all") {
       url = `${url}/danger/${status}`;
     }
@@ -117,7 +117,7 @@ const MeasuresTable = () => {
     // setActiveTab(status);
     setLoading(true);
     // axios
-    // .get(`http://localhost:5000/api/measures/danger/${value}`)
+    // .get(`/api/measures/danger/${value}`)
     // .then((res) => {
     //   setMeasures(res.data);
     //   setLoading(false);
@@ -135,7 +135,7 @@ const MeasuresTable = () => {
     e.preventDefault();
     setLoading(true);
     axios
-      .get(`http://localhost:5000/api/measures/sensor/${sensor}`)
+      .get(`/api/measures/sensor/${sensor}`)
       .then((res) => {
         setMeasures(res.data);
         setLoading(false);

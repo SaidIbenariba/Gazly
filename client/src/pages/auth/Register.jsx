@@ -17,7 +17,7 @@ const register = () => {
   // const handleSubmit = (e) => {
   //   e.preventDefault();
   //   axios
-  //     .post("http://localhost:5000/auth/register", values)
+  //     .post("/auth/register", values)
   //     .then((res) => nav("/login"))
   //     .catch((err) => {
   //       setError(err);

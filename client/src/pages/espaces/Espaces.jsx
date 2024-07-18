@@ -46,12 +46,12 @@ const Espaces = () => {
     
     async function fetchEspaces() { 
         try { 
-            const res = await axios.get("http://localhost:5000/api/workspaces") ; 
+            const res = await axios.get("/api/workspaces") ; 
             const Espaces = Promise.all(
                 res.data.map(async (espace) => {
                   try {
                     console.log(espace);
-                    const response = await axios.get(`http://localhost:5000/api/users/read/${espace.id_resp}`);
+                    const response = await axios.get(`/api/users/read/${espace.id_resp}`);
                     return { ...espace, ...response.data[0]};
                   } catch (err) {
                     console.log(err);
@@ -75,7 +75,7 @@ const Espaces = () => {
         return formattedDate;    
     }
     function handleDelete(id) {
-        axios.delete("http://localhost:5000/api/workspaces/delete/  "+id)
+        axios.delete("/api/workspaces/delete/  "+id)
         .then((res)=>{
             toast.success("workspace deleted successfully!");
         }).catch((err)=>{

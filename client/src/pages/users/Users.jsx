@@ -52,7 +52,7 @@ export default function Users() {
   useEffect(() => {
     setLoading(true);
     axios
-      .get("http://localhost:5000/api/users")
+      .get("/api/users")
       .then((res) => {
         setTableRows(res.data);
         setLoading(false);
@@ -66,7 +66,7 @@ export default function Users() {
   function fetchUsers() { 
     setLoading(true); 
     axios
-          .get("http://localhost:5000/api/users")
+          .get("/api/users")
           .then((res) => {
             setTableRows(res.data);
             setLoading(false);
@@ -84,7 +84,7 @@ export default function Users() {
       fetchUsers() ; 
     } else { 
     axios 
-      .get("http://localhost:5000/api/users/search/" + search)
+      .get("/api/users/search/" + search)
       .then((res) => {
         setTableRows(res.data);
         setLoading(false);
@@ -105,7 +105,7 @@ export default function Users() {
     switch (role) {
       case "all":
         axios
-          .get("http://localhost:5000/api/users")
+          .get("/api/users")
           .then((res) => {
             setTableRows(res.data);
             setLoading(false);
@@ -118,7 +118,7 @@ export default function Users() {
         break;
       default:
         axios
-          .get("http://localhost:5000/api/users/search-role/" + role)
+          .get("/api/users/search-role/" + role)
           .then((res) => {
             setTableRows(res.data);
             setLoading(false);
@@ -135,7 +135,7 @@ export default function Users() {
     // const id = e.target.id;
     console.log(id); 
     axios
-      .delete("http://localhost:5000/api/users/delete/" + id)
+      .delete("/api/users/delete/" + id)
       .then((res) => {
         setDeletedUser({ ...deletedUser, deleted: true, id: id });
         toast.success("User deleted successfully!");

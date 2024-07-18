@@ -8,7 +8,7 @@ const Read = () => {
   const { id } = useParams();
   useEffect(() => {
     axios
-      .get("http://localhost:5000/read_user/" + id)
+      .get("/read_user/" + id)
       .then((res) => {
         setValues({
           ...values,

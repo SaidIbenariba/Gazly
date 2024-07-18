@@ -27,13 +27,13 @@ const CreateObservationForm = () =>
   // if(isAdmin) { 
   // useEffect(() => {
   //   axios
-  //     .get("http://localhost:5000/api/users/responsables")
+  //     .get("/api/users/responsables")
   //     .then((res) => setResponsables(res.data))
   //     .catch((err) => console.log(err));
   // }, []);
     useEffect(()=>{
       axios.get(
-        "http://localhost:5000/api/workspaces"
+        "/api/workspaces"
       ).then((res) => {console.log(res.data) ;setEspaces(res.data)})
       .catch((err)=>console.log(err)); 
     },[])
@@ -53,7 +53,7 @@ const CreateObservationForm = () =>
     // console.log(data) ;
     console.log("handle create observation"); 
     axios
-      .post("http://localhost:5000/api/observations/create", data)
+      .post("/api/observations/create", data)
       .then((res) => {
         console.log(res);      
            nav("/private/observations"); } 

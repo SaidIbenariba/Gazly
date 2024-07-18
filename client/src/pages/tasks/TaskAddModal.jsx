@@ -26,7 +26,7 @@ const TaskAddModal = ({ isOpen, onClose, onSave }) => {
   };
   const fetchOuvriers = async () =>{ 
     try { 
-   const response = await axios.get("http://localhost:5000/api/users/search-role/ouvrier");  
+   const response = await axios.get("/api/users/search-role/ouvrier");  
    setOuvriers(response.data); 
     }catch(err) { 
       console.log(err); 

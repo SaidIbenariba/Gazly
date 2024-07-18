@@ -24,7 +24,7 @@ const Edit = () => {
   useEffect(() => {
     setLoading(true); 
     axios
-      .get("http://localhost:5000/api/users/read/" + id)
+      .get("/api/users/read/" + id)
       .then((res) => {
         console.log(res.data); 
         setUser({ ...user, 
@@ -69,7 +69,7 @@ const Edit = () => {
 
   function handleSubmit(user) {
     axios
-      .put("http://localhost:5000/api/users/edit/" + id, user)
+      .put("/api/users/edit/" + id, user)
       .then((res) => {
         nav("/private/users", {
           state: { message: "User updated successfully!", type: "success" },

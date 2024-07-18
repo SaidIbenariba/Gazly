@@ -46,7 +46,7 @@ const ObservationCard = ({ observation }) => {
 //   console.log(observation);
 //   useEffect(()=>{
 //     setLoading(true);
-//  axios.get(`http://localhost:5000/api/users/read/${observation.id_resp}`)
+//  axios.get(`/api/users/read/${observation.id_resp}`)
 //  .then((res)=>{
 //   console.log(res);
 //   setResponsable(res.date[0].firstname + " " +res.date[0].lastname);
@@ -106,24 +106,24 @@ const Dashboard = () => {
     const fetchData = async () => {
       try {
         const missionCountsRes = await axios.get(
-          "http://localhost:5000/api/missions/missionCounts"
+          "/api/missions/missionCounts"
         );
         setMissionCounts(missionCountsRes.data);
 
         const meetingsRes = await axios.get(
-          "http://localhost:5000/api/meetings/read"
+          "/api/meetings/read"
         );
         console.log(meetingsRes.data);
         setMeetings(meetingsRes.data);
 
         const observationsRes = await axios.get(
-          "http://localhost:5000/api/observations/lastest"
+          "/api/observations/lastest"
         );
         console.log("observaations")
         console.log(observationsRes.data);
         setObservations(observationsRes.data); 
         const gazLevelRes = await axios.get(
-          "http://localhost:5000/api/measures/getLastMeasure"
+          "/api/measures/getLastMeasure"
         );
         console.log(gazLevelRes); 
         if(gazLevelRes.data[0].gaz_danger == 1) {
@@ -141,7 +141,7 @@ const Dashboard = () => {
       try {
          
         const gazLevelRes = await axios.get(
-          "http://localhost:5000/api/measures/getLastMeasure"
+          "/api/measures/getLastMeasure"
         );
         setGazLevel(gazLevelRes.data[0].gazlvl); 
       }catch(err) {

@@ -59,7 +59,7 @@ import useVerifyRole from '../../hooks/useVerifyRoles';
         
       //   useEffect(()=>{
       //     setLoading(true); 
-      //     axios.get(`http://localhost:5000/api/missions/${start}/${id_resp}/${id_dir}`)
+      //     axios.get(`/api/missions/${start}/${id_resp}/${id_dir}`)
       // .then(response => {
       //    console.log(response.data); 
       //   setMission(response.data);
@@ -70,7 +70,7 @@ import useVerifyRole from '../../hooks/useVerifyRoles';
       //   },[start, id_resp, id_dir])
     useEffect(()=>{ 
       function fetchMissions () { 
-          axios.get(`http://localhost:5000/api/missions/${start}/${id_dir}/${id_resp}`)
+          axios.get(`/api/missions/${start}/${id_dir}/${id_resp}`)
           .then((res)=>{setMission({...mission,end:res.data[0].end,title:res.data[0].title,description:res.data[0].description,status:res.data[0].status})})
           .catch((err)=>console.log(err))
           .finally(()=>setLoading(false)); 
@@ -83,7 +83,7 @@ import useVerifyRole from '../../hooks/useVerifyRoles';
     const handleEditMission = (formData) => {
       if(isAdmin) { 
         axios
-        .put(`http://localhost:5000/api/missions/edit/${start}/${id_dir}/${id_resp}`, formData)
+        .put(`/api/missions/edit/${start}/${id_dir}/${id_resp}`, formData)
         .then((res) => {
           console.log("Mission updated successfully:", res);
           // Update missions state with the newly created mission
@@ -95,7 +95,7 @@ import useVerifyRole from '../../hooks/useVerifyRoles';
         .catch((err) => console.log("Error creating mission:", err));
       }else { 
         axios
-        .put(`http://localhost:5000/api/missions/edit/${start}/${id_dir}/${id_resp}`, formData)
+        .put(`/api/missions/edit/${start}/${id_dir}/${id_resp}`, formData)
         .then((res) => {
           console.log("Mission updated successfully:", res);
           // Update missions state with the newly created mission

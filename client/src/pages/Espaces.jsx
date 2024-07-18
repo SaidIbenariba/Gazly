@@ -108,7 +108,7 @@ const Espaces = () => {
   useEffect(() => {
     setIsLoading(true);
     axios
-      .get("http://localhost:5000/api/observations/")
+      .get("/api/observations/")
       .then((res) => {
         setObservations(res.data);
         setIsLoading(false);
@@ -118,7 +118,7 @@ const Espaces = () => {
         setIsLoading(false);
       });
     axios
-      .get("http://localhost:5000/api/WorkSpaces/")
+      .get("/api/WorkSpaces/")
       .then((res) => {
         setEspaces(res.data);
         setIsLoading(false);
@@ -134,7 +134,7 @@ const Espaces = () => {
     console.log(selectedEspace);
     axios
       .get(
-        `http://localhost:5000/api/observations/getObservationsOf/${selectedEspace.id}`
+        `/api/observations/getObservationsOf/${selectedEspace.id}`
       )
       .then((res) => {
         setObservations(res.data);

@@ -112,14 +112,14 @@ const Missions = () => {
   const fetchData = async () => {
     try {
       const response = stat !== 'all' 
-        ? await axios.get(`http://localhost:5000/api/missions/${stat}`)
-        : await axios.get('http://localhost:5000/api/missions/');
+        ? await axios.get(`/api/missions/${stat}`)
+        : await axios.get('/api/missions/');
         const values = response.data; 
         console.log(values) ;
         const Missions = Promise.all(
           values.map(async (value) => {
             try {
-              const res = await axios.get(`http://localhost:5000/api/users/read/${value.id_resp}`);
+              const res = await axios.get(`/api/users/read/${value.id_resp}`);
               return { ...value, responsible: res.data[0] };
             } catch (err) {
               console.log(err);
@@ -156,13 +156,13 @@ const Missions = () => {
   
     }else { 
     try {
-      const response = await axios.get("http://localhost:5000/api/missions/defaultSearch/" + value);
+      const response = await axios.get("/api/missions/defaultSearch/" + value);
       const values = response.data; 
           console.log(values) ;
           const Missions = Promise.all(
             values.map(async (value) => {
               try {
-                const res = await axios.get(`http://localhost:5000/api/users/read/${value.id_resp}`);
+                const res = await axios.get(`/api/users/read/${value.id_resp}`);
                 return { ...value, responsible: res.data[0] };
               } catch (err) {
                 console.log(err);
@@ -192,7 +192,7 @@ const Missions = () => {
 
   const handleDeleteMission = async (mission) => {
     try {
-      await axios.delete(`http://localhost:5000/api/missions/delete/${mission.start}/${mission.id_dir}/${mission.id_resp}`);
+      await axios.delete(`/api/missions/delete/${mission.start}/${mission.id_dir}/${mission.id_resp}`);
       setDeletedMission(!deletedMission);
     } catch (err) {
       console.error(err);

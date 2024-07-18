@@ -28,7 +28,7 @@ const Create = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/workspaces/noresponsable")
+      .get("/api/workspaces/noresponsable")
       .then((response) => setWorkspaces(response.data))
       .catch((error) => console.log(error));
   }, []);
@@ -86,7 +86,7 @@ const Create = () => {
   function handleSubmit(formData) {
     // console.log(formData); 
     axios
-      .post("http://localhost:5000/api/users/create", formData)
+      .post("/api/users/create", formData)
       .then((res) => {
         // console.log(res.data.id);
         // check if userCreate is reponsable for demand a affectation to a mission
@@ -111,7 +111,7 @@ const Create = () => {
     console.log(`affectationData : `);
     console.log(affectationData) 
     axios
-      .post("http://localhost:5000/api/affectations/create", affectationData)
+      .post("/api/affectations/create", affectationData)
       .then((res) => {
         console.log(res);
         toast.success("Responsable was affected to a workspace"); 
@@ -185,6 +185,8 @@ const Create = () => {
         <Button onClick={() => setIsModalOpen(false)} className="button mt-4">
           Close
         </Button>
+
+        
       </Modal>
     </>
   );

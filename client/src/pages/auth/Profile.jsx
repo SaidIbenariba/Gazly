@@ -23,7 +23,7 @@ const Profile = () => {
     const fetchUser = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/users/read/${user.id}`
+          `/api/users/read/${user.id}`
         );
         setUserData(response.data[0]);
         setFormData({
@@ -54,7 +54,7 @@ const Profile = () => {
     e.preventDefault();
     try {
       const response = await axios.put(
-        `http://localhost:5000/api/users/edit/${user.id}`,
+        `/api/users/edit/${user.id}`,
         formData
       );
       setUserData(response.data);

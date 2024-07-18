@@ -9,6 +9,7 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [error, setError] = useState()
+  const url = "http://localhost:5000"; 
   const [user, setUser] = useState(() => {
     const storedToken =
       localStorage.getItem("accessToken") ||
@@ -66,7 +67,7 @@ export const AuthProvider = ({ children }) => {
     
     try {
       const response = await axios.post(
-        "http://localhost:5000/auth/login", 
+        `${url}/auth/login`, 
         formData
       );
       // reponse data form { i send only accestoken { user.id, role} }
@@ -90,7 +91,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await axios.post("http://localhost:5000/auth/logout", null, {
+      await axios.post(`${url}/auth/logout`, null, {
         withCredentials: true, // Ensure cookies are sent
       });
     } catch (error) {
@@ -106,7 +107,7 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       const response = await axios.post(
-        "http://localhost:5000/auth/register",
+        `${url}/auth/register`,
         formData
       );
       setUser(response.data.user);
@@ -124,7 +125,7 @@ export const AuthProvider = ({ children }) => {
     try {
       axios.defaults.headers.common["Authorization"] = `Bearer ${storedToken}`;
       const response = await axios.post(
-        "http://localhost:5000/auth/autologin",
+        `${url}/auth/autologin`,
         [{ token: storedToken }]
       );
       // console.log(response.data.user);

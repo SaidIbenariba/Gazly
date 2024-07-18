@@ -22,7 +22,7 @@ const CreateMissionForm = () => {
   useEffect(() => {
     function fetchResponsable() {
       axios
-        .get("http://localhost:5000/api/users/search-role/" + "responsable")
+        .get("/api/users/search-role/" + "responsable")
         .then((res) => {
           setResponsables(res.data); 
           console.log(res.data); 
@@ -56,7 +56,7 @@ const CreateMissionForm = () => {
   const handleCreateMission = (formData) => {
     console.log(formData); 
     axios
-      .post("http://localhost:5000/api/missions/createMission", formData)
+      .post("/api/missions/createMission", formData)
       .then((res) => {
         console.log("Mission created successfully:", res.data);
         // Reset form values

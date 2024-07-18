@@ -56,7 +56,7 @@ const TasksTable = () => {
   
   const handleDelete = (task) => {
     // setTasks(tasks.filter((t) => t.id_ouv !== task.id_ouv && t.id_resp !== task.id_resp && t.date !== task.date ));
-    axios.delete(`http://localhost:5000/api/tasks/delete/${task.date}/${task.id_resp}/${task.id_ouv}`)
+    axios.delete(`/api/tasks/delete/${task.date}/${task.id_resp}/${task.id_ouv}`)
     .then(res =>{
       toast.success("task deleted succesfully");  
       fetchTasks();
@@ -71,7 +71,7 @@ const TasksTable = () => {
     setTasks(tasks.map((task) => (task.date === editedTask.date ? editedTask : task)));
 
     axios
-      .put(`http://localhost:5000/api/tasks/edit/${editedTask.date}/${editedTask.id_resp}/${editedTask.id_ouv}`, {
+      .put(`/api/tasks/edit/${editedTask.date}/${editedTask.id_resp}/${editedTask.id_ouv}`, {
         status: editedTask.status,
         description: editedTask.description,
         duree: editedTask.duree,
@@ -85,7 +85,7 @@ const TasksTable = () => {
   const handleAddSave = (newTask) => {
     console.log(newTask); 
     axios
-      .post("http://localhost:5000/api/tasks/createTask", newTask)
+      .post("/api/tasks/createTask", newTask)
       .then((res) => {
         toast.success("Task created succesfully"); 
         setIsAddModalOpen(false);
@@ -101,7 +101,7 @@ const TasksTable = () => {
   const fetchTasks = (status = "") => {
     setActiveTab(status);
     setLoading(true);
-    let url = "http://localhost:5000/api/tasks";
+    let url = "/api/tasks";
     if (status !== "all") {
       url = `${url}/status/${status}`;
     }
@@ -122,7 +122,7 @@ const TasksTable = () => {
     e.preventDefault();
     setLoading(true);
     axios
-      .get(`http://localhost:5000/api/tasks/search/${search}`)
+      .get(`/api/tasks/search/${search}`)
       .then((res) => {
         setTasks(res.data);
         setLoading(false);
@@ -149,7 +149,7 @@ const TasksTable = () => {
     console.log(task);
     if(isResponsable) { 
       axios
-      .put(`http://localhost:5000/api/tasks/edit/${task.date}/${task.id_resp}/${task.id_ouv}`, {
+      .put(`/api/tasks/edit/${task.date}/${task.id_resp}/${task.id_ouv}`, {
         status: task.status === "completed" ? "inProgress" : "completed",
         description: task.description,
         duree: task.duree,
@@ -160,7 +160,7 @@ const TasksTable = () => {
       });
     }else { 
       axios
-      .put(`http://localhost:5000/api/tasks/edit/${task.date}/${task.id_resp}/${task.id_ouv}`, {
+      .put(`/api/tasks/edit/${task.date}/${task.id_resp}/${task.id_ouv}`, {
         status: task.status === "completed" ? "inProgress" : "completed",
       })
       .then((res) => console.log("Task updated successfully", res))

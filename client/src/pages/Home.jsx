@@ -8,18 +8,20 @@ export default function Home() {
     <div className="mx-2 max-h-[768px] w-[calc(100%+48px)] overflow-scroll">
       <Navbar />
       <div className="relative flex flex-col gap-20 mx-auto max-w-screen-lg py-12">
-        <Card className="mb-12 overflow-hidden" shadow={false}>
+        <Card className="flex flex-row-reverse mb-12 overflow-hidden items-center gap-10" shadow={false}>
           <img
             alt="Gas Plant"
-            className="h-[32rem] w-full object-cover object-center mb-5"
+            className="h-[32rem] w-1/2 object-cover object-center mb-5"
             src="https://images.unsplash.com/photo-1485470733090-0aae1788d5af?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2717&q=80"
           />
+          <div className="flex flex-col gap-10">
           <Typography variant="h2" color="blue-gray" className="mb-2">
           Gestion d'une Usine de Gaz
         </Typography>
         <Typography color="gray" className="font-normal">
           Bienvenue sur notre application de gestion d'une usine de gaz. Cette plateforme vous aide à gérer efficacement vos employés, vos espaces de travail et à surveiller les capteurs de gaz en temps réel. Grâce à des fonctionnalités avancées et une interface utilisateur intuitive, vous pouvez assurer la sécurité et la productivité de votre usine.
         </Typography>
+        </div>
         </Card>
         
         <div className="flex flex-col gap-10">

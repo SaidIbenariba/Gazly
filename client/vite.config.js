@@ -11,8 +11,15 @@ export default defineConfig({
     // port:5174,\
     watch:{
       usePolling:true,
+    },
+    proxy:{
+      "/api":{
+        target:"http://localhost:5000",
+        changeOrigin:true,
+        rewrite:(path) => path.replace(/^\/api/,"/api")
+      }
+      
     }
-    
   },
   // define: {
   //   Buffer: Buffer,
