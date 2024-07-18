@@ -38,7 +38,7 @@ export default function Calendar({start, end, id_resp}) {
   useEffect(()=>{
      if(start && id_resp){ 
        // fetch data and inseri into selectEvent 
-       axios.get(`http://localhost:5000/api/meetings/${start}/${end}/${id_resp}`)
+       axios.get(`https://gazly-backend.onrender.com/api/meetings/${start}/${end}/${id_resp}`)
        .then((res)=>{
           console.log(res);
           setSelectedEvent(res.data[0]); 
@@ -80,7 +80,7 @@ export default function Calendar({start, end, id_resp}) {
 
   const fetchResponsables = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/users/search-role/responsable");
+      const res = await axios.get("https://gazly-backend.onrender.com/api/users/search-role/responsable");
       setResponsables(res.data);
     } catch (err) {
       console.log(err);
@@ -89,7 +89,7 @@ export default function Calendar({start, end, id_resp}) {
 
   const fetchMeetings = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/meetings/");
+      const res = await axios.get("https://gazly-backend.onrender.com/api/meetings/");
       setAllEvents(res.data);
       setLoading(false);
     } catch (err) {
@@ -157,7 +157,7 @@ export default function Calendar({start, end, id_resp}) {
     }
     if (window.confirm("Are you sure you want to delete this event?")) {
       try {
-        await axios.delete(`http://localhost:5000/api/meetings/delete/${start}/${end}/${id_resp}`);
+        await axios.delete(`https://gazly-backend.onrender.com/api/meetings/delete/${start}/${end}/${id_resp}`);
         setShowViewModal(false);
         setSelectedEvent(null);
         setAllEvents(allEvents.filter((event) => event.id !== selectedEvent.id));
@@ -189,7 +189,7 @@ export default function Calendar({start, end, id_resp}) {
       end = new Date(selectedEvent.end).toISOString(); 
     }
       try {
-        await axios.delete(`http://localhost:5000/api/meetings/delete/${start}/${end}/${id_resp}`);
+        await axios.delete(`https://gazly-backend.onrender.com/api/meetings/delete/${start}/${end}/${id_resp}`);
         setShowModal(true);
         setShowViewModal(false);
         console.log("edited meeting was deleted"); 
@@ -235,7 +235,7 @@ export default function Calendar({start, end, id_resp}) {
     };
   console.log(formattedEvent); 
     try {
-      await axios.post("http://localhost:5000/api/meetings/create", formattedEvent);
+      await axios.post("https://gazly-backend.onrender.com/api/meetings/create", formattedEvent);
       setAllEvents([...allEvents, newEvent]);
       setShowModal(false);
       setSelectedEvent(null); 
