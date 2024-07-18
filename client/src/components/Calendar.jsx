@@ -6,12 +6,12 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import { Fragment, useEffect, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { CheckIcon } from "@heroicons/react/20/solid";
-import { TrashIcon, XMarkIcon, PencilIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useAuth } from "../hooks/useAuth";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Spinner, select } from "@material-tailwind/react";
+import { Spinner} from "@material-tailwind/react";
 import useVerifyRole from "../hooks/useVerifyRoles"
 import { useNavigate } from "react-router-dom";
 
