@@ -9,7 +9,7 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [error, setError] = useState()
-  const url = "http://localhost:5000"; 
+  const url = "https://gazly-backend.onrender.com"; 
   const [user, setUser] = useState(() => {
     const storedToken =
       localStorage.getItem("accessToken") ||
