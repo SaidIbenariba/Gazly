@@ -19,10 +19,12 @@ const FormField = ({
   inputType = "",
   name,
   required = false,
+  placeholder=false,
 }) => {
   return (
     <>
-      <Typography variant="h6" color="blue-gray" className="-mb-3">
+    <div className="flex flex-col gap-1">
+      <Typography variant="h6"  color="text" className="mb-0">
         {label}
       </Typography>
       {inputType === "select" ? (
@@ -68,6 +70,7 @@ const FormField = ({
             className: "before:content-none after:content-none",
           }}
           onChange={(e) => handleChange(e.target.value, name)}
+          placeholder={placeholder && placeholder}
         />
       ) : required ? (
         <Input
@@ -81,6 +84,7 @@ const FormField = ({
           onChange={(e) => handleChange(e.target.value, name)}
           required
           maxLength={20}
+          placeholder={placeholder && placeholder}
         />
       ) : (
         <Input
@@ -92,13 +96,14 @@ const FormField = ({
             className: "before:content-none after:content-none",
           }}
           onChange={(e) => handleChange(e.target.value, name)}
+          placeholder={placeholder && placeholder}
         />
-      )}
+      )}</div>
     </>
   );
 };
 
-const Form = ({ fields, onSubmit, initialValues, handleChange }) => {
+const Form = ({className = false, fields, onSubmit, initialValues, handleChange, shadow = true, msg = "SAVE" }) => {
   const [formValues, setFormValues] = useState(initialValues);
 
   useEffect(() => {
@@ -111,11 +116,12 @@ const Form = ({ fields, onSubmit, initialValues, handleChange }) => {
   };
 
   return (
-    <Card color="transparent" className="w-fit p-5" shadow={true}>
+    <Card color="transparent" className="w-fit p-5" shadow={shadow}>
       <form className="mt-2 mb-2 w-80 sm:w-96" onSubmit={handleSubmit}>
         <div className="mb-1 flex flex-col gap-6">
           {fields.map((field, index) => (
             <FormField
+            className = {className && className} 
               key={index}
               label={field.label}
               type={field.type}
@@ -127,10 +133,11 @@ const Form = ({ fields, onSubmit, initialValues, handleChange }) => {
               }
               inputType={field.inputType}
               required={field.required}
+              placeholder={field.placeholder && field.placeholder}
             />
           ))}
-          <Button type="submit" className="button w-full mt-10" text={`save`}>
-            Save
+          <Button type="submit" className="button w-full mt-10" >
+            {msg}
           </Button>
         </div>
       </form>

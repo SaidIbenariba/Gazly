@@ -12,6 +12,8 @@ import { useAuth } from "./hooks/useAuth";
 import OuvrierRoutes from "./pages/routes/OuvrierRoutes";
 import ResponsableRoutes from "./pages/routes/ResponsableRoutes";
 import AdminRoutes from "./pages/routes/AdminRoutes";
+import Contact from "./pages/Contact";
+import About from "./pages/About"; 
 const App = () => {
   return (
     <Routes>
@@ -20,6 +22,8 @@ const App = () => {
       <Route path="/register" element={<Register />} />
       {/* <Route element={<PrivateRoutes />} path="/private/*" /> */}
       <Route path="/profile" element={<Profile/>}   />
+      <Route path="/contact" element={<Contact/>}/>
+      <Route path="/about"  element={<About/>}/>
        {/* <PrivateRoutes/> */}
       <Route path="/private/*" element={PrivateRoutes()}/>
       <Route path="*" element={<Notfound />} />
